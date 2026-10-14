@@ -39,6 +39,7 @@ local/share/            MonoBW colour scheme, MonoFolders icons, music, soundboa
 sddm/orbital/           login screen theme (install.sh copies it into /usr/share/sddm/themes)
 bin/                    my scripts -> ~/.local/bin
 stream-overlays/        OBS browser overlays + scene collection
+wallpapers/             wallpapers (daily/ = the daily rotation)
 docs/                   this project's website (GitHub Pages)
 ```
 
@@ -74,7 +75,7 @@ Some scripts are tied to my hardware (an Acer Predator laptop: `predator-mode`, 
 
 ## Wallpapers
 
-Not mine, so linked instead of included: [6kre3q](https://wallhaven.cc/w/6kre3q) · [6opwrx](https://wallhaven.cc/w/6opwrx) · [gpj7mq](https://wallhaven.cc/w/gpj7mq) · [xl2273](https://wallhaven.cc/w/xl2273)
+In [`wallpapers/`](wallpapers). The ones in `wallpapers/daily` rotate one per day (`wallpaper-daily`); `Super+W` skips to the next.
 
 ## Credits
 
