@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""update-check -- pending updates for the bar, as one line of JSON.
+
+  {"repo": 3, "aur": 1, "pkgs": ["linux 6.x -> 6.y", ...], "error": ""}
+
+repo: checkupdates (pacman-contrib) -- uses a temporary copy of the package
+      database, so it needs no root and never touches the real one.
+aur:  yay -Qua (or paru -Qua).
+"""
+import json, shutil, subprocess
+
+out = {"repo": 0, "aur": 0, "pkgs": [], "error": ""}
+
+
+def run(argv, timeout=90):
+    try:
+        r = subprocess.run(argv, capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return None, str(e)
+    # checkupdates exits 2 when there is nothing to update
+    if r.returncode not in (0, 2) and not r.stdout.strip():
+        return None, (r.stderr.strip().splitlines() or ["failed"])[-1]
+    return [l.strip() for l in r.stdout.splitlines() if "->" in l], ""
+
+
+if shutil.which("checkupdates"):
+    lines, err = run(["checkupdates"])
+    if lines is None:
+        out["error"] = "checkupdates: " + err
+    else:
+        out["repo"] = len(lines)
+        out["pkgs"] += lines
+else:
+    out["error"] = "install pacman-contrib for update checks (sudo pacman -S pacman-contrib)"
+
+helper = shutil.which("yay") or shutil.which("paru")
+if helper:
+    lines, err = run([helper, "-Qua"])
+    if lines is not None:
+        out["aur"] = len(lines)
+        out["pkgs"] += [l + "  (AUR)" for l in lines]
+
+print(json.dumps(out))

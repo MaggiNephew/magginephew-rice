@@ -1,0 +1,152 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Follower alert</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* Browser source: any size -- the alert scales to fit and stays centred in it.
+     Suggested: 1100 x 640 at the top-centre of the screen (position 410, 0), or 1920 x 1080 full screen.
+     On top of everything in the Live scene.
+     Invisible until someone follows. Tick "Control audio via OBS" for the sound.
+     Options (URL ?query):  test=NAME  show one alert now   sound=0  no sound
+                            sound=file.mp3  your own sound from this folder   hold=5  seconds on screen */
+  /* everything is laid out on a 1100 x 640 stage that is scaled to fit the source */
+  .astage {
+    position: absolute; left: 50%; top: 50%; width: 1100px; height: 640px;
+    transform: translate(-50%, -50%) scale(var(--s, 1));
+  }
+  .alert {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    visibility: hidden;
+  }
+  .alert.on { visibility: visible; }
+
+  .ring, .orbit { position: absolute; pointer-events: none; opacity: 0; }
+  .ring  { width: 520px; }
+  .orbit { width: 1000px; height: 560px; object-fit: fill; }
+
+  .card {
+    position: relative;
+    background: rgba(0, 0, 0, .86);
+    padding: 26px 34px 34px;
+    clip-path: inset(0 50% 0 50%);
+  }
+  .card .frame { padding: 26px 46px 34px; --stroke: 4px; --gap: 300px; min-width: 560px; text-align: center; }
+  .card .frame .label { font-size: 17px; }
+  .name {
+    font-weight: 800; font-size: 64px; letter-spacing: .08em; line-height: 1.05;
+    white-space: nowrap; color: var(--white);
+  }
+  .thanks { margin-top: 10px; font-family: var(--mono); font-size: 20px; color: var(--gray); letter-spacing: .14em; }
+
+  /* in: rings bloom, card opens from the centre; out: everything folds back */
+  .alert.on .ring  { animation: ringIn .9s cubic-bezier(.2,.8,.2,1) forwards, spin 18s linear infinite; }
+  .alert.on .orbit { animation: orbitIn 1.1s cubic-bezier(.2,.8,.2,1) .1s forwards, sway 7s ease-in-out infinite alternate; }
+  .alert.on .card  { animation: open .7s cubic-bezier(.7,0,.2,1) .25s forwards; }
+  .alert.on .name  { animation: rise .6s cubic-bezier(.2,.8,.2,1) .55s both; }
+  .alert.on .thanks{ animation: rise .6s cubic-bezier(.2,.8,.2,1) .7s both; }
+  .alert.out .ring, .alert.out .orbit { animation: fade .5s ease forwards; }
+  .alert.out .card { animation: close .5s cubic-bezier(.7,0,.2,1) forwards; }
+
+  @keyframes ringIn  { from { opacity: 0; transform: scale(.4) rotate(-40deg); } to { opacity: .55; transform: scale(1) rotate(0); } }
+  @keyframes orbitIn { from { opacity: 0; transform: scale(.6); } to { opacity: .22; transform: scale(1); } }
+  @keyframes spin     { to { rotate: 360deg; } }
+  @keyframes sway     { from { rotate: -7deg; } to { rotate: 7deg; } }   /* the wide oval only sways, so it never grows past the stage */
+  @keyframes open  { from { clip-path: inset(0 50% 0 50%); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes close { from { clip-path: inset(0 0 0 0); opacity: 1; } to { clip-path: inset(0 50% 0 50%); opacity: 0; } }
+  @keyframes rise  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes fade  { to { opacity: 0; } }
+</style></head>
+<body>
+  <div class="astage"><div class="alert" id="alert">
+    <img class="orbit" src="assets/stipple-orbit.png" alt="">
+    <img class="ring" src="assets/stipple-ring.png" alt="">
+    <div class="card">
+      <div class="frame">
+        <div class="name" id="name">NAME</div>
+        <div class="thanks">thanks for the follow</div>
+        <div class="label">NEW FOLLOWER</div>
+      </div>
+    </div>
+  </div></div>
+  <script src="twitch-config.js" onerror="window.TWITCH = null"></script>
+  <script src="test-listen.js"></script>
+  <script>
+    const q = new URLSearchParams(location.search);
+    const HOLD = (parseFloat(q.get("hold")) || 5) * 1000;
+    const SOUND = q.get("sound") ?? "chime";
+    const cfg = window.TWITCH;
+    const fitStage = () => document.documentElement.style.setProperty("--s",
+      Math.min(innerWidth / 1100, innerHeight / 640));
+    fitStage(); addEventListener("resize", fitStage);
+    const box = document.getElementById("alert"), nameEl = document.getElementById("name");
+    const queue = [];
+    let busy = false;
+
+    // ---- sound: a soft two-note chime made on the fly, or your own file ----
+    let actx = null;
+    function chime() {
+      try {
+        actx = actx || new AudioContext();
+        const t = actx.currentTime;
+        [[659.25, 0], [987.77, 0.14]].forEach(([f, d]) => {
+          const o = actx.createOscillator(), g = actx.createGain();
+          o.type = "sine"; o.frequency.value = f;
+          g.gain.setValueAtTime(0.0001, t + d);
+          g.gain.exponentialRampToValueAtTime(0.22, t + d + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + d + 1.1);
+          o.connect(g).connect(actx.destination);
+          o.start(t + d); o.stop(t + d + 1.2);
+        });
+      } catch (e) { console.log("[alert] sound failed", e); }
+    }
+    function sound() {
+      if (SOUND === "0" || SOUND === "off") return;
+      if (SOUND === "chime") return chime();
+      new Audio(SOUND).play().catch((e) => console.log("[alert] sound failed", e));
+    }
+
+    // ---- show one alert at a time ----
+    function fit() {                       // long names shrink to fit
+      nameEl.style.fontSize = "";
+      let px = 64;
+      while (nameEl.scrollWidth > 900 && px > 28) { px -= 2; nameEl.style.fontSize = px + "px"; }
+    }
+    function next() {
+      if (busy || !queue.length) return;
+      busy = true;
+      nameEl.textContent = queue.shift();
+      fit();
+      box.classList.remove("out");
+      void box.offsetWidth;                // restart the animations
+      box.classList.add("on");
+      sound();
+      setTimeout(() => {
+        box.classList.add("out");
+        setTimeout(() => { box.classList.remove("on", "out"); busy = false; setTimeout(next, 600); }, 520);
+      }, HOLD);
+    }
+    function alertFor(name) { queue.push(name); next(); }
+
+    // ---- watch Twitch for new followers ----
+    const seen = new Set();
+    let primed = false;
+    async function poll() {
+      try {
+        const r = await fetch("https://api.twitch.tv/helix/channels/followers?first=20&broadcaster_id=" + cfg.userId, {
+          headers: { "Client-Id": cfg.clientId, "Authorization": "Bearer " + cfg.token } });
+        if (!r.ok) { console.log("[alert] twitch said " + r.status); return; }
+        const d = await r.json();
+        const fresh = (d.data || []).filter((f) => !seen.has(f.user_id));
+        fresh.forEach((f) => seen.add(f.user_id));
+        if (primed) fresh.reverse().forEach((f) => alertFor(f.user_name));   // oldest first
+        primed = true;                     // the first look only records who already follows
+      } catch (e) { console.log("[alert] " + e); }
+    }
+
+    // stream-test follow [name]
+    window.onStreamTest = (t) => { if (t.type === "follow") alertFor(t.name || "TestFollower"); };
+    if (q.get("test")) setTimeout(() => alertFor(q.get("test") === "1" ? "TestFollower" : q.get("test")), 800);
+    if (cfg && cfg.token) { poll(); setInterval(poll, 10000); }
+    else console.log("[alert] not set up -- run stream-stats-setup");
+  </script>
+</body></html>

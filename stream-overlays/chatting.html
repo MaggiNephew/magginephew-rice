@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Just Chatting background</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* Browser source: 1920 x 1080, at the bottom of the Just Chatting scene.
+     Leaves room for: camera 1280x720 at (80, 190) and the chat box 460x780 at (1400, 190). */
+  .globes { position: absolute; left: 50%; bottom: -40px; width: 1700px; transform: translateX(-50%);
+            opacity: .07; animation: breathe 18s ease-in-out infinite alternate; }
+  @keyframes breathe { to { opacity: .11; transform: translateX(-50%) translateY(-12px); } }
+  .title { position: absolute; left: 80px; top: 66px; display: flex; align-items: center; gap: 28px; z-index: 1; }
+  .title .frame { width: 360px; padding: 16px 20px 22px; --stroke: 3px; --gap: 132px; }
+  .title .frame .label { font-size: 10px; letter-spacing: .36em; text-indent: .36em; }
+  .title .what { font-weight: 800; font-size: 30px; letter-spacing: .5em; color: var(--white); }
+  .title .sub { font-family: var(--mono); font-size: 18px; color: var(--gray); letter-spacing: .1em; margin-top: 6px; }
+  canvas.wave { bottom: 40px; height: 60px; opacity: .8; }
+</style></head>
+<body class="screen" data-mode="chatting">
+  <img class="bg" src="assets/stipple-sphere.png" style="width:640px;left:1420px;top:-260px;--o:.12;--r:20deg">
+  <img class="bg" src="assets/stipple-haze.png" style="width:560px;left:-220px;top:620px;--o:.08;--dx:50px;--dy:-30px;--d:64s">
+  <img class="globes" src="assets/globes.png" alt="">
+  <div class="title">
+    <div class="frame"><img class="wordmark" src="wordmark.svg" alt="MAGGINEPHEW"><div class="label">GENESIS 1:27</div></div>
+    <div><div class="what">JUST CHATTING</div><div class="sub" data-clock></div></div>
+  </div>
+  <canvas class="wave"></canvas>
+  <script src="screen.js"></script>
+</body></html>

@@ -1,0 +1,964 @@
+#!/usr/bin/env python3
+"""cyber — browse your installed BlackArch tools.
+
+  cyber                  open the browser (mouse + keyboard)
+  cyber -l               print the category list
+  cyber <category>       list a category          cyber code-audit
+  cyber <tool>           show one tool            cyber trufflehog
+  cyber -g<N> [M]        category N / tool M      cyber -g8 3
+  cyber -s <words>       search names + descriptions
+  cyber -f               fuzzy picker (fzf) with live preview
+  cyber sandbox <tool>   open a throwaway sandboxed shell for a tool   (--offline: no network)
+  cyber --update         rebuild the tool list now (normally automatic)
+"""
+import curses, json, locale, os, re, shlex, shutil, subprocess, sys, textwrap, time
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, HERE)
+import gen  # noqa: E402
+
+CATDESC = {
+    "ai": "AI/ML security - LLM & ML attack/defense tools",
+    "anti-forensic": "Anti-forensics - log cleaning, data wiping, hiding traces",
+    "automation": "Automation - pentest automation & orchestration",
+    "automobile": "Automobile/CAN - car & vehicle bus hacking",
+    "backdoor": "Backdoors - remote access, shells, rootkits",
+    "binary": "Binary analysis - inspection & manipulation",
+    "bluetooth": "Bluetooth - BT hacking, sniffing & attacks",
+    "code-audit": "Code audit - static source code analysis",
+    "cracker": "Crackers - password/hash cracking",
+    "crypto": "Cryptography - crypto analysis & attack tools",
+    "database": "Database - DB enumeration & exploitation",
+    "debugger": "Debuggers - dynamic binary debugging",
+    "decompiler": "Decompilers - high-level code from binaries",
+    "defensive": "Defensive - blue-team, hardening, detection",
+    "disassembler": "Disassemblers - machine code to assembly",
+    "dos": "DoS - denial-of-service & stress testing",
+    "drone": "Drones - UAV/drone hacking",
+    "exploitation": "Exploitation - exploit dev & post-exploitation",
+    "fingerprint": "Fingerprinting - OS/service fingerprinting",
+    "firmware": "Firmware - embedded & firmware analysis",
+    "forensic": "Forensics - disk/memory/image forensics",
+    "fuzzer": "Fuzzers - fuzzing & input mutation",
+    "hardware": "Hardware - hardware hacking tools",
+    "honeypot": "Honeypots - deception & honeypot frameworks",
+    "ids": "IDS/IPS - intrusion detection & evasion",
+    "keylogger": "Keyloggers - keystroke capture",
+    "malware": "Malware - malware analysis & creation",
+    "misc": "Miscellaneous - uncategorized utilities",
+    "mobile": "Mobile - Android/iOS mobile security",
+    "networking": "Networking - network tools & analysis",
+    "nfc": "NFC/RFID - near-field & RFID hacking",
+    "packer": "Packers - executable packing & obfuscation",
+    "proxy": "Proxy - MITM & proxy tooling",
+    "radio": "Radio/SDR - software-defined radio & RF",
+    "recon": "Reconnaissance - OSINT & info gathering",
+    "reversing": "Reverse engineering - binary reverse engineering",
+    "scanner": "Scanners - vulnerability & port scanning",
+    "sniffer": "Sniffers - traffic capture & analysis",
+    "social": "Social engineering - phishing & social attacks",
+    "spoof": "Spoofing - IP/MAC/ARP spoofing",
+    "stego": "Steganography - hiding data in media",
+    "threat-model": "Threat modeling - threat modeling & reporting",
+    "tunnel": "Tunneling - covert channels & tunneling",
+    "unpacker": "Unpackers - unpacking packed executables",
+    "voip": "VoIP - SIP/VoIP hacking",
+    "webapp": "Web application - web app scanners & attacks",
+    "windows": "Windows - Windows post-exploitation & analysis",
+    "wireless": "Wireless - WiFi & wireless attacks",
+    "wordlist": "Wordlists - wordlist generation & tools",
+}
+
+# nerd-font glyphs (kitty uses 3270 Nerd Font Mono)
+I_FOLDER, I_OPEN, I_TOOL, I_SEARCH, I_ALL, I_STAR = "\uf07b", "\uf07c", "\uf120", "\uf002", "\uf009", "\u2605"
+
+
+# ----------------------------------------------------------------------------
+#  data
+# ----------------------------------------------------------------------------
+class DB:
+    def __init__(self):
+        if gen.is_stale():
+            try:
+                gen.build()
+            except Exception as e:
+                print(f"cyber: could not refresh tool list ({e})", file=sys.stderr)
+        with open(gen.OUT, encoding="utf-8") as f:
+            tools = json.load(f)["tools"]
+        self.tools = sorted(tools, key=lambda t: (-t["stars"], t["name"].lower()))
+        self.by_name = {t["name"]: t for t in self.tools}
+        self.by_bin = {b: t for t in self.tools for b in t["bins"]}
+        self.cats = sorted({c for t in self.tools for c in t["cats"]})
+        self.by_cat = {c: [t for t in self.tools if c in t["cats"]] for c in self.cats}
+
+    def cat_num(self, cat):
+        return self.cats.index(cat) + 1
+
+    def search(self, query):
+        words = query.lower().split()
+        if not words:
+            return []
+        scored = []
+        for t in self.tools:
+            name = t["name"].lower()
+            hay = " ".join([name, t["desc"].lower(), " ".join(t["bins"]).lower(), " ".join(t["cats"])])
+            if all(w in hay for w in words):
+                w0 = words[0]
+                rank = 0 if name == w0 else 1 if name.startswith(w0) else 2 if w0 in name else 3
+                scored.append((rank, -t["stars"], name, t))
+        return [s[3] for s in sorted(scored, key=lambda s: s[:3])]
+
+
+def main_cmd(t):
+    if t["bins"]:
+        return t["bins"][0]
+    return t["paths"][0] if t["paths"] else ""
+
+
+def emit_command(cmd):
+    out = os.environ.get("CYBER_OUT")
+    if out:
+        with open(out, "w") as f:
+            f.write(cmd)
+    else:
+        print(cmd)
+
+
+def stars_s(n):
+    return f"{n:,}" if n else "n/a"
+
+
+def ver_s(v):
+    return v.split(":", 1)[1] if ":" in v else v
+
+
+def run_capture(argv, timeout=6, env=None):
+    try:
+        p = subprocess.run(argv, stdin=subprocess.DEVNULL, capture_output=True, timeout=timeout, env=env)
+        out = (p.stdout + p.stderr).decode("utf-8", "replace")
+    except subprocess.TimeoutExpired as e:
+        out = ((e.stdout or b"") + (e.stderr or b"")).decode("utf-8", "replace")
+        out += f"\n[stopped after {timeout}s]"
+    except FileNotFoundError:
+        out = f"{argv[0]}: not found"
+    out = re.sub(r"\x1b\[[0-9;?]*[A-Za-z]", "", out)
+    out = re.sub(r".\x08", "", out)
+    return out.expandtabs(4).replace("\r", "")
+
+
+def help_text(cmd):
+    out = run_capture([cmd, "--help"])
+    if len(out.strip().splitlines()) < 2:
+        alt = run_capture([cmd, "-h"])
+        if len(alt.strip()) > len(out.strip()):
+            out = alt
+    return out.strip() or "(no output)"
+
+
+def man_text(page, width):
+    env = dict(os.environ, MANPAGER="cat", PAGER="cat", MANWIDTH=str(max(40, width)))
+    return run_capture(["man", page], timeout=10, env=env).strip() or "(no man page)"
+
+
+def tldr_text(cmd):
+    out = run_capture(["tldr", "--color", "never", cmd]).strip()
+    if not out or "no tldr page" in out.lower():
+        return ""
+    return out
+
+
+# ----------------------------------------------------------------------------
+#  plain terminal output
+# ----------------------------------------------------------------------------
+TTY = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
+B, D, R = ("\033[1m", "\033[2m", "\033[0m") if TTY else ("", "", "")
+
+
+def width():
+    return max(60, shutil.get_terminal_size((100, 24)).columns)
+
+
+def cut(s, n):
+    return s if len(s) <= n else s[:max(0, n - 1)] + "\u2026"
+
+
+def print_cats(db):
+    W = width()
+    print(f"{B}CYBERSEC TOOL GROUPS{R}  {D}{len(db.tools)} tools \u00b7 {len(db.cats)} groups{R}")
+    print(D + "\u2500" * W + R)
+    for i, c in enumerate(db.cats, 1):
+        tools = db.by_cat[c]
+        head = f"{i:>3}. {c:<15} {D}{len(tools):>3} tools{R}  "
+        print(head + D + cut(CATDESC.get(c, ""), W - 30) + R)
+    print(D + "\u2500" * W + R)
+    print(f"{D}cyber <group> \u00b7 cyber <tool> \u00b7 cyber -s <words> \u00b7 cyber -f  (or just `cyber` for the browser){R}")
+
+
+def print_list(db, title, tools):
+    W = width()
+    print(f"{B}{title}{R}  {D}({len(tools)} tools){R}")
+    print(D + "\u2500" * W + R)
+    namew = min(26, max((len(t["name"]) for t in tools), default=10))
+    for i, t in enumerate(tools, 1):
+        dep = f"{D}\u00b7dep{R}" if not t["explicit"] else "    "
+        line = f"{i:>3}. {D}{stars_s(t['stars']):>7}{R} {B}{t['name']:<{namew}}{R} {dep} "
+        print(line + D + cut(t["desc"], W - namew - 20) + R)
+    print(D + "\u2500" * W + R)
+
+
+def print_detail(db, t, W=None, with_usage=True):
+    W = W or min(width(), 90)
+    print(f"{B}{t['name']}{R}  {D}{ver_s(t['version'])}{R}")
+    print(D + "\u2500" * W + R)
+    grp = "  ".join(f"{c} (-g{db.cat_num(c)})" for c in t["cats"])
+    print(f"{D}groups {R} {grp}")
+    line = f"{D}rating {R} {I_STAR} {stars_s(t['stars'])} GitHub stars"
+    if not t["explicit"]:
+        line += f"  {D}(installed as a dependency){R}"
+    print(line)
+    print()
+    for line in textwrap.wrap(t["desc"] or "(no description)", W - 2):
+        print("  " + line)
+    print()
+    if t["bins"]:
+        print(f"{B}COMMANDS{R}")
+        for b in t["bins"]:
+            print(f"  {b}")
+    elif t["paths"]:
+        print(f"{B}FILES{R}  {D}(data package, no command){R}")
+        for p in t["paths"]:
+            print(f"  {p}")
+    else:
+        print(f"{D}library / data package \u2014 no command{R}")
+    if t["man"]:
+        print(f"\n{D}man    {R} " + ", ".join(t["man"]))
+    if t["url"]:
+        print(f"{D}docs   {R} {t['url']}")
+    if with_usage and t["bins"]:
+        cmd = t["bins"][0]
+        print(f"\n{B}TRY{R}")
+        tl = tldr_text(cmd)
+        if tl:
+            print(D + cut(tl, W * 8) + R)
+        else:
+            print(D + cut(help_text(cmd), W * 8) + R)
+
+
+# ----------------------------------------------------------------------------
+#  run a tool: normal shell, or a throwaway firejail sandbox (optionally offline)
+# ----------------------------------------------------------------------------
+def shell_argv(cmd, mode="plain"):
+    """argv for an interactive shell ready to run `cmd`.
+    mode: "plain" (your normal shell) | "sandbox" (empty throwaway home, no privileges)
+          | "offline" (sandbox + no network). Raises RuntimeError if firejail is missing."""
+    lines = [f"\u2500\u2500 {cmd} \u2500\u2500"]
+    if mode == "plain":
+        lines.append(f"try:  {cmd} --help")
+        ps1 = None
+    else:
+        if not shutil.which("firejail"):
+            raise RuntimeError("firejail is not installed \u2014 sudo pacman -S firejail "
+                               "(or run: sudo rice-system-setup)")
+        lines += ["SANDBOX: empty throwaway home (your files are not visible), no root, no new privileges",
+                  "         everything written here is deleted when this window closes",
+                  "OFFLINE: no network access at all" if mode == "offline" else "network: on",
+                  "tools that need root / raw sockets (nmap -sS, aircrack, \u2026) will not work here",
+                  f"try:  {cmd} --help"]
+        ps1 = "[sandbox" + (" offline" if mode == "offline" else "") + "] \\W \\$ "
+    banner = "; ".join(f"printf '%s\\n' {shlex.quote(l)}" for l in lines)
+    if ps1 is None:
+        inner = ["bash", "-c", banner + "; exec bash -i"]
+        return inner
+    inner = ["bash", "-c", banner + f"; exec env PS1={shlex.quote(ps1)} bash --norc --noprofile -i"]
+    fj = ["firejail", "--quiet", "--private", "--private-tmp", "--nonewprivs", "--caps.drop=all",
+          "--noroot", "--hostname=sandbox", f"--name=cyber-{re.sub(r'[^A-Za-z0-9_-]', '_', cmd)}"]
+    if mode == "offline":
+        fj.append("--net=none")
+    return fj + inner
+
+
+def launch_window(cmd, mode="plain"):
+    """Open the shell from shell_argv() in a new kitty window."""
+    argv = shell_argv(cmd, mode)
+    term = shutil.which("kitty")
+    if not term:
+        raise RuntimeError("kitty not found")
+    title = ("sandbox: " if mode != "plain" else "") + cmd
+    subprocess.Popen([term, "--class", "cyber-run", "--title", title, "-e"] + argv,
+                     stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                     start_new_session=True, cwd=os.path.expanduser("~"))
+
+
+def fzf_pick(db):
+    if not shutil.which("fzf"):
+        print("cyber -f needs fzf", file=sys.stderr)
+        return 1
+    self_path = os.path.realpath(__file__)
+    lines = "\n".join(f"{t['name']}\t{','.join(t['cats'])}\t{t['desc']}" for t in db.tools)
+    p = subprocess.run(
+        ["fzf", "--delimiter", "\t", "--with-nth", "1,2,3", "--tabstop", "2",
+         "--height", "90%", "--layout=reverse", "--border=rounded", "--color=bw",
+         "--prompt", f"{I_SEARCH} ", "--header", "Enter: put command on prompt \u00b7 Esc: cancel",
+         "--preview", f"NO_COLOR= {self_path} --detail {{1}}", "--preview-window", "right,55%,wrap"],
+        input=lines, capture_output=False, stdout=subprocess.PIPE, text=True)
+    name = p.stdout.split("\t", 1)[0].strip()
+    if name in db.by_name:
+        emit_command(main_cmd(db.by_name[name]))
+    return 0
+
+
+# ----------------------------------------------------------------------------
+#  browser (curses)
+# ----------------------------------------------------------------------------
+WHEEL_UP = getattr(curses, "BUTTON4_PRESSED", 0x80000)
+WHEEL_DOWN = getattr(curses, "BUTTON5_PRESSED", 0x200000)
+PRESS = getattr(curses, "BUTTON1_PRESSED", 0x2)
+CLICK = getattr(curses, "BUTTON1_CLICKED", 0x4)
+DCLICK = getattr(curses, "BUTTON1_DOUBLE_CLICKED", 0x8)
+REPORT_POS = getattr(curses, "REPORT_MOUSE_POSITION", 0x1)
+DOUBLE_S = 0.4      # max seconds between presses that count as a double-click
+
+
+class Browser:
+    def __init__(self, scr, db):
+        self.scr, self.db = scr, db
+        self.focus = 0
+        self.query = ""
+        self.typing = False
+        self.overlay = None
+        self.detail_sel = 0
+        self.detail_scroll = 0
+        self.cat_sel = 0
+        self.cat_scroll = 0
+        self.tool_sel = 0
+        self.tool_scroll = 0
+        self.hover = None        # (pane, item_index) under the mouse
+        self.last_press = None   # (time, pane, item_index) for double-click detection
+        self.detail_rows = {}    # screen row -> command index, filled while drawing
+
+    # ---- model -------------------------------------------------------------
+    def cat_entries(self):
+        e = []
+        if self.query:
+            e.append(("search", f"search: {self.query}", len(self.db.search(self.query))))
+        e.append(("all", "all tools", len(self.db.tools)))
+        e += [(c, c, len(self.db.by_cat[c])) for c in self.db.cats]
+        return e
+
+    def current_cat(self):
+        e = self.cat_entries()
+        return e[min(self.cat_sel, len(e) - 1)][0]
+
+    def tool_list(self):
+        c = self.current_cat()
+        if c == "search":
+            return self.db.search(self.query)
+        if c == "all":
+            return self.db.tools
+        return self.db.by_cat[c]
+
+    def current_tool(self):
+        tl = self.tool_list()
+        return tl[self.tool_sel] if tl and self.tool_sel < len(tl) else None
+
+    def current_cmd(self):
+        t = self.current_tool()
+        if not t or not t["bins"]:
+            return None
+        return t["bins"][min(self.detail_sel, len(t["bins"]) - 1)]
+
+    # ---- layout ------------------------------------------------------------
+    def layout(self):
+        h, w = self.scr.getmaxyx()
+        lw = max(16, int(w * 0.22))
+        mw = max(20, int(w * 0.30))
+        rw = w - lw - mw
+        return h, w, lw, mw, rw
+
+    def list_h(self):
+        return max(1, self.scr.getmaxyx()[0] - 2)
+
+    def pane_at(self, x):
+        _h, _w, lw, mw, _rw = self.layout()
+        return 0 if x < lw else 1 if x <= lw + mw else 2
+
+    # ---- selection / scrolling (state is stored, never recomputed in draw) --
+    def select_cat(self, i):
+        n = len(self.cat_entries())
+        self.cat_sel = max(0, min(i, n - 1))
+        self.tool_sel = self.tool_scroll = 0
+        self.detail_sel = self.detail_scroll = 0
+        self._follow(0)
+
+    def select_tool(self, i):
+        n = len(self.tool_list())
+        self.tool_sel = max(0, min(i, n - 1)) if n else 0
+        self.detail_sel = self.detail_scroll = 0
+        self._follow(1)
+
+    def _follow(self, pane):
+        """Scroll a list just enough to keep its selection visible."""
+        h = self.list_h()
+        if pane == 0:
+            sel, sc = self.cat_sel, self.cat_scroll
+        else:
+            sel, sc = self.tool_sel, self.tool_scroll
+        if sel < sc:
+            sc = sel
+        elif sel >= sc + h:
+            sc = sel - h + 1
+        if pane == 0:
+            self.cat_scroll = sc
+        else:
+            self.tool_scroll = sc
+
+    def _clamp_scroll(self):
+        h = self.list_h()
+        self.cat_scroll = max(0, min(self.cat_scroll, len(self.cat_entries()) - h))
+        self.tool_scroll = max(0, min(self.tool_scroll, len(self.tool_list()) - h))
+
+    # ---- draw --------------------------------------------------------------
+    def draw(self):
+        if self.overlay is not None:
+            self._draw_overlay()
+            return
+        h, w, lw, mw, rw = self.layout()
+        self._clamp_scroll()
+        self.scr.erase()
+        self._titlebar(w)
+        inner_y, inner_h = 1, h - 2
+        hov = lambda p: self.hover[1] if self.hover and self.hover[0] == p else None
+
+        self._pane(0, 0, inner_y, lw, inner_h, self.cat_entries(), self._cat_row,
+                   self.cat_sel, self.cat_scroll, hov(0))
+        self._vline(lw, inner_y, inner_h)
+        self._pane(1, lw + 1, inner_y, mw, inner_h, self.tool_list(), self._tool_row,
+                   self.tool_sel, self.tool_scroll, hov(1))
+        self._vline(lw + mw + 1, inner_y, inner_h)
+        self._detail(lw + mw + 2, inner_y, rw - 2, inner_h)
+        self._statusbar(h, w)
+
+    def _titlebar(self, w):
+        s = f" {I_FOLDER} cyber — {len(self.db.tools)} tools"
+        if self.query or self.typing:
+            s += f"  {I_SEARCH} search: {self.query}" + ("▁" if self.typing else "")
+        try:
+            self.scr.addstr(0, 0, s[:w], curses.A_BOLD)
+        except curses.error:
+            pass
+
+    def _vline(self, x, y, h):
+        try:
+            for yy in range(y, y + h):
+                self.scr.addch(yy, x, curses.ACS_VLINE)
+        except curses.error:
+            pass
+
+    def _pane(self, pid, x, y, w, h, items, rowfn, sel, scroll, hover_idx=None):
+        for j in range(h):
+            idx = scroll + j
+            if idx >= len(items):
+                break
+            text, _ = rowfn(items[idx])
+            attr = 0
+            if idx == sel:
+                # focused pane: solid highlight; other panes: dimmed highlight
+                attr = curses.A_REVERSE if self.focus == pid else curses.A_REVERSE | curses.A_DIM
+            elif idx == hover_idx:
+                attr = curses.A_UNDERLINE | curses.A_BOLD
+            self._row(x, y + j, w, text, attr)
+
+    def _row(self, x, y, w, text, attr=0):
+        try:
+            self.scr.addstr(y, x, (" " + text)[:w].ljust(w), attr)
+        except curses.error:
+            pass
+
+    def _cat_row(self, e):
+        key, label, n = e
+        icon = I_SEARCH if key == "search" else I_ALL if key == "all" else (
+            I_OPEN if key == self.current_cat() else I_FOLDER)
+        return f"{icon} {label:<12} {n:>3}", False
+
+    def _tool_row(self, t):
+        dep = "" if t["explicit"] else " ·"
+        return f"{I_TOOL} {cut(t['name'], 18)}{dep}", False
+
+    def _detail_lines(self, t, w):
+        lines = []   # (text, attr, command_index or None)
+        add = lambda txt="", attr=0, ci=None: lines.append((txt, attr, ci))
+        add(f" {I_STAR} {stars_s(t['stars'])}   {ver_s(t['version'])}", curses.A_DIM)
+        add(" " + cut("groups: " + ", ".join(t["cats"]), w - 1), curses.A_DIM)
+        add()
+        for ln in textwrap.wrap(t["desc"] or "(no description)", max(12, w - 2)):
+            add(" " + ln)
+        add()
+        if t["bins"]:
+            add(" COMMANDS", curses.A_BOLD)
+            for i, b in enumerate(t["bins"]):
+                add(" " + b, 0, i)
+        elif t["paths"]:
+            add(" FILES (data package)", curses.A_BOLD)
+            for p in t["paths"]:
+                add(" " + p)
+        else:
+            add(" library / data package", curses.A_DIM)
+        if t["man"]:
+            add()
+            add(" man: " + ", ".join(t["man"]), curses.A_DIM)
+        if t["url"]:
+            add()
+            add(" " + cut(t["url"], w - 1), curses.A_DIM)
+        return lines
+
+    def _detail(self, x, y, w, h):
+        self.detail_rows = {}
+        t = self.current_tool()
+        if t is None or w < 4:
+            return
+        try:
+            self.scr.addstr(y, x, (" " + t["name"])[:w].ljust(w), curses.A_BOLD | curses.A_REVERSE)
+        except curses.error:
+            pass
+        lines = self._detail_lines(t, w)
+        body_h = h - 1
+        self.detail_scroll = max(0, min(self.detail_scroll, len(lines) - body_h))
+        for j in range(body_h):
+            idx = self.detail_scroll + j
+            if idx >= len(lines):
+                break
+            txt, attr, ci = lines[idx]
+            if ci is not None:
+                self.detail_rows[y + 1 + j] = ci
+                if ci == self.detail_sel and self.focus == 2:
+                    attr |= curses.A_REVERSE
+                elif self.hover == (2, ci):
+                    attr |= curses.A_UNDERLINE | curses.A_BOLD
+            try:
+                self.scr.addstr(y + 1 + j, x, txt[:w], attr)
+            except curses.error:
+                pass
+
+    def _statusbar(self, h, w):
+        if self.typing:
+            s = " type to search · Enter: show results · Esc: cancel"
+        else:
+            keys = [("↑↓", "move"), ("←→", "pane"), ("Enter/2×click", "open"),
+                    ("/", "search"), ("u", "usage"), ("c", "copy"), ("r", "run"), ("s", "sandbox"),
+                    ("o", "offline"), ("Esc", "back"), ("q", "quit")]
+            s = " " + "  ".join(f"{k}:{v}" for k, v in keys)
+        try:
+            self.scr.addstr(h - 1, 0, s[:w - 1].ljust(w - 1), curses.A_REVERSE)
+        except curses.error:
+            pass
+
+    # ---- input -------------------------------------------------------------
+    def run(self):
+        while True:
+            self.draw()
+            self.scr.refresh()
+            k = self.scr.getch()
+            if k == -1 or k == curses.KEY_RESIZE:
+                continue
+            if k == curses.KEY_MOUSE:
+                self._mouse()
+                continue
+            self.hover = None
+            if self.typing:
+                self._type(k)
+                continue
+            if self.overlay is not None:
+                self._overlay_key(k)
+                continue
+            if k == ord("q"):
+                return
+            if k == 27:                       # Esc: clear search, else go back a pane
+                if self.query:
+                    self.query = ""
+                    self.select_cat(0)
+                elif self.focus > 0:
+                    self.focus -= 1
+                continue
+            if k == ord("/"):
+                self.typing = True
+                self.query = ""
+                continue
+            if k in (curses.KEY_UP, ord("k")):
+                self._move(-1)
+            elif k in (curses.KEY_DOWN, ord("j")):
+                self._move(1)
+            elif k == curses.KEY_PPAGE:
+                self._move(-self.list_h())
+            elif k == curses.KEY_NPAGE:
+                self._move(self.list_h())
+            elif k in (curses.KEY_LEFT, ord("h")):
+                self.focus = max(0, self.focus - 1)
+            elif k in (curses.KEY_RIGHT, ord("l"), ord("\t")):
+                self.focus = min(2, self.focus + 1)
+            elif k in (10, 13, curses.KEY_ENTER):
+                self._open()
+            elif k == ord("u"):
+                self._usage()
+            elif k == ord("c"):
+                self._copy()
+            elif k == ord("r"):
+                self._run("plain")
+            elif k == ord("s"):
+                self._run("sandbox")
+            elif k == ord("o"):
+                self._run("offline")
+            elif k in (127, curses.KEY_BACKSPACE, 8):
+                self.focus = max(0, self.focus - 1)
+
+    def _move(self, d):
+        if self.focus == 0:
+            self.select_cat(self.cat_sel + d)
+        elif self.focus == 1:
+            self.select_tool(self.tool_sel + d)
+        else:
+            t = self.current_tool()
+            n = len(t["bins"]) if t and t["bins"] else 0
+            if n:
+                self.detail_sel = max(0, min(self.detail_sel + d, n - 1))
+            else:
+                self.detail_scroll = max(0, self.detail_scroll + d)
+
+    def _open(self):
+        if self.focus == 0:
+            self.focus = 1
+            self.select_tool(0)
+        elif self.focus == 1:
+            self.focus = 2
+        else:
+            self._usage()
+
+    def _set_overlay(self, title, blocks):
+        lines = []
+        for sub, text in blocks:
+            if sub:
+                lines.append(("H", sub))
+            for ln in text.splitlines():
+                lines.append(("T", ln))
+        self.overlay = {"title": title, "lines": lines, "scroll": 0}
+
+    def _usage(self):
+        t = self.current_tool()
+        if not t:
+            return
+        if not t["bins"]:
+            self._set_overlay(t["name"], [(None, "(data/wordlist package — no command; see FILES)")])
+            return
+        cmd = self.current_cmd() or t["bins"][0]
+        blocks = []
+        if t["man"]:
+            page = t["man"][0]
+            blocks.append((f"man {page}", man_text(page, self.scr.getmaxyx()[1] - 2)))
+        tl = tldr_text(cmd)
+        if tl:
+            blocks.append((f"tldr {cmd}", tl))
+        if not blocks:
+            blocks.append((f"{cmd} --help", help_text(cmd)))
+        self._set_overlay(t["name"], blocks)
+
+    def _run(self, mode):
+        cmd = self.current_cmd()
+        if not cmd:
+            t = self.current_tool()
+            if t:
+                self._set_overlay(t["name"], [(None, "(data/wordlist package \u2014 no command to run)")])
+            return
+        try:
+            launch_window(cmd, mode)
+        except RuntimeError as e:
+            self._set_overlay("can't open " + cmd, [(None, str(e))])
+
+    def _copy(self):
+        cmd = self.current_cmd()
+        if not cmd:
+            return
+        if shutil.which("wl-copy"):
+            subprocess.run(["wl-copy"], input=cmd.encode())
+            self._set_overlay("copy", [(None, f"copied to clipboard: {cmd}")])
+        else:
+            self._set_overlay("copy", [(None, cmd), (None, "(wl-copy not available)")])
+
+    def _overlay_key(self, k):
+        page = self.list_h()
+        if k in (27, ord("q"), 10, 13, 127, curses.KEY_BACKSPACE, 8):
+            self.overlay = None
+        elif k in (curses.KEY_UP, ord("k")):
+            self.overlay["scroll"] -= 1
+        elif k in (curses.KEY_DOWN, ord("j")):
+            self.overlay["scroll"] += 1
+        elif k in (ord(" "), curses.KEY_NPAGE):
+            self.overlay["scroll"] += page
+        elif k in (ord("b"), curses.KEY_PPAGE):
+            self.overlay["scroll"] -= page
+        elif k == curses.KEY_HOME:
+            self.overlay["scroll"] = 0
+        elif k == curses.KEY_END:
+            self.overlay["scroll"] = 1 << 30
+
+    def _draw_overlay(self):
+        h, w = self.scr.getmaxyx()
+        self.scr.erase()
+        title = self.overlay["title"]
+        lines = self.overlay["lines"]
+        body_h = h - 2
+        self.overlay["scroll"] = max(0, min(self.overlay["scroll"], len(lines) - body_h))
+        sc = self.overlay["scroll"]
+        try:
+            self.scr.addstr(0, 0, f" ✕ {title}   (click here, q or Esc to close)"[:w].ljust(w),
+                            curses.A_BOLD | curses.A_REVERSE)
+        except curses.error:
+            pass
+        for j in range(body_h):
+            idx = sc + j
+            if idx >= len(lines):
+                break
+            kind, txt = lines[idx]
+            try:
+                self.scr.addstr(1 + j, 0, txt[:w], curses.A_BOLD if kind == "H" else 0)
+            except curses.error:
+                pass
+        end = min(len(lines), sc + body_h)
+        try:
+            self.scr.addstr(h - 1, 0, f" lines {sc + 1 if lines else 0}-{end} of {len(lines)}"
+                            "   wheel/arrows/space to scroll"[:w - 1].ljust(w - 1), curses.A_REVERSE)
+        except curses.error:
+            pass
+
+    def _type(self, k):
+        if k == 27:
+            self.typing = False
+            self.query = ""
+            self.select_cat(0)
+        elif k in (10, 13, curses.KEY_ENTER):
+            self.typing = False
+            self.select_cat(0)               # the "search:" entry is first
+            self.focus = 1 if self.query else 0
+        elif k in (127, curses.KEY_BACKSPACE, 8):
+            self.query = self.query[:-1]
+            self.select_cat(0)
+        elif 32 <= k < 127:
+            self.query += chr(k)
+            self.select_cat(0)
+
+    # ---- mouse -------------------------------------------------------------
+    def _item_at(self, pane, y):
+        """Index of the list item / command under screen row y, or None."""
+        h = self.scr.getmaxyx()[0]
+        if y < 1 or y >= h - 1:
+            return None
+        if pane == 0:
+            i, n = self.cat_scroll + y - 1, len(self.cat_entries())
+        elif pane == 1:
+            i, n = self.tool_scroll + y - 1, len(self.tool_list())
+        else:
+            return self.detail_rows.get(y)
+        return i if 0 <= i < n else None
+
+    def _mouse(self):
+        try:
+            _id, x, y, _z, bstate = curses.getmouse()
+        except curses.error:
+            return
+        if self.overlay is not None:
+            if bstate & WHEEL_UP:
+                self.overlay["scroll"] -= 3
+            elif bstate & WHEEL_DOWN:
+                self.overlay["scroll"] += 3
+            elif bstate & (PRESS | CLICK | DCLICK) and y == 0:
+                self.overlay = None
+            return
+        if self.typing and bstate & (PRESS | CLICK | DCLICK):
+            self.typing = False          # clicking away finishes the search box
+        pane = self.pane_at(x)
+
+        if bstate & WHEEL_UP:
+            self._scroll_pane(pane, -3)
+            return
+        if bstate & WHEEL_DOWN:
+            self._scroll_pane(pane, 3)
+            return
+
+        idx = self._item_at(pane, y)
+        if not bstate & (PRESS | CLICK | DCLICK):
+            # plain motion: just track hover
+            self.hover = (pane, idx) if idx is not None else None
+            return
+
+        now = time.monotonic()
+        double = bool(bstate & DCLICK)
+        lp = self.last_press
+        if lp and lp[1] == pane and lp[2] == idx and idx is not None and now - lp[0] < DOUBLE_S:
+            double = True
+        self.last_press = None if double else (now, pane, idx)
+
+        if y == 0 or y == self.scr.getmaxyx()[0] - 1:
+            return                        # title / status bar
+        self.focus = pane
+        if idx is None:
+            return                        # empty space: focus the pane, select nothing
+        if pane == 0:
+            if idx != self.cat_sel:
+                self.select_cat(idx)
+            if double:
+                self._open()
+        elif pane == 1:
+            if idx != self.tool_sel:
+                self.select_tool(idx)
+            if double:
+                self._usage()
+        else:
+            self.detail_sel = idx
+            if double:
+                self._usage()
+
+    def _scroll_pane(self, pane, d):
+        if pane == 0:
+            self.cat_scroll += d
+        elif pane == 1:
+            self.tool_scroll += d
+        else:
+            self.detail_scroll = max(0, self.detail_scroll + d)
+        self._clamp_scroll()
+
+
+def run_browser(db):
+    # Esc normally waits ~1s for a possible escape sequence; make it instant.
+    os.environ.setdefault("ESCDELAY", "25")
+
+    def _term(seq):
+        try:
+            sys.stdout.flush()
+            os.write(sys.stdout.fileno(), seq.encode())
+        except (OSError, AttributeError, ValueError):
+            pass
+
+    def main(stdscr):
+        try:
+            curses.curs_set(0)
+        except curses.error:
+            pass
+        stdscr.keypad(1)
+        try:
+            curses.set_escdelay(25)
+        except (AttributeError, curses.error):
+            pass
+        try:
+            # report presses immediately; double-clicks are detected in Browser._mouse
+            curses.mouseinterval(0)
+            curses.mousemask(PRESS | WHEEL_UP | WHEEL_DOWN | REPORT_POS)
+        except curses.error:
+            pass
+        # ncurses does not turn on any-motion (1003) reporting itself
+        _term("\x1b[?1003h")
+        try:
+            Browser(stdscr, db).run()
+        finally:
+            _term("\x1b[?1003l")
+    try:
+        curses.wrapper(main)
+    except KeyboardInterrupt:
+        pass
+
+
+# ----------------------------------------------------------------------------
+#  cli dispatch
+# ----------------------------------------------------------------------------
+def completions(db):
+    for c in db.cats:
+        print(c)
+    for t in db.tools:
+        print(t["name"])
+
+
+def main():
+    locale.setlocale(locale.LC_ALL, "")
+    db = DB()
+
+    argv = sys.argv[1:]
+    if not argv:
+        if sys.stdout.isatty() and sys.stdin.isatty():
+            run_browser(db)
+        else:
+            print_cats(db)
+        return
+
+    a = argv[0]
+
+    if a in ("-h", "--help", "help"):
+        print(__doc__.rstrip())
+        return
+    if a in ("-l", "--list", "groups"):
+        print_cats(db)
+        return
+    if a in ("--update",):
+        gen.build()
+        print("rebuilt tool list")
+        return
+    if a in ("--completions",):
+        completions(db)
+        return
+    if a == "--detail" and len(argv) >= 2:
+        t = db.by_name.get(argv[1])
+        if t:
+            print_detail(db, t, with_usage=False)
+        return
+    if a in ("sandbox", "--sandbox", "-x"):
+        rest = [x for x in argv[1:] if x != "--offline"]
+        if not rest:
+            sys.exit("usage: cyber sandbox <tool or command> [--offline]")
+        t = db.by_name.get(rest[0]) or db.by_bin.get(rest[0])
+        cmd = main_cmd(t) if t and t["bins"] else rest[0]
+        try:
+            av = shell_argv(cmd, "offline" if "--offline" in argv else "sandbox")
+        except RuntimeError as e:
+            sys.exit(f"cyber: {e}")
+        os.execvp(av[0], av)
+    if a in ("-f", "--fzf"):
+        sys.exit(fzf_pick(db))
+    if a in ("-s", "--search"):
+        q = " ".join(argv[1:])
+        res = db.search(q)
+        print_list(db, f"search: {q}", res)
+        return
+
+    # -g<N> [M]
+    m = re.match(r"^-g(\d+)$", a) or re.match(r"^g(\d+)$", a)
+    if m:
+        gnum = int(m.group(1))
+        if gnum < 1 or gnum > len(db.cats):
+            print(f"invalid group: {gnum} (1-{len(db.cats)})")
+            return
+        cat = db.cats[gnum - 1]
+        if len(argv) >= 2 and argv[1].isdigit():
+            tnum = int(argv[1])
+            tools = db.by_cat[cat]
+            if tnum < 1 or tnum > len(tools):
+                print(f"invalid tool: {tnum} (1-{len(tools)})")
+                return
+            print_detail(db, tools[tnum - 1])
+        else:
+            print_list(db, cat, db.by_cat[cat])
+        return
+
+    # name: category or tool or binary
+    if a in db.by_name:
+        print_detail(db, db.by_name[a])
+    elif a in db.by_cat:
+        print_list(db, a, db.by_cat[a])
+    elif a in db.by_bin:
+        print_detail(db, db.by_bin[a])
+    else:
+        res = db.search(a)
+        if res:
+            print_list(db, f"search: {a}", res)
+        else:
+            print(f"no such group, tool, or command: {a}", file=sys.stderr)
+            sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

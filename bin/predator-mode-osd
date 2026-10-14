@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# predator-mode-osd — pop up the Predator performance mode whenever it changes
+# (mode key, ASense, or anything else writing the acer-wmi platform profile).
+# Runs as a user service: systemctl --user status predator-mode-osd
+
+name_of() {
+    case $1 in
+        low-power)            echo "Eco" ;;
+        quiet)                echo "Quiet" ;;
+        balanced)             echo "Balanced" ;;
+        balanced-performance) echo "Performance" ;;
+        performance)          echo "Turbo" ;;
+        *)                    echo "$1" ;;
+    esac
+}
+
+profile_file() {
+    local p
+    for p in /sys/class/platform-profile/*/; do
+        [[ $(<"$p/name") == acer-wmi ]] 2>/dev/null && { echo "$p/profile"; return; }
+    done
+}
+
+nid=0
+notify() {
+    nid=$(gdbus call --session --dest org.freedesktop.Notifications \
+        --object-path /org/freedesktop/Notifications \
+        --method org.freedesktop.Notifications.Notify \
+        "Predator mode" "$nid" "" "$1" "" "[]" "{}" 2000 2>/dev/null \
+        | grep -oE '[0-9]+' | tail -1)
+    nid=${nid:-0}
+}
+
+last=""
+while :; do
+    f=$(profile_file)
+    cur=$( [[ -n $f ]] && cat "$f" 2>/dev/null )
+    if [[ -n $cur && $cur != "$last" ]]; then
+        [[ -n $last ]] && notify "󰓅  $(name_of "$cur")"
+        last=$cur
+    fi
+    sleep 0.4
+done

@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+"""obs-ctl -- control OBS from the keyboard / terminal (through OBS's built-in WebSocket server).
+
+  obs-ctl scene <name or number>   switch scene  (1 Starting Soon, 2 Live, 3 Be Right Back, 4 Ending, 5 Just Chatting)
+  obs-ctl scenes                   list the scenes
+  obs-ctl mute                     mute / unmute your mic on stream
+  obs-ctl music [up|down|mute]     the Music source's volume
+
+Hotkeys (Hyprland): Super+Ctrl+1..5 scenes, Super+Ctrl+M mic, Super+Ctrl+Up/Down music volume.
+Needs: OBS open, Tools -> WebSocket Server Settings -> Enable WebSocket server.
+"""
+import base64, hashlib, json, os, socket, struct, subprocess, sys
+
+CONF = [os.path.expanduser("~/.var/app/com.obsproject.Studio/config/obs-studio/plugin_config/obs-websocket/config.json"),
+        os.path.expanduser("~/.config/obs-studio/plugin_config/obs-websocket/config.json")]
+SCENES = {"1": "Starting Soon", "2": "Live", "3": "Be Right Back", "4": "Ending", "5": "Just Chatting",
+          "start": "Starting Soon", "starting": "Starting Soon", "live": "Live", "brb": "Be Right Back",
+          "end": "Ending", "ending": "Ending", "chat": "Just Chatting", "chatting": "Just Chatting"}
+MIC = "Mic/Aux"
+MUSIC = "Music"
+
+
+def notify(msg):
+    try:
+        subprocess.Popen(["notify-send", "-a", "OBS", "-t", "1500", "OBS", msg],
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError:
+        pass
+    print(msg)
+
+
+def fail(msg):
+    notify(msg)
+    sys.exit(1)
+
+
+# ---- a minimal WebSocket client (no extra packages needed) ----
+class WS:
+    def __init__(self, host, port):
+        self.s = socket.create_connection((host, port), timeout=3)
+        key = base64.b64encode(os.urandom(16)).decode()
+        self.s.sendall((f"GET / HTTP/1.1\r\nHost: {host}:{port}\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+                        f"Sec-WebSocket-Key: {key}\r\nSec-WebSocket-Version: 13\r\n"
+                        "Sec-WebSocket-Protocol: obswebsocket.json\r\n\r\n").encode())
+        head = b""
+        while b"\r\n\r\n" not in head:
+            chunk = self.s.recv(1024)
+            if not chunk:
+                raise ConnectionError("closed during handshake")
+            head += chunk
+        if b" 101 " not in head.split(b"\r\n", 1)[0]:
+            raise ConnectionError("not a websocket server")
+        self.buf = head.split(b"\r\n\r\n", 1)[1]
+
+    def _read(self, n):
+        while len(self.buf) < n:
+            chunk = self.s.recv(65536)
+            if not chunk:
+                raise ConnectionError("closed")
+            self.buf += chunk
+        out, self.buf = self.buf[:n], self.buf[n:]
+        return out
+
+    def close(self):
+        try:
+            self.s.sendall(bytes([0x88, 0x82]) + b"\0\0\0\0" + struct.pack(">H", 1000))
+            self.s.close()
+        except OSError:
+            pass
+
+    def send(self, obj):
+        data = json.dumps(obj).encode()
+        head = bytearray([0x81])
+        n = len(data)
+        if n < 126:
+            head.append(0x80 | n)
+        elif n < 65536:
+            head += bytes([0x80 | 126]) + struct.pack(">H", n)
+        else:
+            head += bytes([0x80 | 127]) + struct.pack(">Q", n)
+        mask = os.urandom(4)
+        self.s.sendall(bytes(head) + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(data)))
+
+    def recv(self):
+        while True:
+            b1, b2 = self._read(2)
+            n = b2 & 0x7F
+            if n == 126:
+                n = struct.unpack(">H", self._read(2))[0]
+            elif n == 127:
+                n = struct.unpack(">Q", self._read(8))[0]
+            payload = self._read(n)
+            if b1 & 0x0F == 1:
+                return json.loads(payload)
+            if b1 & 0x0F == 8:
+                raise ConnectionError("closed")
+
+
+def connect():
+    cfg = next((json.load(open(p)) for p in CONF if os.path.exists(p)), None)
+    if cfg is None:
+        fail("OBS settings not found")
+    try:
+        ws = WS("127.0.0.1", int(cfg.get("server_port", 4455)))
+    except (OSError, ConnectionError):
+        fail("OBS isn't reachable -- is it open, with Tools > WebSocket Server Settings > Enable on?")
+    try:
+        hello = ws.recv()["d"]
+    except (ConnectionError, OSError):
+        fail("OBS closed the connection")
+    ident = {"rpcVersion": 1}
+    auth = hello.get("authentication")
+    if auth:
+        pw = cfg.get("server_password", "")
+        secret = base64.b64encode(hashlib.sha256((pw + auth["salt"]).encode()).digest()).decode()
+        ident["authentication"] = base64.b64encode(hashlib.sha256((secret + auth["challenge"]).encode()).digest()).decode()
+    ws.send({"op": 1, "d": ident})
+    try:
+        msg = ws.recv()
+    except (ConnectionError, OSError):
+        fail("OBS refused the connection (password changed? reopen OBS)")
+    if msg.get("op") != 2:
+        fail("OBS refused the connection (password changed? reopen OBS)")
+    return ws
+
+
+def call(ws, kind, data=None):
+    ws.send({"op": 6, "d": {"requestType": kind, "requestId": kind, "requestData": data or {}}})
+    while True:
+        m = ws.recv()
+        if m.get("op") == 7 and m["d"].get("requestId") == kind:
+            st = m["d"]["requestStatus"]
+            if not st.get("result"):
+                raise RuntimeError(st.get("comment") or f"{kind} failed")
+            return m["d"].get("responseData") or {}
+
+
+def main():
+    a = sys.argv[1:]
+    if not a or a[0] in ("-h", "--help"):
+        print(__doc__.strip()); return
+    ws = connect()
+    cmd = a[0]
+    try:
+        if cmd == "scenes":
+            for s in reversed(call(ws, "GetSceneList")["scenes"]):
+                print(s["sceneName"])
+        elif cmd == "scene" and len(a) > 1:
+            want = " ".join(a[1:])
+            name = SCENES.get(want, want)
+            names = [s["sceneName"] for s in call(ws, "GetSceneList")["scenes"]]
+            match = next((n for n in names if n.lower() == name.lower()), None) or \
+                    next((n for n in names if name.lower() in n.lower()), None)
+            if not match:
+                fail(f"no scene called {name}")
+            call(ws, "SetCurrentProgramScene", {"sceneName": match})
+            notify("scene: " + match)
+        elif cmd == "mute":
+            muted = call(ws, "ToggleInputMute", {"inputName": MIC})["inputMuted"]
+            notify("mic MUTED on stream" if muted else "mic live")
+        elif cmd == "music":
+            how = a[1] if len(a) > 1 else "mute"
+            if how == "mute":
+                muted = call(ws, "ToggleInputMute", {"inputName": MUSIC})["inputMuted"]
+                notify("music muted" if muted else "music on")
+            else:
+                db = call(ws, "GetInputVolume", {"inputName": MUSIC})["inputVolumeDb"]
+                db = max(-60.0, min(0.0, db + (3 if how == "up" else -3)))
+                call(ws, "SetInputVolume", {"inputName": MUSIC, "inputVolumeDb": db})
+                notify(f"music {db:.0f} dB")
+        else:
+            print(__doc__.strip())
+    except RuntimeError as e:
+        fail(str(e))
+    except (ConnectionError, OSError, socket.timeout):
+        fail("lost the connection to OBS")
+    finally:
+        ws.close()
+
+
+if __name__ == "__main__":
+    main()

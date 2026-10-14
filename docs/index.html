@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAGGINEPHEW — Arch rice</title>
+<meta name="description" content="A black and white Arch Linux + Hyprland setup with a hand-built Quickshell bar, soundboard, music player and stream kit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#000; --fg:#e6e6e6; --white:#fff; --gray:#8c8c8c; --dim:#2a2a2a; --line:#1a1a1a;
+          --sans:"Montserrat",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font: 500 16px/1.65 var(--sans); }
+  a { color: var(--white); text-underline-offset: 3px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  /* the logo's frame: box with a gap in the bottom edge holding a spaced label */
+  .frame { position: relative; border: 3px solid var(--white); border-bottom: none; }
+  .frame::before, .frame::after { content: ""; position: absolute; bottom: 0; height: 3px; background: var(--white);
+                                   width: calc(50% - var(--gap, 160px) / 2); }
+  .frame::before { left: 0; } .frame::after { right: 0; }
+  .frame > .label { position: absolute; left: 50%; bottom: 0; transform: translate(-50%, 50%); width: var(--gap, 160px);
+                    text-align: center; font: 700 12px var(--sans); letter-spacing: .42em; text-indent: .42em; color: var(--white); }
+
+  header { min-height: 92vh; display: grid; place-items: center; text-align: center; padding: 72px 0 40px; position: relative; overflow: hidden; }
+  header .frame { width: min(760px, 88vw); padding: clamp(28px, 6vw, 56px) clamp(24px, 6vw, 64px) clamp(34px, 6vw, 64px); --gap: 220px; }
+  header .frame img { width: 100%; display: block; }
+  header h1 { position: absolute; left: -9999px; }
+  .tag { margin-top: 44px; font: 800 clamp(14px, 2.4vw, 20px) var(--sans); letter-spacing: .5em; text-indent: .5em; color: var(--white); }
+  .sub { margin-top: 14px; font: 400 14px var(--mono); color: var(--gray); }
+  .cta { margin-top: 34px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn { font: 700 13px var(--sans); letter-spacing: .25em; text-transform: uppercase; text-decoration: none;
+         padding: 13px 22px; border: 2px solid var(--white); color: var(--white); }
+  .btn.solid { background: var(--white); color: var(--bg); }
+  .btn:hover { background: var(--white); color: var(--bg); }
+  canvas#wave { position: absolute; left: 0; right: 0; bottom: 6vh; width: 100%; height: 80px; opacity: .7; }
+
+  section { padding: 84px 0; border-top: 1px solid var(--line); }
+  h2 { font: 800 clamp(18px, 2.6vw, 24px) var(--sans); letter-spacing: .42em; color: var(--white); margin-bottom: 30px; }
+  h3 { font: 700 15px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--white); margin-bottom: 8px; }
+  p.lead { max-width: 720px; color: #bdbdbd; }
+
+  .shot { display: block; width: 100%; border: 2px solid var(--white); background: #0b0b0b; }
+  .shot-big { margin-top: 10px; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin-top: 26px; }
+  .gallery figure { margin: 0; }
+  .gallery figcaption { font: 400 13px var(--mono); color: var(--gray); margin-top: 8px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .card { border: 1px solid var(--dim); padding: 22px 22px 20px; background: #050505; }
+  .card p { font-size: 14.5px; color: #b4b4b4; }
+  .card code, td code, li code, p code { font: 400 13px var(--mono); color: var(--white); background: #141414; padding: 1px 6px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:first-child { white-space: nowrap; width: 1%; }
+  kbd { font: 600 12.5px var(--mono); border: 1px solid #555; border-bottom-width: 2px; padding: 1px 7px; color: var(--white); border-radius: 3px; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 36px; }
+  @media (max-width: 520px) { .cols { grid-template-columns: 1fr; } td:first-child { white-space: normal; } }
+
+  pre { font: 400 13.5px/1.6 var(--mono); background: #0b0b0b; border: 1px solid var(--dim); padding: 18px; overflow-x: auto; color: #dcdcdc; }
+  ul.plain { list-style: none; } ul.plain li { padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  footer { padding: 60px 0 80px; text-align: center; font: 400 13px var(--mono); color: var(--gray); border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>MAGGINEPHEW</h1>
+    <div class="frame"><img src="wordmark.svg" alt="MAGGINEPHEW"><div class="label">GENESIS 1:27</div></div>
+    <div class="tag">ARCH&nbsp;·&nbsp;HYPRLAND&nbsp;·&nbsp;MONO</div>
+    <div class="sub">a black &amp; white desktop, built by hand, one piece at a time</div>
+    <div class="cta">
+      <a class="btn solid" href="https://github.com/MaggiNephew/magginephew-rice">Dotfiles on GitHub</a>
+      <a class="btn" href="#features">What's inside</a>
+    </div>
+  </div>
+  <canvas id="wave"></canvas>
+</header>
+
+<section id="look">
+  <div class="wrap">
+    <h2>THE LOOK</h2>
+    <p class="lead">Everything is black, white and gray: the bar, the lock screen, the file manager, the terminal, even the stream overlays. One font family, one frame shape, one line that moves with the music.</p>
+    <img class="shot shot-big" src="screenshots/desktop.png" alt="Full desktop" onerror="this.remove()">
+    <figure style="margin:22px 0 0"><img class="shot" src="screenshots/bar.png" alt="The bar" onerror="this.parentNode.remove()"><figcaption style="font:400 13px var(--mono);color:var(--gray);margin-top:8px">the bar — workspaces, now playing, music line, clock, mic / camera light, stats</figcaption></figure>
+    <div class="gallery">
+      <figure><img class="shot" src="screenshots/media.png" alt="" onerror="this.parentNode.remove()"><figcaption>media player with output switcher and library</figcaption></figure>
+      <figure><img class="shot" src="screenshots/start-menu.png" alt="" onerror="this.parentNode.remove()"><figcaption>start menu on the Arch logo</figcaption></figure>
+      <figure><img class="shot" src="screenshots/soundboard.png" alt="" onerror="this.parentNode.remove()"><figcaption>soundboard + Rice Mic</figcaption></figure>
+      <figure><img class="shot" src="screenshots/calendar.png" alt="" onerror="this.parentNode.remove()"><figcaption>calendar and clipboard history</figcaption></figure>
+      <figure><img class="shot" src="screenshots/lock.png" alt="" onerror="this.parentNode.remove()"><figcaption>Orbital lock screen (matches the login screen)</figcaption></figure>
+      <figure><img class="shot" src="screenshots/terminal.png" alt="" onerror="this.parentNode.remove()"><figcaption>kitty with fastfetch and btop</figcaption></figure>
+      <figure><img class="shot" src="screenshots/files.png" alt="" onerror="this.parentNode.remove()"><figcaption>Dolphin in the MonoBW theme</figcaption></figure>
+      <figure><img class="shot" src="screenshots/stream.png" alt="" onerror="this.parentNode.remove()"><figcaption>the stream kit in OBS</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>WHAT'S INSIDE</h2>
+    <div class="grid">
+      <div class="card"><h3>Hyprland</h3><p>Lua config, monochrome borders and gaps, scroll-to-switch workspaces, scratchpad, and games that keep running at full speed on other workspaces.</p></div>
+      <div class="card"><h3>Quickshell bar</h3><p>Hand-written in QML. Workspaces, a clock with a music-reactive line on both sides, CPU / RAM / network, Wi-Fi, VPN, update badge and a mic/camera privacy light.</p></div>
+      <div class="card"><h3>Media player</h3><p>Click the music pill: cover, controls, seek, volume, pick the output device with scroll / arrows / Enter, plus a pull-out library and downloader.</p></div>
+      <div class="card"><h3>Local music</h3><p>An mpv-based player with its own library, a downloader that tags songs (MusicBrainz + cover art), and a Brave extension that adds the YouTube song you're on to the library.</p></div>
+      <div class="card"><h3>Soundboard + Rice Mic</h3><p>A virtual mic = your mic + clips + any app you choose to share. Works in Discord, games and calls. <kbd>Super</kbd>+<kbd>Alt</kbd>+<kbd>1–9</kbd> plays clips.</p></div>
+      <div class="card"><h3>Start menu, calendar, clipboard</h3><p>Windows-style menu on the Arch logo with pins and recent files, a month calendar on the clock, and clipboard history with image previews on <kbd>Super</kbd>+<kbd>C</kbd>.</p></div>
+      <div class="card"><h3>Orbital lock + login</h3><p>One animated lock screen for both boot and <kbd>Super</kbd>+<kbd>L</kbd> — Quickshell for the session, SDDM for login — so they look identical.</p></div>
+      <div class="card"><h3>MonoBW theme</h3><p>A KDE / Qt colour scheme and light-gray folder icons so Dolphin and every Qt app match, with readable white text and dark-gray selection.</p></div>
+      <div class="card"><h3><code>cyber</code></h3><p>A terminal browser for the BlackArch tool collection with mouse support, and a one-key firejail sandbox (with or without network) for running tools safely.</p></div>
+      <div class="card"><h3><code>safe-update</code></h3><p>Updates that can't leave you in emergency mode: snapshot first, run where a desktop crash can't interrupt it, check the kernel / initramfs / NVIDIA / boot menu, repair or roll back.</p></div>
+      <div class="card"><h3>Snapshots + firewall</h3><p><code>rice-system-setup</code>: snapper with automatic snapshots before every update, Limine boot entries for them, and a deny-incoming firewall.</p></div>
+      <div class="card"><h3>Stream kit</h3><p>OBS scenes and browser overlays in the same style: starting / BRB / ending screens, camera frame, follower alerts, live counters, chat, and scene hotkeys that work in-game.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="keys">
+  <div class="wrap">
+    <h2>KEYS</h2>
+    <div class="cols">
+      <table>
+        <tr><td><kbd>Super</kbd> <kbd>Enter</kbd></td><td>terminal (kitty)</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>Space</kbd></td><td>launcher</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>E</kbd> / <kbd>B</kbd></td><td>files / browser</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>Q</kbd></td><td>close window</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>F</kbd> / <kbd>V</kbd></td><td>fullscreen / float</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>1–5</kbd></td><td>workspace (add <kbd>Shift</kbd> to move the window)</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>S</kbd></td><td>scratchpad</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>L</kbd></td><td>lock</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>R</kbd></td><td>reload Hyprland</td></tr>
+      </table>
+      <table>
+        <tr><td><kbd>Super</kbd> <kbd>C</kbd></td><td>clipboard history</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>N</kbd></td><td>notifications</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>W</kbd></td><td>next wallpaper</td></tr>
+        <tr><td><kbd>Print</kbd></td><td>screenshot a region and edit (<kbd>Super</kbd>: save, <kbd>Super</kbd><kbd>Shift</kbd>: whole screen)</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>Alt</kbd> <kbd>1–9</kbd> / <kbd>0</kbd></td><td>soundboard clip / stop</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>Ctrl</kbd> <kbd>1–5</kbd></td><td>OBS scene</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>Ctrl</kbd> <kbd>M</kbd></td><td>mute mic on stream</td></tr>
+        <tr><td><kbd>Super</kbd> <kbd>Ctrl</kbd> <kbd>↑ ↓</kbd></td><td>stream music volume</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>USE IT</h2>
+    <p class="lead">These are my personal dotfiles, not an installer — take what you like. Back up your own configs first.</p>
+<pre>git clone https://github.com/MaggiNephew/magginephew-rice
+cd magginephew-rice
+cp -r config/hypr config/quickshell config/kitty config/cava ~/.config/
+cp bin/* ~/.local/bin/</pre>
+    <p class="lead" style="margin-top:22px">Main packages: <code>hyprland</code> <code>quickshell</code> <code>kitty</code> <code>cava</code> <code>pipewire</code> <code>wireplumber</code> <code>playerctl</code> <code>brightnessctl</code> <code>cliphist</code> <code>wl-clipboard</code> <code>mpv</code> <code>mpv-mpris</code> <code>yt-dlp</code> <code>python-mutagen</code> <code>firejail</code> <code>snapper</code> <code>qt6ct</code> <code>dolphin</code> <code>fastfetch</code> <code>ttf-3270-nerd</code>. The full list and folder-by-folder notes are in the <a href="https://github.com/MaggiNephew/magginephew-rice#readme">README</a>.</p>
+  </div>
+</section>
+
+<section id="walls">
+  <div class="wrap">
+    <h2>WALLPAPERS</h2>
+    <p class="lead">Not mine, so they're linked instead of included:</p>
+    <ul class="plain" style="margin-top:14px">
+      <li><a href="https://wallhaven.cc/w/6kre3q">wallhaven 6kre3q</a></li>
+      <li><a href="https://wallhaven.cc/w/6opwrx">wallhaven 6opwrx</a></li>
+      <li><a href="https://wallhaven.cc/w/gpj7mq">wallhaven gpj7mq</a></li>
+      <li><a href="https://wallhaven.cc/w/xl2273">wallhaven xl2273</a></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  MAGGINEPHEW · GENESIS 1:27 · <a href="https://twitch.tv/magginephew_gaming">twitch</a> · <a href="https://github.com/MaggiNephew/magginephew-rice">github</a><br>
+  lock screen based on <a href="https://github.com/Darkkal44/qylock">qylock</a> (GPL-3.0) · cava shaders by rezky_nightky (MIT)
+</footer>
+
+<script>
+  // the same calm line as the bar and the stream screens
+  const cv = document.getElementById("wave"), ctx = cv.getContext("2d");
+  const size = () => { const d = devicePixelRatio || 1; cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; };
+  size(); addEventListener("resize", size);
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function draw(ms) {
+    const w = cv.width, h = cv.height, mid = h / 2, t = still ? 0 : ms / 1000, d = devicePixelRatio || 1;
+    ctx.clearRect(0, 0, w, h); ctx.lineWidth = 2.5 * d; ctx.strokeStyle = "#5a5a5a"; ctx.beginPath();
+    for (let x = 0; x <= w; x += 4 * d) {
+      const u = x / w, env = Math.sin(Math.PI * u) ** 2;
+      const y = mid + env * h * .32 * (.55 * Math.sin(u * 19 + t * 1.3) + .3 * Math.sin(u * 47 - t * 2.1) + .15 * Math.sin(u * 97 + t * 3.7));
+      x ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.stroke(); if (!still) requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+</script>
+</body></html>

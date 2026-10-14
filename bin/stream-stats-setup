@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""stream-stats-setup -- connect the OBS viewers/followers overlay to your Twitch account.
+
+Run it once (and again if the overlay says the login expired, about every two months).
+It writes ~/Videos/stream-overlays/twitch-config.js, which only that overlay reads.
+"""
+import json, os, re, subprocess, sys, urllib.parse, urllib.request
+
+OUT = os.path.expanduser("~/Videos/stream-overlays/twitch-config.js")
+REDIRECT = "http://localhost/"
+B, D, R = "\033[1m", "\033[2m", "\033[0m"
+
+
+def ask(q):
+    try:
+        return input(q).strip()
+    except (EOFError, KeyboardInterrupt):
+        print(); sys.exit(1)
+
+
+def main():
+    old = {}
+    if os.path.exists(OUT):
+        m = re.search(r"clientId:\s*\"([^\"]+)\"", open(OUT).read())
+        if m:
+            old["clientId"] = m.group(1)
+
+    print(f"\n{B}1. Twitch app{R}  (one time, free)")
+    if old.get("clientId"):
+        print(f"   using your saved Client ID {D}({old['clientId'][:6]}…){R}")
+        cid = old["clientId"]
+    else:
+        print("   • Open  https://dev.twitch.tv/console/apps  and log in with your Twitch account")
+        print("   • Register Your Application:")
+        print(f"       Name: anything, e.g. magginephew-overlay")
+        print(f"       OAuth Redirect URLs: {B}{REDIRECT}{R}")
+        print("       Category: Broadcaster Suite      Client Type: Public")
+        print("   • Click Create, then Manage, and copy the Client ID")
+        cid = ask("\n   Client ID: ")
+        if not re.fullmatch(r"[a-z0-9]{20,40}", cid):
+            sys.exit("   that does not look like a Client ID")
+
+    url = "https://id.twitch.tv/oauth2/authorize?" + urllib.parse.urlencode({
+        "client_id": cid, "redirect_uri": REDIRECT, "response_type": "token",
+        "scope": "moderator:read:followers", "force_verify": "true"})
+    print(f"\n{B}2. Allow the overlay to read your counts{R}")
+    print("   Opening Twitch in your browser. Click Authorize.")
+    print("   The next page will fail to load (that's expected) -- copy its whole address from the address bar.")
+    subprocess.Popen(["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print(f"   {D}(if nothing opened: {url}){R}")
+    back = ask("\n   Paste the address here: ")
+    m = re.search(r"access_token=([a-z0-9]+)", back)
+    if not m:
+        sys.exit("   no access_token in that address -- try again")
+    token = m.group(1)
+
+    req = urllib.request.Request("https://id.twitch.tv/oauth2/validate", headers={"Authorization": "OAuth " + token})
+    try:
+        info = json.load(urllib.request.urlopen(req, timeout=15))
+    except Exception as e:
+        sys.exit(f"   Twitch did not accept that login ({e})")
+
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    with open(OUT + ".tmp", "w") as f:
+        f.write("// written by stream-stats-setup -- keep this file private (it is a login for your Twitch account)\n")
+        f.write("window.TWITCH = " + json.dumps({"clientId": cid, "token": token, "userId": info["user_id"],
+                                                  "login": info["login"]}, indent=2) + ";\n")
+    os.chmod(OUT + ".tmp", 0o600)
+    os.replace(OUT + ".tmp", OUT)
+    days = int(info.get("expires_in", 0)) // 86400
+    print(f"\n{B}done{R} -- connected as {info['login']}" + (f", valid for about {days} days" if days else ""))
+    print("   In OBS: right-click the Viewers & followers source -> Refresh")
+
+
+if __name__ == "__main__":
+    main()

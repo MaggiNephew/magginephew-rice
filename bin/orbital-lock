@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Lock the session with the Orbital Quickshell lock (~/.config/quickshell/lock).
+#   orbital-lock          lock now (SUPER+L, hypridle)
+#   orbital-lock --test   preview in a normal window: real password check, nothing locked, Esc closes
+#
+# Safety: Hyprland keeps the session locked if the lock client dies, and
+# misc.allow_session_lock_restore lets a new client take over, so this
+# restarts it. If it keeps failing right away, it falls back to hyprlock.
+
+CFG="$HOME/.config/quickshell/lock/shell.qml"
+
+if [[ ${1:-} == --test ]]; then
+    ORBITAL_TEST=1 exec quickshell -p "$CFG"
+fi
+
+# one lock at a time (keybind + idle + before-sleep can all fire together)
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/orbital-lock.lock"
+flock -n 9 || exit 0
+pidof hyprlock >/dev/null && exit 0
+
+quick_fails=0
+while :; do
+    started=$(date +%s)
+    quickshell -p "$CFG" 9>&- && exit 0          # exits 0 only after a real unlock
+    if (( $(date +%s) - started < 3 )); then
+        quick_fails=$((quick_fails + 1))
+    else
+        quick_fails=0
+    fi
+    if (( quick_fails >= 3 )) && command -v hyprlock >/dev/null; then
+        notify-send -u critical "orbital-lock" "Quickshell lock failed; using hyprlock" 2>/dev/null
+        exec hyprlock 9>&-
+    fi
+    # no hyprlock: keep retrying, slowing down, so the screen gets its lock UI back
+    (( quick_fails >= 3 )) && sleep $(( quick_fails < 10 ? quick_fails : 10 ))
+    sleep 0.3
+done

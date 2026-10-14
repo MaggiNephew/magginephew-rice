@@ -1,0 +1,19 @@
+[Icon Theme]
+Name=MonoFolders
+Comment=Light gray folders for the mono theme
+Inherits=breeze-dark,breeze,Adwaita,hicolor
+Directories=scalable/places,scalable/mimetypes
+
+[scalable/places]
+Size=64
+MinSize=8
+MaxSize=512
+Context=Places
+Type=Scalable
+
+[scalable/mimetypes]
+Size=64
+MinSize=8
+MaxSize=512
+Context=MimeTypes
+Type=Scalable

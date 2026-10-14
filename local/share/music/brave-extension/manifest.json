@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Local music",
+  "version": "1.0",
+  "description": "Add the YouTube / YouTube Music song you are on to your local music library (only that song, even inside a playlist).",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAua0WN150iUEphmVaqi+Wievnql3OGM5zNgIX9fre4TsWi0t6yLwNm68s+mlBV5VGq4/8ew0fPTtxJjefbhMd0hDaoxxSIAg4+NK8zIzLMjwd38zIzTaveGSRmggGUgfcdZJMVHJjdUUuvmvKuKJEz1gEKleAN5IrIXhildJccY3rySVZFV48p2SMolJsbZnjhVxVXA3QtW0azA8BSrXLuRbnFSfxCEEQ9liYn+qQh1/KDJO8ryaRE04/B1COq5jjRCuCqu6uTkdsMR6uvpSO/x5c2uX672Oxy5sNyzH1Bp63dLPt70t/tOYjTjNj5vnfB/R4g9XAd3yvgJferBnplQIDAQAB",
+  "action": {
+    "default_title": "Add to local library",
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png" }
+  },
+  "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["activeTab", "scripting", "nativeMessaging", "storage", "contextMenus"]
+}

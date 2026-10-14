@@ -1,0 +1,393 @@
+#!/usr/bin/env python3
+"""soundboard -- virtual mic ("Rice Mic") with a soundboard and app-audio sharing.
+
+  soundboard on               create Rice Mic = your mic + soundboard + shared apps
+  soundboard off              remove it again (your mic is no longer captured)
+  soundboard test             record 4 s of Rice Mic and play it back to you
+  soundboard play <sound>     play a clip into Rice Mic (you hear it too)
+  soundboard play-n <N>       play clip number N (1 = first in the list; Super+Alt+N)
+  soundboard volume [0-150]   clip volume in percent (no number: show it)
+  soundboard stop             stop all clips
+  soundboard add <link|file>  add a clip (YouTube etc. link, or an audio file)
+  soundboard apps             apps that are playing sound right now
+  soundboard share <app>      send that app's sound into Rice Mic as well
+  soundboard unshare <app>    send it back to your speakers only
+  soundboard list [--json]    sounds + state (the bar uses --json)
+
+While it is on, Rice Mic is also your default mic, so games that just use the
+default (most Steam / Proton games) get it automatically. Discord / Zoom: pick
+"Rice Mic" as the input device (or "Default").
+Clips live in ~/Music/Soundboard (any audio file; the name is the button label).
+"""
+import json, os, re, shutil, signal, subprocess, sys, tempfile
+
+HOME = os.path.expanduser("~")
+SOUNDS = os.environ.get("SOUNDBOARD_DIR") or os.path.join(HOME, "Music", "Soundboard")
+STATE = os.path.join(os.environ.get("XDG_RUNTIME_DIR") or tempfile.gettempdir(), "rice-soundboard.json")
+AUDIO_EXT = {".mp3", ".wav", ".ogg", ".oga", ".opus", ".flac", ".m4a", ".aac", ".webm"}
+SHARE, MIX, MIC = "rice_share", "rice_mix", "rice_mic"
+CONFIG = os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".config"), "soundboard", "config.json")
+
+
+def load_config():
+    try:
+        with open(CONFIG) as f:
+            c = json.load(f)
+        return c if isinstance(c, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def get_volume():
+    try:
+        return max(0, min(150, int(load_config().get("volume", 100))))
+    except (TypeError, ValueError):
+        return 100
+
+
+def set_volume(v):
+    v = max(0, min(150, int(v)))
+    c = load_config()
+    c["volume"] = v
+    os.makedirs(os.path.dirname(CONFIG), exist_ok=True)
+    tmp = CONFIG + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(c, f)
+    os.replace(tmp, CONFIG)
+    return v
+
+
+def pactl(*args, check=True):
+    if not shutil.which("pactl"):
+        sys.exit("soundboard: pactl not found (sudo pacman -S libpulse; pipewire-pulse must be running)")
+    r = subprocess.run(["pactl", *args], capture_output=True, text=True)
+    if check and r.returncode != 0:
+        raise RuntimeError(f"pactl {' '.join(args)}: {(r.stderr or r.stdout).strip()}")
+    return r.stdout.strip()
+
+
+def pactl_json(*what):
+    out = pactl("-f", "json", "list", *what, check=False)
+    try:
+        return json.loads(out) if out else []
+    except ValueError:
+        return []
+
+
+def load_state():
+    try:
+        with open(STATE) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def save_state(s):
+    tmp = STATE + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(s, f)
+    os.replace(tmp, STATE)
+
+
+def sink_names():
+    return {l.split("\t")[1] for l in pactl("list", "short", "sinks", check=False).splitlines() if "\t" in l}
+
+
+def is_on():
+    return SHARE in sink_names()
+
+
+# ----------------------------------------------------------------------------
+#  on / off
+# ----------------------------------------------------------------------------
+def turn_on():
+    if is_on():
+        return "Rice Mic is already on"
+    mic = pactl("get-default-source")
+    out = pactl("get-default-sink")
+    if mic.endswith(".monitor") or mic.startswith("rice_"):
+        raise RuntimeError(f"your default input is {mic!r}, not a microphone -- pick your mic first")
+    mods = []
+
+    def load(*args):
+        mods.append(int(pactl("load-module", *args)))
+    try:
+        # where clips and shared apps play
+        load("module-null-sink", f"sink_name={SHARE}", "sink_properties='device.description=\"Soundboard (Rice Mic)\"'")
+        # everything that goes out on the call is mixed here
+        load("module-null-sink", f"sink_name={MIX}", "sink_properties='device.description=\"Rice Mic mix\"'")
+        load("module-loopback", f"source={mic}", f"sink={MIX}", "latency_msec=60",
+             "source_dont_move=true", "sink_dont_move=true", "sink_input_properties='media.name=\"Rice Mic: microphone\"'")
+        load("module-loopback", f"source={SHARE}.monitor", f"sink={MIX}", "latency_msec=60",
+             "source_dont_move=true", "sink_dont_move=true", "sink_input_properties='media.name=\"Rice Mic: soundboard\"'")
+        # so you hear the clips / shared apps yourself
+        load("module-loopback", f"source={SHARE}.monitor", f"sink={out}", "latency_msec=60",
+             "source_dont_move=true", "sink_input_properties='media.name=\"Soundboard: to your speakers\"'")
+        # the device apps pick as their microphone
+        load("module-remap-source", f"master={MIX}.monitor", f"source_name={MIC}",
+             "source_properties='device.description=\"Rice Mic\"'")
+    except Exception:
+        for m in reversed(mods):
+            pactl("unload-module", str(m), check=False)
+        raise
+    save_state({"modules": mods, "mic": mic, "speakers": out})
+    # games (Proton / Wine) and many apps just use the *default* mic: make Rice Mic the
+    # default while it is on; `off` puts the real mic back
+    pactl("set-default-source", MIC, check=False)
+    return f"Rice Mic on and set as your default mic (real mic: {mic})"
+
+
+def turn_off():
+    st = load_state()
+    apps_back()
+    stop()
+    if st.get("mic") and pactl("get-default-source", check=False) == MIC:
+        pactl("set-default-source", st["mic"], check=False)
+    mods = st.get("modules") or []
+    # anything with our names that is still loaded (e.g. state file lost)
+    for line in pactl("list", "short", "modules", check=False).splitlines():
+        parts = line.split("\t")
+        if len(parts) >= 3 and any(n in parts[2] for n in (SHARE, MIX, MIC)):
+            try:
+                if int(parts[0]) not in mods:
+                    mods.append(int(parts[0]))
+            except ValueError:
+                pass
+    for m in sorted(set(mods), reverse=True):
+        pactl("unload-module", str(m), check=False)
+    try:
+        os.unlink(STATE)
+    except OSError:
+        pass
+    return "Rice Mic off"
+
+
+# ----------------------------------------------------------------------------
+#  clips
+# ----------------------------------------------------------------------------
+def test(seconds=4):
+    """Record Rice Mic for a few seconds (playing a clip into it) and play the recording back."""
+    if not is_on():
+        raise RuntimeError("turn Rice Mic on first (soundboard on)")
+    if not (shutil.which("pw-record") and shutil.which("pw-play")):
+        raise RuntimeError("needs pw-record / pw-play (pipewire)")
+    rec = os.path.join(tempfile.gettempdir(), "rice-mic-test.wav")
+    print(f"recording Rice Mic for {seconds} s -- say something" + (" (playing a clip too)" if sounds() else ""))
+    r = subprocess.Popen(["pw-record", "--target", MIC, rec], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if sounds():
+        play(sounds()[0]["path"])
+    try:
+        r.wait(timeout=seconds)
+    except subprocess.TimeoutExpired:
+        r.terminate()
+        r.wait()
+    stop()
+    print("playing back what the call / game would hear\u2026")
+    subprocess.run(["pw-play", rec], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    default = pactl("get-default-source", check=False)
+    print("default mic now: " + ("Rice Mic \u2713" if default == MIC else default))
+
+
+def sounds():
+    try:
+        names = sorted(os.listdir(SOUNDS), key=str.lower)
+    except OSError:
+        return []
+    out = []
+    for n in names:
+        p = os.path.join(SOUNDS, n)
+        if os.path.isfile(p) and os.path.splitext(n)[1].lower() in AUDIO_EXT:
+            out.append({"name": os.path.splitext(n)[0], "path": p})
+    return out
+
+
+def find_sound(q):
+    if os.path.isfile(q):
+        return q
+    ql = q.lower()
+    for s in sounds():
+        if s["name"].lower() == ql:
+            return s["path"]
+    for s in sounds():
+        if ql in s["name"].lower():
+            return s["path"]
+    return None
+
+
+def play(q, volume=None):
+    if volume is None:
+        volume = get_volume() / 100
+    path = find_sound(q)
+    if not path:
+        raise RuntimeError(f"no sound called {q!r} in {SOUNDS}")
+    on = is_on()
+    if shutil.which("pw-play"):
+        argv = ["pw-play", "--volume", str(volume),
+                "--properties", '{ application.name = "Soundboard" media.name = "Soundboard clip" }'] + \
+               (["--target", SHARE] if on else []) + [path]
+    elif shutil.which("mpv"):
+        argv = ["mpv", "--no-video", "--really-quiet", f"--volume={int(volume * 100)}", "--audio-client-name=Soundboard"] + \
+               ([f"--audio-device=pulse/{SHARE}"] if on else []) + [path]
+    else:
+        raise RuntimeError("needs pw-play (pipewire) or mpv")
+    p = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
+    st = load_state()
+    st.setdefault("playing", []).append(p.pid)
+    save_state(st)
+    return ("playing into Rice Mic: " if on else "Rice Mic is off -- only you hear: ") + os.path.basename(path)
+
+
+def stop():
+    st = load_state()
+    for pid in st.get("playing", []):
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            pass
+    if st:
+        st["playing"] = []
+        save_state(st)
+
+
+def add(src):
+    os.makedirs(SOUNDS, exist_ok=True)
+    if os.path.isfile(src):
+        dst = os.path.join(SOUNDS, os.path.basename(src))
+        shutil.copy2(src, dst)
+        return "added " + os.path.basename(dst)
+    if not re.match(r"^[a-z]+://", src, re.I):
+        raise RuntimeError("give a link or an audio file")
+    try:
+        import yt_dlp
+    except ImportError:
+        raise RuntimeError("yt-dlp is not installed (sudo pacman -S yt-dlp)")
+    opts = {"format": "bestaudio/best", "noplaylist": True, "quiet": True, "no_warnings": True, "noprogress": True,
+            "outtmpl": os.path.join(SOUNDS, "%(title).60B.%(ext)s"),
+            "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "best"}]}
+    with yt_dlp.YoutubeDL(opts) as y:
+        info = y.extract_info(src, download=True)
+    return "added " + (info.get("title") or "clip")
+
+
+# ----------------------------------------------------------------------------
+#  app audio
+# ----------------------------------------------------------------------------
+def apps():
+    """Playing streams, merged per app: [{app, title, ids[], shared}]."""
+    sinks = {}
+    for s in pactl_json("sinks"):
+        sinks[s.get("index")] = s.get("name")
+    by = {}
+    for si in pactl_json("sink-inputs"):
+        props = si.get("properties", {})
+        name = props.get("application.name") or props.get("application.process.binary") or "app"
+        media = props.get("media.name", "")
+        # our own plumbing: the loopbacks (made by a module) and the soundboard's clips
+        if "pulse.module.id" in props or name == "Soundboard" or media.startswith(("Rice Mic", "Soundboard")):
+            continue
+        if props.get("node.name", "").startswith(("rice_", "loopback")):
+            continue
+        a = by.setdefault(name.lower(), {"app": name, "title": media, "ids": [], "shared": False})
+        a["ids"].append(si.get("index"))
+        if sinks.get(si.get("sink")) == SHARE:
+            a["shared"] = True
+    return sorted(by.values(), key=lambda a: a["app"].lower())
+
+
+def share(name, on=True):
+    if on and not is_on():
+        raise RuntimeError("turn Rice Mic on first (soundboard on)")
+    target = SHARE if on else (load_state().get("speakers") or pactl("get-default-sink"))
+    n = 0
+    for a in apps():
+        if a["app"].lower() == name.lower() or name.lower() in a["app"].lower():
+            for i in a["ids"]:
+                pactl("move-sink-input", str(i), target, check=False)
+                n += 1
+    if not n:
+        raise RuntimeError(f"no app playing sound matches {name!r}")
+    return ("sharing " if on else "stopped sharing ") + name
+
+
+def apps_back():
+    """Move every shared stream back to the speakers (used by `off`)."""
+    if not is_on():
+        return
+    target = load_state().get("speakers") or pactl("get-default-sink")
+    sink_idx = {s.get("name"): s.get("index") for s in pactl_json("sinks")}
+    for si in pactl_json("sink-inputs"):
+        if si.get("sink") == sink_idx.get(SHARE) and not si.get("properties", {}).get("media.name", "").startswith(("Rice Mic", "Soundboard")):
+            pactl("move-sink-input", str(si.get("index")), target, check=False)
+
+
+# ----------------------------------------------------------------------------
+def main():
+    a = sys.argv[1:]
+    if not a or a[0] in ("-h", "--help", "help"):
+        print(__doc__.strip())
+        return
+    cmd, rest = a[0], a[1:]
+    try:
+        if cmd == "on":
+            print(turn_on())
+        elif cmd == "off":
+            print(turn_off())
+        elif cmd == "toggle":
+            print(turn_off() if is_on() else turn_on())
+        elif cmd == "play":
+            if not rest:
+                sys.exit("usage: soundboard play <sound name or file>")
+            print(play(" ".join(rest)))
+        elif cmd == "play-n":
+            if not rest or not rest[0].isdigit():
+                sys.exit("usage: soundboard play-n <number>")
+            n, lst = int(rest[0]), sounds()
+            if not 1 <= n <= len(lst):
+                sys.exit(f"soundboard: there is no clip {n} ({len(lst)} clips in {SOUNDS})")
+            print(play(lst[n - 1]["path"]))
+        elif cmd == "volume":
+            if rest:
+                try:
+                    print(f"clip volume: {set_volume(rest[0].rstrip('%'))}%")
+                except ValueError:
+                    sys.exit("usage: soundboard volume <0-150>")
+            else:
+                print(f"clip volume: {get_volume()}%")
+        elif cmd == "test":
+            test()
+        elif cmd == "stop":
+            stop()
+            print("stopped")
+        elif cmd == "add":
+            if not rest:
+                sys.exit("usage: soundboard add <link or file>")
+            print(add(" ".join(rest)))
+        elif cmd == "apps":
+            for x in apps():
+                print(("[shared] " if x["shared"] else "         ") + x["app"] + (f"  — {x['title']}" if x["title"] else ""))
+        elif cmd in ("share", "unshare"):
+            if not rest:
+                sys.exit(f"usage: soundboard {cmd} <app name>")
+            print(share(" ".join(rest), cmd == "share"))
+        elif cmd == "list":
+            on = is_on()
+            data = {"on": on, "dir": SOUNDS, "sounds": sounds(), "apps": apps(),
+                    "mic": load_state().get("mic", "") if on else "", "volume": get_volume()}
+            if "--json" in rest:
+                print(json.dumps(data, ensure_ascii=False))
+            else:
+                print("Rice Mic: " + ("on" if on else "off"))
+                print(f"clip volume: {data['volume']}%")
+                for i, s in enumerate(data["sounds"], 1):
+                    print(f"  {i:>2}  " + s["name"])
+                if not data["sounds"]:
+                    print(f"  (no sounds yet -- put audio files in {SOUNDS})")
+        else:
+            sys.exit(f"soundboard: unknown command {cmd!r} (soundboard --help)")
+    except RuntimeError as e:
+        sys.exit(f"soundboard: {e}")
+
+
+if __name__ == "__main__":
+    main()

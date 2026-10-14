@@ -1,0 +1,274 @@
+#!/usr/bin/env bash
+# safe-update -- update Arch without ending up in emergency mode.
+#
+#   safe-update            check, snapshot, update, verify the boot files (repair / roll back if needed)
+#   safe-update attach     reconnect to a running update (e.g. from a TTY after the desktop died)
+#   safe-update check      only run the boot checks
+#   safe-update --force    skip the battery / news stops
+#
+# What it guards against
+#   * the update being cut off half-way (desktop crash, closed terminal): the system part runs in a
+#     detached tmux session inside its own systemd unit, so it always finishes
+#   * a kernel in /boot that does not match the installed modules, a missing initramfs, an NVIDIA
+#     driver that was not built for the new kernel: checked after every update, repaired by
+#     re-running the kernel install hooks, and if that fails it offers to undo the whole update
+#     from the snapshot taken just before (default after 2 min: undo)
+#   * Arch news items that need manual steps: shown before anything changes
+#   * updating on a low battery
+set -uo pipefail
+# a system service has no HOME; without this `set -u` stopped the update part before it began
+: "${HOME:=$(getent passwd "$(id -un)" | cut -d: -f6)}"; export HOME
+
+UNIT=rice-update
+SOCK=rice-update
+RESULT=/run/rice-update/result
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/safe-update
+SELF=$(readlink -f "$0")
+
+B=$'\e[1m'; D=$'\e[2m'; G=$'\e[32m'; Y=$'\e[33m'; RD=$'\e[31m'; R=$'\e[0m'
+say()  { printf '%s\n' "$*"; }
+ok()   { printf '  %s✓%s %s\n' "$G" "$R" "$*"; }
+warn() { printf '  %s!%s %s\n' "$Y" "$R" "$*"; }
+bad()  { printf '  %s✗%s %s\n' "$RD" "$R" "$*"; }
+head1() { printf '\n%s== %s ==%s\n' "$B" "$*" "$R"; }
+yes_no() {  # yes_no "question" default(y/n)
+    local a; read -rp "  $1 [$( [[ $2 == y ]] && echo Y/n || echo y/N )] " a
+    a=${a:-$2}; [[ $a == [yY]* ]]
+}
+
+kernel_pkgs() { pacman -Qq 2>/dev/null | grep -xE 'linux(-zen|-lts|-hardened|-rt|-rt-lts|-cachyos)?'; }
+kernel_ver() {  # installed module dir name of a kernel package
+    pacman -Ql "$1" 2>/dev/null | awk -F/ '$0 ~ /\/usr\/lib\/modules\/[^/]+\/vmlinuz$/ {print $5; exit}'
+}
+
+# ---------------------------------------------------------------------------
+#  boot checks (root)
+# ---------------------------------------------------------------------------
+verify() {
+    local fail=0 pkg v f fv found img
+    if ! mountpoint -q /boot; then bad "/boot is not mounted"; return 1; fi
+    if [[ -e /var/lib/pacman/db.lck ]] && ! pgrep -x pacman >/dev/null; then
+        bad "pacman lock left behind (an update was interrupted)"; fail=1
+    fi
+    for pkg in $(kernel_pkgs); do
+        v=$(kernel_ver "$pkg")
+        if [[ -z $v || ! -f /usr/lib/modules/$v/vmlinuz ]]; then bad "$pkg: kernel files missing"; fail=1; continue; fi
+        [[ -f /usr/lib/modules/$v/modules.dep ]] || { bad "$pkg: module index missing ($v)"; fail=1; }
+        # the kernel(s) the boot menu loads -- skip limine-snapper-sync's copies for snapshots
+        found=0
+        while IFS= read -r f; do
+            found=1
+            fv=$(file -bL "$f" 2>/dev/null | grep -o 'version [^ ]*' | cut -d' ' -f2)
+            if [[ -z $fv ]]; then warn "$pkg: could not read the version of ${f#/boot/}"
+            elif [[ $fv == "$v" ]]; then ok "$pkg $v: kernel in /boot matches"
+            else bad "$pkg: /boot has $fv but the installed modules are $v"; fail=1; fi
+        done < <(find /boot -maxdepth 5 -type f \( -name "vmlinuz-$pkg" -o -path "*/$pkg/vmlinuz" \) -not -path '*limine_history*' 2>/dev/null)
+        (( found )) || { bad "$pkg: no vmlinuz-$pkg in /boot"; fail=1; }
+        img=$(find /boot -maxdepth 5 -type f \( -name "initramfs-$pkg.img" -o -path "*/$pkg/initramfs" \) -not -path '*limine_history*' 2>/dev/null | head -1)
+        if [[ -z $img ]]; then bad "$pkg: no initramfs in /boot"; fail=1
+        elif [[ /usr/lib/modules/$v/modules.dep -nt $img ]]; then bad "$pkg: initramfs is older than the kernel modules"; fail=1
+        else ok "$pkg: initramfs up to date"; fi
+        if pacman -Qq 2>/dev/null | grep -qE '^nvidia.*-dkms$'; then
+            if modinfo -k "$v" nvidia >/dev/null 2>&1; then ok "$pkg: NVIDIA driver built for $v"
+            else bad "$pkg: NVIDIA driver not built for $v"; fail=1; fi
+        fi
+    done
+    # Limine refuses to boot a file whose checksum differs from the one written in limine.conf
+    local conf line path want have n=0
+    for conf in /boot/limine.conf /boot/EFI/BOOT/limine.conf /boot/EFI/limine/limine.conf; do
+        [[ -f $conf ]] || continue
+        while IFS= read -r line; do
+            path=/boot/${line#*boot():/}; path=${path%%#*}; want=${line##*#}
+            [[ -f $path ]] || { bad "boot menu points to a missing file: ${path#/boot/}"; fail=1; continue; }
+            have=$(b2sum "$path" | cut -d' ' -f1)
+            if [[ $have != "$want" ]]; then bad "boot menu checksum is out of date for ${path#/boot/}"; fail=1; else n=$((n + 1)); fi
+        done < <(grep -oE '(kernel_path|module_path|image_path): *boot\(\):/[^#[:space:]]+#[0-9a-f]+' "$conf" | grep -v limine_history)
+        (( n )) && ok "boot menu checksums match ($n files)"
+        break
+    done
+    return $fail
+}
+
+repair() {
+    local pkgs; pkgs=$(kernel_pkgs | tr '\n' ' ')
+    say "  re-running the kernel install steps (dkms + initramfs + boot menu) for: $pkgs"
+    rm -f /var/lib/pacman/db.lck 2>/dev/null
+    # reinstalling the same kernel package from the cache triggers every hook exactly as an update does
+    local files=() p f
+    for p in $pkgs; do
+        f=$(ls /var/cache/pacman/pkg/"$p"-"$(pacman -Q "$p" | cut -d' ' -f2)"-*.pkg.tar.zst 2>/dev/null | head -1)
+        [[ -n $f ]] && files+=("$f")
+    done
+    if (( ${#files[@]} )); then pacman -U --noconfirm "${files[@]}"; else pacman -S --noconfirm $pkgs; fi
+}
+
+rollback() {  # rollback <snapshot number>
+    say "  undoing every change since snapshot $1 …"
+    snapper -c root undochange "$1"..0 >/dev/null || { bad "snapper undochange failed"; return 1; }
+    say "  putting the old kernel back into /boot …"
+    repair
+}
+
+# ---------------------------------------------------------------------------
+#  the system part: runs as root inside tmux (survives the desktop dying)
+# ---------------------------------------------------------------------------
+root_stage() {
+    mkdir -p /run/rice-update; echo running > "$RESULT"
+    local pre rc
+    head1 "snapshot"
+    if [[ -e /var/lib/pacman/db.lck ]] && ! pgrep -x pacman >/dev/null; then
+        warn "removing a pacman lock left by an interrupted update"; rm -f /var/lib/pacman/db.lck
+    fi
+    pre=$(snapper -c root create -t single -c number -p -d "safe-update: before $(date '+%F %H:%M')" 2>/dev/null)
+    if [[ -n $pre ]]; then ok "snapshot $pre"; else warn "could not take a snapshot -- no automatic undo this time"; fi
+
+    head1 "updating (official repos)"
+    pacman -Syu; rc=$?
+    if (( rc != 0 )); then
+        say; warn "pacman stopped (exit $rc) -- nothing or only part was changed"
+    fi
+
+    head1 "checking the boot files"
+    if verify; then
+        echo ok > "$RESULT"; say; ok "${B}safe to reboot${R}"; sleep 2; return 0
+    fi
+    say; warn "something is off -- repairing"
+    repair
+    head1 "checking again"
+    if verify; then echo repaired > "$RESULT"; say; ok "${B}repaired -- safe to reboot${R}"; sleep 2; return 0; fi
+
+    say; bad "${B}the boot files are still wrong -- do NOT reboot yet${R}"
+    if [[ -z $pre ]]; then echo failed > "$RESULT"; read -rp "  press Enter"; return 1; fi
+    local a=y
+    read -t 120 -rp "  undo the whole update from snapshot $pre? [Y/n] (auto-yes in 2 min) " a; a=${a:-y}
+    if [[ $a == [yY]* ]]; then
+        rollback "$pre"
+        head1 "checking after undo"
+        if verify; then echo rolledback > "$RESULT"; ok "${B}update undone -- reboot to be safe${R}"
+        else echo failed > "$RESULT"; bad "still not right: don't reboot, ask for help (boot menu snapshot $pre also works)"; fi
+    else
+        echo failed > "$RESULT"; warn "left as is. Don't reboot until it's fixed; the boot menu has snapshot $pre"
+    fi
+    read -rp "  press Enter"
+}
+
+# ---------------------------------------------------------------------------
+#  checks before anything changes (user)
+# ---------------------------------------------------------------------------
+preflight() {
+    local force=$1 stop=0
+    head1 "before updating"
+    # battery
+    local bat; bat=$(ls -d /sys/class/power_supply/BAT* 2>/dev/null | head -1)
+    if [[ -n $bat ]]; then
+        local cap st; cap=$(<"$bat/capacity"); st=$(<"$bat/status")
+        if [[ $st == Discharging && $cap -lt 40 ]]; then bad "battery at $cap% and unplugged -- plug in first"; stop=1
+        else ok "power: $cap% ($st)"; fi
+    fi
+    # /boot
+    if mountpoint -q /boot; then
+        local free; free=$(df --output=avail -BM /boot | tail -1 | tr -dc 0-9)
+        if (( free < 150 )); then bad "/boot has only ${free} MB free (kernels need room)"; stop=1; else ok "/boot: ${free} MB free"; fi
+    else bad "/boot is not mounted"; stop=1; fi
+    # already broken before we start?
+    # if the check fails on a working system it would also fail after the update and offer an undo
+    # for nothing -- so stop here unless forced (an earlier interrupted update is the other reason)
+    if ! sudo "$SELF" --verify-quiet; then
+        bad "the boot check fails before updating -- run 'safe-update check' to see why"
+        say "    (if an earlier update was interrupted, 'safe-update --force' repairs it)"
+        stop=1
+    else ok "boot files: fine right now"; fi
+    # headers for a kernel that is not installed only make every NVIDIA build slower
+    if pacman -Qq linux-headers &>/dev/null && ! pacman -Qq linux &>/dev/null \
+       && LC_ALL=C pacman -Qi linux-headers | grep -q '^Required By *: None'; then
+        warn "linux-headers is installed without the 'linux' kernel -- NVIDIA gets built for nothing each update"
+        say  "    (remove it with: sudo pacman -Rns linux-headers)"
+    fi
+    # Arch news since the last good update
+    mkdir -p "$STATE"
+    local since=0; [[ -f $STATE/last-ok ]] && since=$(<"$STATE/last-ok")
+    local news
+    news=$(curl -fsS --max-time 10 https://archlinux.org/feeds/news/ 2>/dev/null | python3 -c '
+import sys, email.utils, xml.etree.ElementTree as ET
+since = float(sys.argv[1]) or 0
+try: root = ET.fromstring(sys.stdin.read())
+except Exception: sys.exit(3)
+import time
+floor = since if since else time.time() - 21 * 86400
+for it in root.iter("item"):
+    t = email.utils.parsedate_to_datetime(it.findtext("pubDate")).timestamp()
+    if t > floor: print(time.strftime("%Y-%m-%d", time.localtime(t)) + "  " + it.findtext("title") + "\n      " + it.findtext("link"))
+' "$since"); local nrc=$?
+    if (( nrc != 0 )); then warn "could not read the Arch news (offline?)"
+    elif [[ -n $news ]]; then
+        warn "Arch news since your last update -- read these first, they may need manual steps:"
+        say "$news" | sed 's/^/    /'
+        (( force )) || yes_no "read them / nothing applies to you -- continue?" n || stop=1
+    else ok "no new Arch news"; fi
+    if (( stop && !force )); then say; bad "stopped (use --force to update anyway)"; exit 1; fi
+}
+
+start_root_stage() {
+    if sudo systemctl is-active --quiet "$UNIT"; then
+        warn "an update is already running -- attaching"; attach; return
+    fi
+    sudo rm -f "$RESULT"
+    sudo systemctl reset-failed "$UNIT" 2>/dev/null
+    sudo systemd-run --quiet --unit="$UNIT" --collect --service-type=forking \
+        --setenv=TERM="${TERM:-xterm-256color}" --setenv=HOME=/root \
+        tmux -L "$SOCK" new-session -d -s update -x 200 -y 50 \
+        "'$SELF' --root-stage || { rc=\$?; echo; echo \"the update helper stopped unexpectedly (exit \$rc)\"; read -rp 'press Enter'; }" \
+        || { bad "could not start the update"; exit 1; }
+    sleep 0.3
+    attach
+}
+
+attach() {
+    say "${D}  (the update keeps running even if this window or the desktop closes -- reconnect with: safe-update attach)${R}"
+    sleep 1
+    sudo tmux -L "$SOCK" attach -t update 2>/dev/null
+    # wait for the unit (in case we were detached / it is finishing up)
+    while sudo systemctl is-active --quiet "$UNIT"; do sleep 1; done
+}
+
+aur_stage() {
+    local helper; helper=$(command -v yay || command -v paru) || return 0
+    head1 "AUR"
+    "$helper" -Sua
+    head1 "checking the boot files again"
+    sudo "$SELF" --verify || warn "something is off after the AUR updates -- run: safe-update   (it repairs)"
+}
+
+# ---------------------------------------------------------------------------
+case ${1:-} in
+    --root-stage) root_stage; exit ;;
+    --verify) verify; exit ;;
+    --verify-quiet) verify >/dev/null 2>&1; exit ;;
+    attach) attach; exit ;;
+    check) sudo "$SELF" --verify && ok "${B}all good${R}"; exit ;;
+    -h|--help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+esac
+FORCE=0; [[ ${1:-} == --force ]] && FORCE=1
+(( EUID == 0 )) && { say "run it as yourself, not with sudo: safe-update"; exit 1; }
+for c in tmux snapper systemd-run; do command -v $c >/dev/null || { bad "needs $c"; exit 1; }; done
+
+sudo -v || exit 1
+preflight "$FORCE"
+start_root_stage
+res=$(cat "$RESULT" 2>/dev/null || echo unknown)
+if [[ $res == unknown ]]; then
+    say; warn "the update part did not report back -- its log:"
+    sudo journalctl -u "$UNIT" -n 15 --no-pager -o cat 2>/dev/null | sed 's/^/    /'
+fi
+case $res in
+    ok|repaired)
+        aur_stage
+        mkdir -p "$STATE"; date +%s > "$STATE/last-ok"
+        head1 "done"; ok "updated -- reboot when you like" ;;
+    rolledback) head1 "done"; warn "the update was undone; your system is as it was. Reboot, then tell someone what failed." ;;
+    *) head1 "done"; bad "result: $res -- do not reboot until the boot check passes (safe-update check)" ;;
+esac
+# refresh the bar badge
+f="${XDG_RUNTIME_DIR:-/tmp}/rice-updates.json"
+"$HOME/.local/bin/update-check" > "$f.tmp" 2>/dev/null && mv "$f.tmp" "$f"
+echo; read -n1 -rsp "press any key to close"

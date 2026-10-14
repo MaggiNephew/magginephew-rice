@@ -1,0 +1,13 @@
+#!/bin/sh
+# osd-brightness up|down|<brightnessctl value>
+# Changes the screen brightness, then writes the new level for the bar's on-screen display.
+case "$1" in
+    up)   v="5%+" ;;
+    down) v="5%-" ;;
+    "")   v="" ;;
+    *)    v="$1" ;;
+esac
+[ -n "$v" ] && brightnessctl -q -n 1 set "$v"
+cur=$(brightnessctl get 2>/dev/null) && max=$(brightnessctl max 2>/dev/null) && [ "$max" -gt 0 ] \
+    && echo $((cur * 100 / max)) > "${XDG_RUNTIME_DIR:-/tmp}/osd-brightness"
+exit 0

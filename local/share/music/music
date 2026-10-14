@@ -1,0 +1,752 @@
+#!/usr/bin/env python3
+"""music -- local music player, downloader and tagger.
+
+  music                     open the player (mouse + keyboard)
+  music get <name or link>  download a song, look up its real info + cover, add it
+        --artist A --title T    use this artist / title for the lookup
+  music tag <file...>       identify files you already have and add them (originals kept)
+        --artist A --title T    help the lookup when the file name is unclear
+  music play [words|file]   play everything / matching songs / a file
+  music add <file...>       add to the queue
+  music toggle | next | prev | stop
+  music now                 what is playing
+  music list [words]        list the library      (--json for scripts)
+  music scan                re-read ~/Music
+  music daemon              start the background player (the bar does this)
+  music setup-brave         connect the "Local music" Brave extension
+
+Songs live in ~/Music/<Artist>/<Album>/. Playback runs in the background,
+so it keeps going when the window is closed and shows up on the bar.
+"""
+import curses, json, locale, os, shutil, subprocess, sys, textwrap, threading, time
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, HERE)
+import musiclib as M  # noqa: E402
+
+TTY = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
+B, D, R = ("\033[1m", "\033[2m", "\033[0m") if TTY else ("", "", "")
+I_NOTE, I_PLAY, I_PAUSE, I_USER, I_ALL, I_NEW, I_LIST, I_SEARCH, I_DL = (
+    "\U000f0387", "\U000f040a", "\U000f03e4", "\U000f0803", "\U000f0333", "\U000f02da", "\U000f0cb8",
+    "\U000f0349", "\U000f01da")
+
+
+def say(msg):
+    print(msg, flush=True)
+
+
+def cut(s, n):
+    s = str(s)
+    return s if len(s) <= n else s[:max(0, n - 1)] + "…"
+
+
+# ----------------------------------------------------------------------------
+#  terminal app
+# ----------------------------------------------------------------------------
+PRESS = getattr(curses, "BUTTON1_PRESSED", 0x2)
+WHEEL_UP = getattr(curses, "BUTTON4_PRESSED", 0x80000)
+WHEEL_DOWN = getattr(curses, "BUTTON5_PRESSED", 0x200000)
+DOUBLE_S = 0.4
+
+
+class App:
+    def __init__(self, scr):
+        self.scr = scr
+        self.tracks = M.scan()
+        self.focus = 0            # 0 sources, 1 tracks
+        self.src_sel = 1          # start on "All songs"
+        self.src_scroll = 0
+        self.tr_sel = 0
+        self.tr_scroll = 0
+        self.query = ""
+        self.mode = None          # None | "search" | "get" | "import"
+        self.entry = ""
+        self.msg = ""
+        self.busy = False
+        self.st = {"running": False}
+        self.st_at = 0.0
+        self.last_press = None
+        self.lock = threading.Lock()
+
+    # ---- model ---------------------------------------------------------------
+    def sources(self):
+        s = [("queue", I_LIST + " Now playing"), ("all", I_ALL + " All songs"), ("new", I_NEW + " Recently added")]
+        if self.query:
+            s.insert(0, ("search", I_SEARCH + " " + self.query))
+        artists = sorted({t["albumartist"] or t["artist"] for t in self.tracks}, key=str.lower)
+        return s + [("artist:" + a, I_USER + " " + a) for a in artists]
+
+    def cur_source(self):
+        s = self.sources()
+        return s[min(self.src_sel, len(s) - 1)][0]
+
+    def track_list(self):
+        k = self.cur_source()
+        if k == "all":
+            return self.tracks
+        if k == "new":
+            return sorted(self.tracks, key=lambda t: -t["mtime"])[:100]
+        if k == "search":
+            return M.search(self.tracks, self.query)
+        if k == "queue":
+            by = {t["path"]: t for t in self.tracks}
+            out = []
+            for q in M.queue() if self.st.get("running") else []:
+                t = dict(by.get(q["path"]) or {"path": q["path"], "title": os.path.basename(q["path"]),
+                                                "artist": "", "album": "", "albumartist": "", "duration": 0,
+                                                "track": 0, "date": "", "genre": "", "cover": False, "mtime": 0})
+                t["current"] = q["current"]
+                out.append(t)
+            return out
+        a = k.split(":", 1)[1]
+        return [t for t in self.tracks if (t["albumartist"] or t["artist"]) == a]
+
+    def cur_track(self):
+        tl = self.track_list()
+        return tl[self.tr_sel] if tl and 0 <= self.tr_sel < len(tl) else None
+
+    def refresh_status(self, force=False):
+        if force or time.time() - self.st_at > 0.5:
+            try:
+                self.st = M.status()
+            except Exception:
+                self.st = {"running": False}
+            self.st_at = time.time()
+
+    # ---- layout ----------------------------------------------------------------
+    def layout(self):
+        h, w = self.scr.getmaxyx()
+        lw = max(20, int(w * 0.24))
+        dw = max(26, int(w * 0.30)) if w >= 100 else 0
+        mw = w - lw - dw - (2 if dw else 1)
+        return h, w, lw, mw, dw
+
+    def list_h(self):
+        return max(1, self.scr.getmaxyx()[0] - 5)
+
+    def follow(self, pane):
+        h = self.list_h()
+        if pane == 0:
+            if self.src_sel < self.src_scroll:
+                self.src_scroll = self.src_sel
+            elif self.src_sel >= self.src_scroll + h:
+                self.src_scroll = self.src_sel - h + 1
+        else:
+            if self.tr_sel < self.tr_scroll:
+                self.tr_scroll = self.tr_sel
+            elif self.tr_sel >= self.tr_scroll + h:
+                self.tr_scroll = self.tr_sel - h + 1
+
+    def clamp(self):
+        h = self.list_h()
+        ns, nt = len(self.sources()), len(self.track_list())
+        self.src_sel = max(0, min(self.src_sel, ns - 1))
+        self.tr_sel = max(0, min(self.tr_sel, max(0, nt - 1)))
+        self.src_scroll = max(0, min(self.src_scroll, ns - h))
+        self.tr_scroll = max(0, min(self.tr_scroll, nt - h))
+
+    # ---- draw --------------------------------------------------------------------
+    def put(self, y, x, s, attr=0, w=None):
+        try:
+            if w is not None:
+                s = cut(s, w).ljust(w)
+            self.scr.addstr(y, x, s, attr)
+        except curses.error:
+            pass
+
+    def draw(self):
+        self.clamp()
+        h, w, lw, mw, dw = self.layout()
+        self.scr.erase()
+        n = len(self.tracks)
+        self.put(0, 0, f" {I_NOTE} music — {n} song{'s' if n != 1 else ''}", curses.A_BOLD, w)
+        top, lh = 1, self.list_h()
+
+        srcs = self.sources()
+        cur_src = self.cur_source()
+        for j in range(lh):
+            i = self.src_scroll + j
+            if i >= len(srcs):
+                break
+            key, label = srcs[i]
+            attr = 0
+            if i == self.src_sel:
+                attr = curses.A_REVERSE if self.focus == 0 else curses.A_REVERSE | curses.A_DIM
+            elif key in ("queue", "all", "new", "search"):
+                attr = curses.A_BOLD
+            self.put(top + j, 0, " " + label, attr, lw)
+        for y in range(top, top + lh):
+            self.put(y, lw, "│", curses.A_DIM)
+
+        tl = self.track_list()
+        x = lw + 1
+        playing = self.st.get("path") if self.st.get("running") else None
+        if not tl:
+            empty = {"queue": "Nothing queued — Enter on a song plays it",
+                     "search": "No matches"}.get(cur_src, "No songs yet — press d to download one")
+            self.put(top, x, " " + empty, curses.A_DIM, mw)
+        durw = 6
+        for j in range(lh):
+            i = self.tr_scroll + j
+            if i >= len(tl):
+                break
+            t = tl[i]
+            is_now = t.get("current") if cur_src == "queue" else (t["path"] == playing)
+            mark = (I_PAUSE if self.st.get("paused") else I_PLAY) if is_now else " "
+            name = t["title"] + ("  · " + t["artist"] if t["artist"] and not cur_src.startswith("artist:") else "")
+            row = f" {mark} {cut(name, mw - durw - 5)}"
+            row = row.ljust(mw - durw) + M.fmt_time(t["duration"]).rjust(durw - 1) + " "
+            attr = curses.A_BOLD if is_now else 0
+            if i == self.tr_sel:
+                attr |= curses.A_REVERSE if self.focus == 1 else curses.A_REVERSE | curses.A_DIM
+            self.put(top + j, x, row, attr, mw)
+
+        if dw:
+            dx = lw + mw + 2
+            for y in range(top, top + lh):
+                self.put(y, dx - 1, "│", curses.A_DIM)
+            self.draw_detail(dx + 1, top, dw - 2, lh)
+
+        self.draw_player(h, w)
+        self.draw_bottom(h, w)
+
+    def draw_detail(self, x, y, w, h):
+        t = self.cur_track()
+        if not t:
+            return
+        lines = [(t["title"], curses.A_BOLD), (t["artist"], 0)]
+        if t["album"]:
+            lines.append((t["album"] + (f"  ({t['date']})" if t["date"] else ""), curses.A_DIM))
+        lines.append(("", 0))
+        info = []
+        if t["track"]:
+            info.append(f"track {t['track']}")
+        if t["genre"]:
+            info.append(t["genre"])
+        info.append(M.fmt_time(t["duration"]))
+        lines.append(("  ·  ".join(info), curses.A_DIM))
+        lines.append(("cover art ✓" if t["cover"] else "no cover art", curses.A_DIM))
+        if not t.get("tagged", True):
+            lines.append(("not tagged — press t to look it up", 0))
+        lines.append(("", 0))
+        for ln in textwrap.wrap(t["path"].replace(os.path.expanduser("~"), "~"), max(10, w)):
+            lines.append((ln, curses.A_DIM))
+        for i, (s, a) in enumerate(lines[:h]):
+            self.put(y + i, x, s, a, w)
+
+    def draw_player(self, h, w):
+        y = h - 4
+        self.put(y, 0, "─" * w, curses.A_DIM)
+        st = self.st
+        if not st.get("running") or not st.get("path"):
+            self.put(y + 1, 0, "  nothing playing", curses.A_DIM, w)
+            self.put(y + 2, 0, "", 0, w)
+            return
+        by = {t["path"]: t for t in self.tracks}
+        t = by.get(st["path"])
+        title = t["title"] if t else os.path.basename(st["path"])
+        artist = t["artist"] if t else ""
+        icon = I_PAUSE if st["paused"] else I_PLAY
+        head = f"  {icon}  {title}" + (f"  ·  {artist}" if artist else "")
+        right = f"vol {int(st['volume'])}%  {st['index'] + 1}/{st['count']}  "
+        self.put(y + 1, 0, cut(head, w - len(right) - 1).ljust(w - len(right)) + right, curses.A_BOLD, w)
+        pos, dur = st["pos"], st["duration"]
+        lt, rt = M.fmt_time(pos), M.fmt_time(dur)
+        bw = max(10, w - len(lt) - len(rt) - 8)
+        fill = int(bw * (pos / dur)) if dur else 0
+        bar = "━" * fill + "─" * (bw - fill)
+        self.bar_x, self.bar_w, self.bar_y = 3 + len(lt) + 1, bw, y + 2
+        self.put(y + 2, 0, f"  {lt} ", curses.A_DIM)
+        self.put(y + 2, self.bar_x, bar[:fill], curses.A_BOLD)
+        self.put(y + 2, self.bar_x + fill, bar[fill:], curses.A_DIM)
+        self.put(y + 2, self.bar_x + bw + 1, rt, curses.A_DIM)
+
+    def draw_bottom(self, h, w):
+        if self.mode:
+            label = {"search": "search", "get": "download (song name or link)", "import": "add file (path)"}[self.mode]
+            self.put(h - 1, 0, f" {label}: {self.entry}▁", curses.A_REVERSE, w - 1)
+        elif self.msg:
+            self.put(h - 1, 0, " " + self.msg, curses.A_REVERSE, w - 1)
+        else:
+            keys = [("Enter", "play"), ("Space", "pause"), ("n/p", "next/prev"), (",/.", "seek"),
+                    ("a", "queue"), ("/", "search"), ("d", "download"), ("i", "add file"), ("t", "re-tag"), ("q", "quit")]
+            self.put(h - 1, 0, " " + "  ".join(f"{k}:{v}" for k, v in keys), curses.A_REVERSE, w - 1)
+
+    # ---- actions -----------------------------------------------------------------
+    def play_here(self):
+        tl = self.track_list()
+        if not tl:
+            return
+        try:
+            if self.cur_source() == "queue":
+                M.ipc("set_property", "playlist-pos", self.tr_sel)
+                M.ipc("set_property", "pause", False)
+            else:
+                M.play([t["path"] for t in tl], self.tr_sel)
+            self.msg = ""
+        except M.PlayerError as e:
+            self.msg = str(e)
+        self.refresh_status(True)
+
+    def control(self, fn, *a):
+        try:
+            fn(*a)
+        except M.PlayerError as e:
+            self.msg = str(e)
+        self.refresh_status(True)
+
+    def job(self, label, fn):
+        if self.busy:
+            self.msg = "busy — wait for the current job to finish"
+            return
+        self.busy = True
+        self.msg = label
+
+        def log(s):
+            self.msg = s
+
+        def run():
+            try:
+                fn(log)
+            except Exception as e:     # show any failure in the status line
+                self.msg = f"failed: {e}"
+            finally:
+                try:
+                    self.tracks = M.scan()
+                except Exception:
+                    pass
+                self.busy = False
+        threading.Thread(target=run, daemon=True).start()
+
+    def start_get(self, q):
+        def fn(log):
+            paths = M.download(q, log=log, progress=lambda p: log(f"downloading… {p}%"))
+            log(f"added {len(paths)} song{'s' if len(paths) != 1 else ''} — see Recently added")
+        self.job(f"searching for “{q}”…", fn)
+
+    def start_import(self, path):
+        path = os.path.expanduser(path.strip().strip("'\""))
+
+        def fn(log):
+            files = [path]
+            if os.path.isdir(path):
+                files = sorted(os.path.join(r, f) for r, _, fs in os.walk(path) for f in fs
+                               if os.path.splitext(f)[1].lower() in M.AUDIO_EXT)
+            if not files or not os.path.exists(files[0]):
+                raise FileNotFoundError(path)
+            for i, f in enumerate(files, 1):
+                log(f"[{i}/{len(files)}] {os.path.basename(f)}")
+                M.tag_file(f, log=log)
+            log(f"added {len(files)} file{'s' if len(files) != 1 else ''} — see Recently added")
+        self.job("reading " + os.path.basename(path), fn)
+
+    def start_retag(self):
+        t = self.cur_track()
+        if not t:
+            return
+        self.job("looking up " + t["title"], lambda log: M.tag_file(t["path"], log=log))
+
+    # ---- input -------------------------------------------------------------------
+    def type_key(self, k):
+        if k == 27:
+            if self.mode == "search":
+                self.query = ""
+            self.mode = None
+        elif k in (10, 13, curses.KEY_ENTER):
+            mode, text = self.mode, self.entry.strip()
+            self.mode = None
+            if mode == "search":
+                self.focus = 1
+            elif mode == "get" and text:
+                self.start_get(text)
+            elif mode == "import" and text:
+                self.start_import(text)
+        elif k in (127, curses.KEY_BACKSPACE, 8):
+            self.entry = self.entry[:-1]
+        elif isinstance(k, str) or 32 <= k < 0x110000:
+            self.entry += k if isinstance(k, str) else chr(k)
+        if self.mode == "search":            # live search: results update while typing
+            self.query = self.entry
+            self.src_sel, self.tr_sel, self.tr_scroll = (0 if self.query else 1), 0, 0
+        elif k == 27 and not self.query:      # search cancelled: back to All songs
+            self.src_sel, self.tr_sel, self.tr_scroll = 1, 0, 0
+
+    def key(self, k):
+        if k in (ord("q"),):
+            return False
+        self.msg = "" if not self.busy else self.msg
+        if k == 27:
+            if self.query:
+                self.query = ""
+                self.src_sel = 1
+            elif self.focus:
+                self.focus = 0
+        elif k in (curses.KEY_UP, ord("k")):
+            self.move(-1)
+        elif k in (curses.KEY_DOWN, ord("j")):
+            self.move(1)
+        elif k == curses.KEY_PPAGE:
+            self.move(-self.list_h())
+        elif k == curses.KEY_NPAGE:
+            self.move(self.list_h())
+        elif k in (curses.KEY_LEFT, ord("h"), 127, curses.KEY_BACKSPACE):
+            self.focus = 0
+        elif k in (curses.KEY_RIGHT, ord("l"), ord("\t")):
+            self.focus = 1
+        elif k in (10, 13, curses.KEY_ENTER):
+            if self.focus == 0:
+                self.focus = 1
+            else:
+                self.play_here()
+        elif k == ord(" "):
+            self.control(M.toggle)
+        elif k == ord("n"):
+            self.control(M.next_track)
+        elif k == ord("p"):
+            self.control(M.prev_track)
+        elif k == ord(","):
+            self.control(M.seek, -10)
+        elif k == ord("."):
+            self.control(M.seek, 10)
+        elif k in (ord("+"), ord("=")):
+            self.control(M.volume, 5)
+        elif k == ord("-"):
+            self.control(M.volume, -5)
+        elif k == ord("a"):
+            t = self.cur_track()
+            if t:
+                self.control(M.enqueue, [t["path"]])
+                self.msg = "queued: " + t["title"]
+        elif k == ord("/"):
+            self.mode, self.entry = "search", ""
+        elif k == ord("d"):
+            self.mode, self.entry = "get", ""
+        elif k == ord("i"):
+            self.mode, self.entry = "import", ""
+        elif k == ord("t"):
+            self.start_retag()
+        elif k == ord("r"):
+            self.tracks = M.scan()
+            self.msg = "library re-read"
+        return True
+
+    def move(self, d):
+        if self.focus == 0:
+            self.src_sel = max(0, min(self.src_sel + d, len(self.sources()) - 1))
+            self.tr_sel = self.tr_scroll = 0
+            self.follow(0)
+        else:
+            self.tr_sel = max(0, min(self.tr_sel + d, len(self.track_list()) - 1))
+            self.follow(1)
+
+    def mouse(self):
+        try:
+            _id, x, y, _z, b = curses.getmouse()
+        except curses.error:
+            return
+        h, w, lw, mw, dw = self.layout()
+        pane = 0 if x < lw else 1 if x < lw + 1 + mw else 2
+        lh = self.list_h()
+        if b & (WHEEL_UP | WHEEL_DOWN):
+            d = -3 if b & WHEEL_UP else 3
+            if pane == 0:
+                self.src_scroll += d
+            elif pane == 1:
+                self.tr_scroll += d
+            self.clamp()
+            return
+        if not b & PRESS:
+            return
+        # click on the progress bar seeks
+        if getattr(self, "bar_y", None) == y and self.bar_x <= x < self.bar_x + self.bar_w and self.st.get("duration"):
+            frac = (x - self.bar_x) / self.bar_w
+            self.control(lambda: M.ipc("seek", frac * 100, "absolute-percent"))
+            return
+        if not 1 <= y < 1 + lh or pane == 2:
+            return
+        idx = (self.src_scroll if pane == 0 else self.tr_scroll) + y - 1
+        n = len(self.sources()) if pane == 0 else len(self.track_list())
+        if idx >= n:
+            return
+        now = time.monotonic()
+        lp = self.last_press
+        double = bool(lp and lp[1] == pane and lp[2] == idx and now - lp[0] < DOUBLE_S)
+        self.last_press = None if double else (now, pane, idx)
+        self.focus = pane
+        if pane == 0:
+            if idx != self.src_sel:
+                self.src_sel, self.tr_sel, self.tr_scroll = idx, 0, 0
+            if double:
+                self.focus = 1
+        else:
+            self.tr_sel = idx
+            if double:
+                self.play_here()
+
+    def run(self):
+        self.scr.timeout(250)
+        while True:
+            self.refresh_status()
+            self.draw()
+            self.scr.refresh()
+            try:
+                k = self.scr.get_wch()
+            except curses.error:
+                continue
+            if k == curses.KEY_RESIZE:
+                continue
+            if k == curses.KEY_MOUSE:
+                self.mouse()
+                continue
+            if self.mode:
+                self.type_key(k if isinstance(k, int) else (ord(k) if len(k) == 1 and ord(k) < 32 or k == "\x7f" else k))
+                continue
+            if isinstance(k, str):
+                k = ord(k) if len(k) == 1 else -1
+            if not self.key(k):
+                return
+
+
+def run_app():
+    os.environ.setdefault("ESCDELAY", "25")
+    try:
+        M.start_player()
+    except M.PlayerError as e:
+        print(f"music: {e}", file=sys.stderr)
+
+    def main(scr):
+        try:
+            curses.curs_set(0)
+        except curses.error:
+            pass
+        scr.keypad(1)
+        try:
+            curses.set_escdelay(25)
+        except (AttributeError, curses.error):
+            pass
+        curses.mouseinterval(0)
+        curses.mousemask(PRESS | WHEEL_UP | WHEEL_DOWN)
+        App(scr).run()
+    try:
+        curses.wrapper(main)
+    except KeyboardInterrupt:
+        pass
+
+
+# ----------------------------------------------------------------------------
+#  command line
+# ----------------------------------------------------------------------------
+def print_list(tracks):
+    if not tracks:
+        say("no songs")
+        return
+    W = max(60, shutil.get_terminal_size((100, 24)).columns)
+    for t in tracks:
+        name = f"{B}{t['title']}{R} {D}· {t['artist']}{R}"
+        alb = f"{D}{t['album']}{R}" if t["album"] else ""
+        say(f"  {cut(name, W)}  {alb}")
+
+
+def take_opts(args, names):
+    """Split ["--artist", "X", "word", ...] into ({"--artist": "X"}, ["word", ...])."""
+    opts, words, i = {}, [], 0
+    while i < len(args):
+        if args[i] in names and i + 1 < len(args):
+            opts[args[i]] = args[i + 1]
+            i += 2
+        else:
+            words.append(args[i])
+            i += 1
+    return opts, words
+
+
+def notify(title, body, urgent=False):
+    if shutil.which("notify-send"):
+        subprocess.run(["notify-send", "-a", "Music", "-i", "audio-x-generic"]
+                       + (["-u", "critical"] if urgent else []) + [title, body],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def run_job(job_id, query, hints):
+    """`music get` started by the browser button: progress goes to a status file the button
+    reads, and a desktop notification says when the song is in the library."""
+    os.makedirs(M.JOBS_DIR, exist_ok=True)
+    path = os.path.join(M.JOBS_DIR, "".join(ch for ch in job_id if ch.isalnum() or ch in "-_") + ".json")
+    state = {"state": "running", "msg": "starting…", "pct": 0, "path": "", "title": "", "updated": 0}
+
+    def save(**kw):
+        state.update(kw, updated=time.time())
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(state, f, ensure_ascii=False)
+        os.replace(tmp, path)
+    save()
+    try:
+        paths = M.download(query, log=lambda s: save(msg=s), hints=hints,
+                           progress=lambda p: save(msg=f"downloading… {p}%", pct=p))
+        t = M.read_tags(paths[0])
+        name = (t["title"] or os.path.basename(paths[0])) + (f" — {t['artist']}" if t["artist"] else "")
+        save(state="done", msg="added to your library", pct=100, path=paths[0], title=name)
+        notify("Added to your library", name)
+    except Exception as e:
+        save(state="error", msg=str(e))
+        notify("Could not add the song", str(e), urgent=True)
+        sys.exit(1)
+
+
+EXT_ID = "aoinhcjlmlpkneiedllinninpjmlnhdi"          # fixed by the "key" in brave-extension/manifest.json
+HOST_NAME = "com.unome.music"
+
+
+def setup_brave():
+    """Register the native helper with Brave (and Chromium / Chrome if present)."""
+    home = os.path.expanduser("~")
+    cfg = os.environ.get("XDG_CONFIG_HOME") or os.path.join(home, ".config")
+    helper = os.path.join(HERE, "brave-host")
+    ext = os.path.join(HERE, "brave-extension")
+    if not os.path.isfile(helper):
+        sys.exit("music: brave-host is missing next to the music command")
+    os.chmod(helper, 0o755)
+    manifest = {"name": HOST_NAME, "description": "Local music library helper",
+                "path": helper, "type": "stdio", "allowed_origins": [f"chrome-extension://{EXT_ID}/"]}
+    browsers = [("Brave", "BraveSoftware/Brave-Browser", True), ("Chromium", "chromium", False),
+                ("Chrome", "google-chrome", False)]
+    done = []
+    for name, sub, always in browsers:
+        root = os.path.join(cfg, sub)
+        if not always and not os.path.isdir(root):
+            continue
+        d = os.path.join(root, "NativeMessagingHosts")
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, HOST_NAME + ".json"), "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=2)
+        done.append(name)
+    say(f"{B}helper registered{R} for {', '.join(done)}")
+    say("")
+    say(f"{B}Load the extension (once):{R}")
+    say("  1. open  brave://extensions")
+    say("  2. turn on  Developer mode  (top right)")
+    say("  3. click  Load unpacked  and pick:")
+    say(f"     {ext}")
+    say("  4. pin it: puzzle-piece icon in the toolbar \u2192 pin  Local music")
+    say("")
+    say(f"{D}extension id {EXT_ID} \u2014 if Brave shows a different id, tell Claude.{R}")
+
+
+def need_mutagen():
+    if not M._mutagen():
+        sys.exit("music: python-mutagen is not installed (sudo pacman -S python-mutagen)")
+
+
+def main():
+    locale.setlocale(locale.LC_ALL, "")
+    a = sys.argv[1:]
+    if not a:
+        if sys.stdin.isatty() and sys.stdout.isatty():
+            need_mutagen()
+            return run_app()
+        return say(__doc__.strip())
+    cmd, rest = a[0], a[1:]
+    try:
+        if cmd in ("-h", "--help", "help"):
+            say(__doc__.strip())
+        elif cmd == "get":
+            need_mutagen()
+            opts, words = take_opts(rest, ("--artist", "--title", "--job"))
+            if not words:
+                sys.exit("usage: music get <song name or link> [--artist A] [--title T]")
+            hints = {"artist": opts.get("--artist", ""), "title": opts.get("--title", "")}
+            if opts.get("--job"):
+                return run_job(opts["--job"], " ".join(words), hints)
+            M.download(" ".join(words), log=lambda s: say(s), hints=hints,
+                       progress=(lambda p: print(f"\r  downloading… {p}%", end="", flush=True)) if TTY else None)
+        elif cmd == "tag":
+            need_mutagen()
+            artist = title = ""
+            files = []
+            i = 0
+            while i < len(rest):
+                if rest[i] == "--artist" and i + 1 < len(rest):
+                    artist = rest[i + 1]; i += 2
+                elif rest[i] == "--title" and i + 1 < len(rest):
+                    title = rest[i + 1]; i += 2
+                else:
+                    files.append(rest[i]); i += 1
+            if not files:
+                sys.exit("usage: music tag <file...> [--artist A] [--title T]")
+            for f in files:
+                if os.path.isdir(f):
+                    sub = sorted(os.path.join(r, x) for r, _, fs in os.walk(f) for x in fs
+                                 if os.path.splitext(x)[1].lower() in M.AUDIO_EXT)
+                else:
+                    sub = [f]
+                for s in sub:
+                    say(f"{B}{os.path.basename(s)}{R}")
+                    M.tag_file(s, artist, title, log=lambda m: say("  " + m))
+            M.scan()
+        elif cmd == "play":
+            tracks = M.scan()
+            if rest and os.path.isfile(" ".join(rest)):
+                p = os.path.abspath(" ".join(rest))
+                paths = [t["path"] for t in tracks]
+                if p in paths:
+                    M.play(paths, paths.index(p))
+                else:
+                    M.play([p])
+            elif rest:
+                hits = M.search(tracks, " ".join(rest))
+                if not hits:
+                    sys.exit("no songs match")
+                M.play([t["path"] for t in hits])
+            else:
+                st = M.status()
+                if st.get("running") and st.get("path"):
+                    M.ipc("set_property", "pause", False)
+                elif tracks:
+                    M.play([t["path"] for t in tracks])
+        elif cmd in ("add", "queue"):
+            if not rest:
+                sys.exit("usage: music add <file...>")
+            M.enqueue(rest)
+        elif cmd in ("toggle", "pause"):
+            M.toggle()
+        elif cmd == "next":
+            M.next_track()
+        elif cmd in ("prev", "previous"):
+            M.prev_track()
+        elif cmd == "stop":
+            M.stop()
+        elif cmd == "now":
+            st = M.status()
+            if not st.get("running") or not st.get("path"):
+                return say("nothing playing")
+            t = {x["path"]: x for x in M.scan()}.get(st["path"])
+            name = f"{t['title']} · {t['artist']}" if t else os.path.basename(st["path"])
+            say(f"{'paused' if st['paused'] else 'playing'}: {name}  ({M.fmt_time(st['pos'])} / {M.fmt_time(st['duration'])})")
+        elif cmd == "list":
+            js = "--json" in rest
+            words = [x for x in rest if x != "--json"]
+            tracks = M.search(M.scan(), " ".join(words))
+            if js:
+                keep = ("path", "title", "artist", "album", "duration", "mtime", "cover")
+                print(json.dumps([{k: t[k] for k in keep} for t in tracks], ensure_ascii=False))
+            else:
+                print_list(tracks)
+        elif cmd == "scan":
+            say(f"{len(M.scan(force=True))} songs in {M.MUSIC_DIR.replace(os.path.expanduser('~'), '~')}")
+        elif cmd == "setup-brave":
+            setup_brave()
+        elif cmd == "daemon":
+            M.start_player()
+        else:
+            sys.exit(f"music: unknown command {cmd!r} (music --help)")
+    except M.PlayerError as e:
+        sys.exit(f"music: {e}")
+    except FileNotFoundError as e:
+        sys.exit(f"music: no such file: {e}")
+    except Exception as e:
+        sys.exit(f"music: {e}")
+
+
+if __name__ == "__main__":
+    main()

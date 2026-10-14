@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Camera frame</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* Camera frame with the logo badge on its bottom edge.
+     Browser source: camera width x (camera width * 0.5625 + camera width / 12)
+       e.g. camera 480x270  ->  480 x 310   (put it at the same position as the camera)
+     Everything scales with the width, so other sizes work too (640 -> 640x413).
+     ?logo=0  plain frame without the logo plate (used in Just Chatting, which has the logo up top) */
+  body.nologo .plate { display: none; }
+  :root { --u: calc(100vw / 480); }          /* 1 design pixel at 480 wide */
+  .cam {
+    position: absolute; left: 0; top: 0;
+    width: 100vw; height: calc(100vw * 9 / 16);
+    border: calc(var(--u) * 4) solid var(--white);
+  }
+  .plate {
+    position: absolute; left: 50%; top: calc(100vw * 9 / 16); transform: translate(-50%, -50%);
+    width: calc(var(--u) * 300);
+    padding: calc(var(--u) * 9) calc(var(--u) * 11) calc(var(--u) * 13);
+    background: rgba(0, 0, 0, .9);
+    border-radius: calc(var(--u) * 3);
+  }
+  .plate .frame { padding: calc(var(--u) * 9) calc(var(--u) * 11) calc(var(--u) * 11);
+                  --stroke: calc(var(--u) * 2.5); --gap: calc(var(--u) * 104); }
+  .plate .frame .label { font-size: calc(var(--u) * 7.5); letter-spacing: .36em; text-indent: .36em; }
+</style></head>
+<body>
+  <div class="cam"></div>
+  <div class="plate"><div class="frame"><img class="wordmark" src="wordmark.svg" alt="MAGGINEPHEW"><div class="label">GENESIS 1:27</div></div></div>
+  <script>if (new URLSearchParams(location.search).get("logo") === "0") document.body.classList.add("nologo");</script>
+</body></html>

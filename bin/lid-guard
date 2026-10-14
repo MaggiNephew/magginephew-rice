@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Hold a logind "handle-lid-switch" inhibitor while the session is locked,
+# so closing the lid never suspends a locked session (Super+L). When the
+# session is unlocked, the inhibitor is released and the lid works normally.
+set -u
+
+SESSION_ID="${XDG_SESSION_ID:-}"
+inhibit_pid=""
+
+acquire() {
+    setsid systemd-inhibit --what=handle-lid-switch \
+        --who=lid-guard --why="session locked" \
+        --mode=block sleep infinity &
+    inhibit_pid=$!
+}
+
+release() {
+    if [ -n "$inhibit_pid" ]; then
+        kill -- -"$inhibit_pid" 2>/dev/null
+        wait "$inhibit_pid" 2>/dev/null
+        inhibit_pid=""
+    fi
+}
+
+trap release EXIT INT TERM
+
+while :; do
+    locked=$(loginctl show-session "$SESSION_ID" -p LockedHint --value 2>/dev/null || echo no)
+    if [ "$locked" = "yes" ] && [ -z "$inhibit_pid" ]; then
+        acquire
+    elif [ "$locked" != "yes" ] && [ -n "$inhibit_pid" ]; then
+        release
+    fi
+    sleep 3
+done

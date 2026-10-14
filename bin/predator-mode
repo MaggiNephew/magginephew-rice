@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# predator-mode — read or change the Predator performance mode through ASense.
+#
+#   predator-mode              print the current mode (raw platform-profile name)
+#   predator-mode next|prev    cycle Eco → Quiet → Balanced → Performance → Turbo
+#   predator-mode <raw>        set low-power|quiet|balanced|balanced-performance|performance
+#
+# Writes go through the asensed control socket, so no root is needed. If the
+# ASense window is open it holds the daemon's single session; close it first.
+
+ORDER=(low-power quiet balanced balanced-performance performance)
+
+current() {
+    local p
+    for p in /sys/class/platform-profile/*/; do
+        [[ $(<"$p/name") == acer-wmi ]] 2>/dev/null && { cat "$p/profile" 2>/dev/null; return; }
+    done
+}
+
+set_mode() {
+    python3 - "$1" <<'PY'
+import socket, sys
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.settimeout(3)
+try:
+    s.connect("/run/asense-control.sock")
+except OSError as e:
+    sys.exit(f"predator-mode: cannot reach asensed ({e})")
+f = s.makefile("rwb", buffering=0)
+for cmd in (b"HELLO 2\n", f"PROFILE {sys.argv[1]}\n".encode()):
+    f.write(cmd)
+    reply = f.readline(4097).decode().rstrip()
+    if not reply.startswith("OK"):
+        sys.exit(f"predator-mode: {reply}")
+PY
+}
+
+cur=$(current)
+case ${1:-} in
+    "")        echo "$cur" ;;
+    next|prev)
+        idx=2
+        for i in "${!ORDER[@]}"; do [[ ${ORDER[$i]} == "$cur" ]] && idx=$i; done
+        step=1; [[ $1 == prev ]] && step=-1
+        set_mode "${ORDER[$(( (idx + step + ${#ORDER[@]}) % ${#ORDER[@]} ))]}" ;;
+    *)         set_mode "$1" ;;
+esac

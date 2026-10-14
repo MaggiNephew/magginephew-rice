@@ -1,0 +1,69 @@
+/* monochrome, matches the Quickshell bar (black / gray / white, 3270 Nerd Font) */
+:root {
+  --bg: #131313;
+  --surface: #1f1f1f;
+  --surface2: #2a2a2a;
+  --outline: #333333;
+  --muted: #777777;
+  --fg2: #999999;
+  --fg: #e2e2e2;
+  --white: #ffffff;
+  --ink: #0a0a0a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); }
+body {
+  width: 330px;
+  padding: 12px;
+  font: 12px/1.35 "3270 Nerd Font", "3270 Nerd Font Mono", ui-monospace, monospace;
+}
+header { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+.glyph { color: var(--white); font-size: 14px; }
+.brand { color: var(--fg2); font-size: 10px; letter-spacing: 1.5px; flex: 1; }
+button { font: inherit; cursor: pointer; }
+.link { background: none; border: 0; color: var(--muted); font-size: 10px; padding: 2px 0; }
+.link:hover { color: var(--white); }
+
+.card { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+.card img {
+  width: 96px; height: 54px; object-fit: cover; border-radius: 6px;
+  border: 1px solid var(--outline); background: var(--surface); flex: none;
+  filter: grayscale(1); transition: filter .25s;
+}
+.card img.square { width: 62px; height: 62px; }
+.card:hover img { filter: none; }
+.meta { min-width: 0; }
+.title {
+  color: var(--white); font-weight: bold; font-size: 13px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.artist { color: var(--fg2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.chip {
+  display: inline-block; margin-top: 5px; padding: 1px 7px; border-radius: 9px;
+  border: 1px solid var(--outline); color: var(--muted); font-size: 10px;
+}
+
+.btn {
+  width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--white);
+  background: var(--white); color: var(--ink); font-weight: bold; font-size: 12px;
+}
+.btn:hover { background: var(--fg); }
+.btn.ghost { background: var(--surface); color: var(--fg); border-color: var(--outline); font-weight: normal; }
+.btn.ghost:hover { background: var(--surface2); border-color: var(--muted); }
+.row { display: flex; gap: 6px; margin-top: 6px; }
+.row .btn { margin: 0; }
+
+.progress { height: 4px; border-radius: 2px; background: var(--surface2); overflow: hidden; margin: 8px 0 6px; }
+.progress > div { height: 100%; background: var(--white); width: 0; transition: width .3s; }
+.progress.indet > div { width: 30%; animation: slide 1.1s ease-in-out infinite; }
+@keyframes slide { from { margin-left: -30%; } to { margin-left: 100%; } }
+
+.status { color: var(--fg2); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ok { color: var(--white); }
+.muted { color: var(--muted); margin: 4px 0; }
+.empty { text-align: center; padding: 14px 4px 6px; }
+.empty .glyph { font-size: 28px; color: var(--muted); display: block; margin-bottom: 6px; }
+code {
+  display: block; margin-top: 6px; padding: 6px 8px; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--outline); color: var(--white); user-select: all;
+}

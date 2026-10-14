@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+# rice-system-setup -- the system-level parts of the rice (needs root).
+#
+#   sudo rice-system-setup             go through every section, asking before each change
+#   sudo rice-system-setup snapshots   only one section: packages | firewall | snapshots
+#   rice-system-setup --dry-run        show what would happen, change nothing (no sudo needed)
+#
+# Sections
+#   packages   firejail (cyber sandbox), ufw (firewall), hyprpicker (colour picker),
+#              cava (visualiser), mpv + mpv-mpris + yt-dlp + python-mutagen (music)
+#   firewall   ufw: block everything coming in, allow everything going out
+#   snapshots  snapper for / (hourly + daily, auto-cleaned), a snapshot before/after every
+#              pacman run (snap-pac), and snapshots in the boot menu (GRUB: grub-btrfs)
+set -uo pipefail
+
+DRY=0
+ONLY=""
+for a in "$@"; do
+    case $a in
+        --dry-run|-n) DRY=1 ;;
+        packages|firewall|snapshots) ONLY=$a ;;
+        -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) echo "unknown option: $a (try --help)"; exit 1 ;;
+    esac
+done
+
+B=$'\e[1m'; D=$'\e[2m'; R=$'\e[0m'
+[[ -t 1 ]] || { B=""; D=""; R=""; }
+say()  { printf '%s\n' "$*"; }
+section() { printf '\n%s== %s ==%s\n' "$B" "$*" "$R"; }
+note() { printf '   %s%s%s\n' "$D" "$*" "$R"; }
+run()  { printf '   %s$ %s%s\n' "$D" "$*" "$R"; (( DRY )) && return 0; "$@"; }
+ask()  {
+    if (( DRY )); then printf '   [dry run] would ask: %s\n' "$1"; return 0; fi
+    local a; read -rp "   $1 [y/N] " a; [[ $a == [yY]* ]]
+}
+installed() { pacman -Q "$1" &>/dev/null; }
+want() { [[ -z $ONLY || $ONLY == "$1" ]]; }
+
+if (( ! DRY )) && [[ $EUID -ne 0 ]]; then
+    echo "run it with sudo:  sudo rice-system-setup   (or --dry-run to only look)"
+    exit 1
+fi
+REAL_USER=${SUDO_USER:-$(logname 2>/dev/null || echo "")}
+[[ $REAL_USER == root ]] && REAL_USER=""
+
+# ---------------------------------------------------------------------------
+#  packages
+# ---------------------------------------------------------------------------
+if want packages; then
+    section "packages"
+    pkgs=(firejail ufw hyprpicker cava mpv mpv-mpris yt-dlp python-mutagen)
+    missing=()
+    for p in "${pkgs[@]}"; do installed "$p" || missing+=("$p"); done
+    if (( ${#missing[@]} == 0 )); then
+        say "   all installed"
+    else
+        say "   missing: ${missing[*]}"
+        note "firejail = cyber sandbox, ufw = firewall, hyprpicker = colour picker,"
+        note "cava = visualiser, mpv/mpv-mpris/yt-dlp/python-mutagen = music"
+        if ask "install them?"; then run pacman -S --needed --noconfirm "${missing[@]}"; fi
+    fi
+    if ! installed chromaprint; then
+        note "optional: chromaprint lets 'music tag' recognise songs by sound (needs a free AcoustID key)"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+#  firewall
+# ---------------------------------------------------------------------------
+if want firewall; then
+    section "firewall (ufw)"
+    if ! command -v ufw &>/dev/null && (( ! DRY )); then
+        say "   ufw is not installed -- run the packages section first"
+    else
+        status=$(ufw status 2>/dev/null | head -1)
+        say "   now: ${status:-unknown}"
+        note "plan: deny all incoming connections, allow all outgoing, start at boot"
+        note "if you ever run a server for testing:  sudo ufw allow 8000/tcp"
+        if ask "set up the firewall?"; then
+            run ufw default deny incoming
+            run ufw default allow outgoing
+            # VMs (libvirt) route their traffic through the host; ufw drops forwarded
+            # traffic by default, which cuts the VMs off from the internet
+            if [[ -d /etc/libvirt ]] || command -v virsh &>/dev/null || command -v VBoxManage &>/dev/null; then
+                say "   virtual machines detected"
+                if ask "let VM traffic through (otherwise VMs lose internet)?"; then
+                    run sed -i 's/^DEFAULT_FORWARD_POLICY=.*/DEFAULT_FORWARD_POLICY="ACCEPT"/' /etc/default/ufw
+                fi
+            fi
+            run ufw --force enable
+            run systemctl enable --now ufw.service
+        fi
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+#  snapshots
+# ---------------------------------------------------------------------------
+if want snapshots; then
+    section "snapshots"
+    fstype=$(findmnt -no FSTYPE / 2>/dev/null)
+    if [[ $fstype != btrfs ]]; then
+        say "   / is ${fstype:-unknown}, not btrfs -- snapshots need btrfs, skipping"
+    else
+        rootsrc=$(findmnt -no SOURCE / 2>/dev/null)                 # /dev/nvme0n1p2[/@]
+        rootdev=${rootsrc%%[*}
+        rootsub=$(sed -n 's/.*\[\/\{0,1\}\(.*\)\]/\1/p' <<<"$rootsrc")
+        snapsrc=$(findmnt -no SOURCE /.snapshots 2>/dev/null)
+        snapsub=$(sed -n 's/.*\[\/\{0,1\}\(.*\)\]/\1/p' <<<"$snapsrc")
+        say "   root: $rootdev  subvolume: ${rootsub:-(top level)}"
+        if [[ -n $snapsub ]]; then say "   /.snapshots: subvolume $snapsub"; else say "   /.snapshots: not a separate mount"; fi
+
+        # 1. snapper config for /
+        if ! installed snapper && (( ! DRY )); then
+            if ask "install snapper?"; then run pacman -S --needed --noconfirm snapper; fi
+        fi
+        if [[ -f /etc/snapper/configs/root ]]; then
+            say "   snapper root config: exists"
+        elif ask "create the snapper config for / ?"; then
+            if [[ -n $snapsub ]]; then
+                # snapper wants to create /.snapshots itself; with a separate @.snapshots
+                # subvolume (archinstall layout) the usual dance is: unmount, let snapper
+                # create its own, delete that, remount the real one.
+                note "/.snapshots is its own subvolume: temporarily unmounting it for snapper"
+                # every step must succeed before the next; above all, the subvolume deleted
+                # below must be the empty one snapper just made, never the real (unmounted) one
+                if run umount /.snapshots && run rmdir /.snapshots && run snapper -c root create-config /; then
+                    if (( DRY )) || ! mountpoint -q /.snapshots; then
+                        run btrfs subvolume delete /.snapshots && run mkdir /.snapshots
+                    fi
+                else
+                    say "   ${B}a step failed${R} -- stopping here so nothing is deleted"
+                fi
+                run mount /.snapshots || say "   could not remount /.snapshots -- run: sudo mount -a"
+            else
+                run snapper -c root create-config /
+            fi
+            run chmod 750 /.snapshots
+        fi
+        if [[ -f /etc/snapper/configs/root ]] || (( DRY )); then
+            note "keep 5 hourly + 7 daily + 10 pacman snapshots, cleaned up automatically"
+            if ask "apply those limits?"; then
+                run snapper -c root set-config TIMELINE_CREATE=yes TIMELINE_CLEANUP=yes \
+                    TIMELINE_LIMIT_HOURLY=5 TIMELINE_LIMIT_DAILY=7 TIMELINE_LIMIT_WEEKLY=0 \
+                    TIMELINE_LIMIT_MONTHLY=0 TIMELINE_LIMIT_YEARLY=0 NUMBER_LIMIT=10 NUMBER_CLEANUP=yes \
+                    ${REAL_USER:+ALLOW_USERS=$REAL_USER SYNC_ACL=yes}
+            fi
+            run systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
+        fi
+
+        # 2. a snapshot before and after every pacman transaction
+        if installed snap-pac; then
+            say "   snap-pac: installed (pacman snapshots on)"
+        elif ask "install snap-pac (snapshot before/after every update)?"; then
+            run pacman -S --needed --noconfirm snap-pac
+        fi
+
+        # 3. boot menu
+        if [[ -f /boot/grub/grub.cfg ]] && installed grub; then
+            say "   bootloader: GRUB"
+            if ask "add snapshots to the GRUB menu (grub-btrfs)?"; then
+                run pacman -S --needed --noconfirm grub-btrfs inotify-tools
+                run systemctl enable --now grub-btrfsd.service
+                run grub-mkconfig -o /boot/grub/grub.cfg
+            fi
+            # read-only snapshots boot much better with a writable overlay in the initramfs
+            hooks=$(grep -E '^HOOKS=' /etc/mkinitcpio.conf 2>/dev/null)
+            if [[ $hooks == *grub-btrfs-overlayfs* ]]; then
+                say "   overlayfs hook: present"
+            elif [[ $hooks == *systemd* ]]; then
+                note "your initramfs uses the systemd hook; grub-btrfs-overlayfs only works with the udev one --"
+                note "snapshots will still boot, but read-only"
+            elif [[ -n $hooks ]]; then
+                note "so a snapshot you boot into is usable (writable on top, nothing saved)"
+                if ask "add the grub-btrfs-overlayfs hook and rebuild the initramfs?"; then
+                    run cp /etc/mkinitcpio.conf /etc/mkinitcpio.conf.bak-rice
+                    run sed -i -E '/^HOOKS=/ s/\)\s*$/ grub-btrfs-overlayfs)/' /etc/mkinitcpio.conf
+                    run mkinitcpio -P
+                fi
+            fi
+        elif installed limine || compgen -G "/boot/limine*.conf" >/dev/null || compgen -G "/boot/EFI/*/limine.conf" >/dev/null; then
+            say "   bootloader: Limine"
+            note "Limine gets snapshot boot entries from the AUR package limine-snapper-sync."
+            note "Its setup depends on how your limine.conf is laid out, so this script only installs it;"
+            note "follow the steps on https://aur.archlinux.org/packages/limine-snapper-sync after that."
+            if [[ -n $REAL_USER ]] && command -v yay &>/dev/null; then
+                if ask "install limine-snapper-sync from the AUR (yay, as $REAL_USER)?"; then
+                    run sudo -u "$REAL_USER" yay -S --needed limine-snapper-sync
+                fi
+            fi
+        elif bootctl is-installed &>/dev/null; then
+            say "   bootloader: systemd-boot"
+            note "systemd-boot cannot list btrfs snapshots in its menu. Snapshots are still taken"
+            note "(hourly/daily + every pacman run) and can be restored from a live USB -- see below."
+            note "For a snapshot boot menu you would need GRUB or Limine instead."
+        else
+            say "   bootloader: not recognised -- snapshots are taken, boot menu entries skipped"
+        fi
+
+        # how to get back
+        section "if an update breaks something"
+        say "   1. reboot and pick a snapshot from the boot menu (GRUB/Limine) -- or boot a live USB"
+        say "   2. if that snapshot works, make it the real system again:"
+        say "        sudo mount -o subvolid=5 $rootdev /mnt"
+        say "        sudo mv /mnt/${rootsub:-@} /mnt/${rootsub:-@}.broken"
+        say "        sudo btrfs subvolume snapshot /mnt/${snapsub:-@.snapshots}/<NUMBER>/snapshot /mnt/${rootsub:-@}"
+        say "        reboot      (later: sudo btrfs subvolume delete /mnt/${rootsub:-@}.broken)"
+        note "list snapshots with:  snapper -c root list"
+    fi
+fi
+
+section "done"
+(( DRY )) && say "   (dry run -- nothing was changed)"
+exit 0

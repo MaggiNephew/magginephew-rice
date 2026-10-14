@@ -1,0 +1,12 @@
+# third-party art / logo packs -- not mine to redistribute
+config/fastfetch/logos/
+config/fastfetch/logos-png/
+config/quickshell/assets/launcher-bg.jpg
+stream-overlays/assets/
+# backups and leftovers
+*.pre-*
+*.bak*
+__pycache__/
+# private -- never publish
+stream-overlays/twitch-config.js
+stream-overlays/test-trigger.js

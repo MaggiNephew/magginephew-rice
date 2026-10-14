@@ -1,0 +1,101 @@
+/* MAGGINEPHEW stream overlays -- shared look (monochrome, matches the rice) */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap");
+
+:root {
+  --white: #ffffff;
+  --gray: #9a9a9a;
+  --dim: #4a4a4a;
+  --line: #2a2a2a;
+  --bg: #000000;
+  --stroke: 5px;                       /* frame thickness on full screens */
+  --sans: "Montserrat", "Inter", "DejaVu Sans", sans-serif;
+  --mono: "3270 Nerd Font", "3270 Nerd Font Mono", "JetBrains Mono", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body { background: transparent; color: var(--white); font-family: var(--sans); }
+body.screen { background: var(--bg); }
+
+/* ---- the logo frame: white box, gap in the bottom edge holding a spaced label ---- */
+.frame {
+  position: relative;
+  border: var(--stroke) solid var(--white);
+  border-bottom: none;
+}
+.frame::before, .frame::after {           /* the two halves of the bottom edge */
+  content: "";
+  position: absolute;
+  bottom: 0;
+  height: var(--stroke);
+  background: var(--white);
+  width: calc(50% - var(--gap, 120px) / 2);
+}
+.frame::before { left: 0; }
+.frame::after { right: 0; }
+.frame .label {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  width: var(--gap, 120px);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;                     /* keeps spaced text optically centred */
+  white-space: nowrap;
+  color: var(--white);
+}
+
+.wordmark { display: block; width: 100%; height: auto; }
+
+/* ---- full-screen scenes ---- */
+.stage {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.stage .frame { width: 1180px; padding: 64px 70px 74px; --gap: 420px; }
+.stage .frame .label { font-size: 26px; }
+.status {
+  margin-top: 84px;
+  font-weight: 800;
+  font-size: 46px;
+  letter-spacing: 0.55em;
+  text-indent: 0.55em;
+}
+.sub {
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 30px;
+  color: var(--gray);
+  letter-spacing: 0.12em;
+  min-height: 1.2em;
+}
+.corner {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+}
+.corner.tl { top: 44px; left: 56px; }
+.corner.tr { top: 44px; right: 56px; }
+.corner.bl { bottom: 44px; left: 56px; }
+.corner.br { bottom: 44px; right: 56px; }
+
+/* the line along the bottom -- same idea as the bar's music line */
+canvas.wave { position: absolute; left: 0; right: 0; bottom: 120px; width: 100%; height: 90px; }
+
+/* entrance */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.stage > * { animation: rise 900ms cubic-bezier(.2,.7,.2,1) both; }
+.stage > *:nth-child(2) { animation-delay: 150ms; }
+.stage > *:nth-child(3) { animation-delay: 300ms; }
+
+/* ---- slow drifting stipple shapes behind full-screen scenes (from your Stream folder) ---- */
+.bg { position: absolute; pointer-events: none; z-index: 0; opacity: var(--o, .14); animation: drift var(--d, 46s) ease-in-out infinite alternate; }
+.stage, .corner, canvas.wave { z-index: 1; }
+@keyframes drift {
+  from { transform: translate(0, 0) rotate(0deg) scale(1); }
+  to   { transform: translate(var(--dx, 40px), var(--dy, -30px)) rotate(var(--r, 14deg)) scale(1.06); }
+}

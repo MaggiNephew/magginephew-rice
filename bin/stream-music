@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+"""stream-music -- put the song-request music (Brave / Nightbot) on its own OBS slider.
+
+  stream-music on       send Brave's sound to "Stream Music" (OBS's Music source picks it up and plays
+                        it to you). Switches back by itself when OBS closes.
+  stream-music off      send Brave back to your speakers now
+  stream-music status
+  stream-music init     just create the (silent) Stream Music output -- done at login
+
+While it is on, all of Brave's sound goes through OBS, so keep other Brave videos paused while live.
+"""
+import json, os, shutil, subprocess, sys, time
+
+SINK = "stream_music"
+DESC = "Stream Music"
+APPS = ("brave", "chromium", "brave-browser")
+STATE = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "stream-music.json")
+
+
+def pactl(*a, check=False):
+    r = subprocess.run(["pactl", *a], capture_output=True, text=True)
+    if check and r.returncode:
+        sys.exit("pactl: " + (r.stderr.strip() or "failed"))
+    return r.stdout.strip()
+
+
+def jlist(what):
+    try:
+        return json.loads(pactl("-f", "json", "list", what) or "[]")
+    except ValueError:
+        return []
+
+
+def sink_exists():
+    return any(s.get("name") == SINK for s in jlist("sinks"))
+
+
+def ensure_sink():
+    if sink_exists():
+        return
+    before = pactl("get-default-sink")
+    # priority 0 so PipeWire never picks this silent output as your default speakers
+    pactl("load-module", "module-null-sink", f"sink_name={SINK}",
+          f"sink_properties='device.description=\"{DESC}\" priority.session=0 priority.driver=0'", check=True)
+    if before and before != SINK and pactl("get-default-sink") == SINK:
+        pactl("set-default-sink", before)
+
+
+def brave_streams():
+    out = []
+    for si in jlist("sink-inputs"):
+        p = si.get("properties", {})
+        name = (p.get("application.name") or "").lower()
+        binary = (p.get("application.process.binary") or "").lower()
+        if any(a in name or a in binary for a in APPS):
+            out.append(si["index"])
+    return out
+
+
+def move_all(target):
+    n = 0
+    for i in brave_streams():
+        pactl("move-sink-input", str(i), target)
+        n += 1
+    return n
+
+
+def default_sink():
+    d = pactl("get-default-sink")
+    if d and d != SINK:
+        return d
+    # the default somehow ended up on Stream Music: pick the real speakers instead
+    real = [s["name"] for s in jlist("sinks") if s.get("name") != SINK and not s.get("name", "").startswith("rice_")]
+    if real:
+        pactl("set-default-sink", real[0])
+        return real[0]
+    return None
+
+
+def obs_running():
+    return subprocess.run(["pgrep", "-x", "obs"],   # the OBS program (Flatpak and normal)
+                          stdout=subprocess.DEVNULL).returncode == 0
+
+
+def save(on):
+    with open(STATE, "w") as f:
+        json.dump({"on": on}, f)
+
+
+def is_on():
+    try:
+        return json.load(open(STATE)).get("on", False)
+    except (OSError, ValueError):
+        return False
+
+
+def watch():
+    """Background: keep new Brave streams on Stream Music while OBS runs; undo when OBS closes."""
+    while is_on():
+        if not obs_running():
+            off(quiet=True)
+            return
+        move_all(SINK)            # catches a new stream when the next song starts
+        time.sleep(3)
+
+
+def on():
+    if not shutil.which("pactl"):
+        sys.exit("needs pactl (pipewire-pulse)")
+    ensure_sink()
+    save(True)
+    n = move_all(SINK)
+    if not obs_running():
+        print("note: OBS isn't open -- you won't hear Brave until it is (or run: stream-music off)")
+    subprocess.Popen([sys.executable, os.path.abspath(__file__), "_watch"], start_new_session=True,
+                     stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print(f"Brave -> Stream Music ({n} stream{'s' if n != 1 else ''} playing now). OBS's Music slider controls it.")
+
+
+def off(quiet=False):
+    save(False)
+    target = default_sink()
+    n = move_all(target) if target else 0
+    if not quiet:
+        print(f"Brave -> your speakers again ({n} stream{'s' if n != 1 else ''})")
+
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "status"
+    if cmd == "on":
+        on()
+    elif cmd == "off":
+        off()
+    elif cmd == "init":
+        ensure_sink()
+    elif cmd == "_watch":
+        watch()
+    elif cmd == "status":
+        print("on" if is_on() else "off", "| Stream Music output:", "present" if sink_exists() else "missing",
+              "| OBS:", "open" if obs_running() else "closed")
+    else:
+        print(__doc__.strip())
+
+
+if __name__ == "__main__":
+    main()

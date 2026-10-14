@@ -1,0 +1,20 @@
+NIGHTBOT COMMANDS -- paste each line into YOUR Twitch chat (Nightbot must be a mod: /mod nightbot)
+Change the parts in <...> first. To edit one later:  !commands edit !name new text
+To remove one:  !commands delete !name
+
+!commands add !discord Join the Discord: <your discord invite link>
+!commands add !socials Find me here: <link 1> | <link 2>
+!commands add !rice Arch Linux + Hyprland, my own black & white Quickshell bar, kitty + 3270 Nerd Font, and a pile of home-made scripts. Built it myself.
+!commands add !setup <your laptop / PC, mic, camera: Elgato Facecam Neo>
+!commands add !lurk $(user) is lurking in the shadows. Enjoy the stream!
+!commands add !uptime Live for $(twitch $(channel) "{{uptimeLength}}")
+!commands add !requests Request a song: !sr <song name or YouTube link>  |  what's playing: !songs current
+!commands add !followage $(user) has been following for $(urlfetch https://decapi.me/twitch/followage/$(channel)/$(user))
+
+TIMERS -- add these in the Nightbot dashboard: Timers -> Add  (they only post if chat is active)
+
+Name: follow       Interval: 20 min   Chat lines: 5
+Message: Enjoying the stream? Hit follow -- it helps a ton. Song requests: !sr <song>  |  Discord: !discord
+
+Name: rice         Interval: 35 min   Chat lines: 8
+Message: Wondering what this desktop is? Type !rice

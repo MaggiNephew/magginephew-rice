@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# boot-splash — pick the Plymouth boot animation and rebuild the boot image.
+#
+#   boot-splash              list options (* = current)
+#   boot-splash <name>       switch: singularity | cube | fade-in (stock), then rebuild
+#
+# Themes live in /usr/share/plymouth/themes/shade-*; their sources and render
+# tools are in ~/Documents/shaders/boot/. Limine also has a "previous splash"
+# entry that boots the image from before these themes existed.
+
+declare -A THEMES=([singularity]=shade-singularity [cube]=shade-cube [fade-in]=fade-in)
+cur=$(plymouth-set-default-theme)
+
+if [[ -z ${1:-} ]]; then
+    for k in singularity cube fade-in; do
+        mark=" "; [[ ${THEMES[$k]} == "$cur" ]] && mark="*"
+        printf '  %s %-12s (%s)\n' "$mark" "$k" "${THEMES[$k]}"
+    done
+    exit 0
+fi
+
+theme=${THEMES[$1]:-}
+[[ -n $theme ]] || { echo "unknown splash: $1 (singularity | cube | fade-in)"; exit 1; }
+[[ -f /usr/share/plymouth/themes/$theme/$theme.plymouth ]] || { echo "theme $theme is not installed"; exit 1; }
+if [[ $theme == "$cur" ]]; then echo "already using $theme"; exit 0; fi
+
+sudo sed -i "s/^Theme=.*/Theme=$theme/" /etc/plymouth/plymouthd.conf
+echo "Boot splash set to $theme — rebuilding the boot image…"
+sudo mkinitcpio -P >/dev/null && echo "Done. It will show on the next boot."

@@ -1,0 +1,136 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Chat</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* Browser source: 420 x 720 (any size works; newest message at the bottom).
+     Reads your Twitch chat without logging in. Options (URL ?query):
+       channel=name   another channel      fade=60   hide messages after 60 s (0 = never)
+       bots=1         also show Nightbot and !commands */
+  body { overflow: hidden; }
+  .box {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 8px;
+    padding: 14px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 70px);   /* old lines fade out at the top */
+  }
+  .msg {
+    background: rgba(0, 0, 0, .72);
+    border-left: 3px solid var(--white);
+    padding: 8px 12px 9px;
+    font-size: 17px; line-height: 1.35; color: #d8d8d8;
+    word-wrap: break-word; overflow-wrap: anywhere;
+    animation: in .35s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .msg.mod  { border-left-color: var(--gray); }
+  .msg.gone { animation: out .4s ease forwards; }
+  .who { font-weight: 800; color: var(--white); letter-spacing: .03em; margin-right: 8px; }
+  .badge { font-family: var(--mono); font-size: 12px; color: var(--bg); background: var(--white); padding: 0 5px; margin-right: 6px; border-radius: 2px; vertical-align: 2px; }
+  .emote { height: 1.6em; vertical-align: middle; margin: -4px 1px; }
+  .action { font-style: italic; }
+  .status { font-family: var(--mono); font-size: 13px; color: var(--gray); opacity: .8; }
+  @keyframes in  { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+  @keyframes out { to { opacity: 0; transform: translateX(-10px); } }
+</style></head>
+<body>
+  <div class="box" id="box"></div>
+  <script src="twitch-config.js" onerror="window.TWITCH = null"></script>
+  <script src="test-listen.js"></script>
+  <script>
+    const q = new URLSearchParams(location.search);
+    const CHANNEL = (q.get("channel") || (window.TWITCH && window.TWITCH.login) || "").toLowerCase();
+    const FADE = parseFloat(q.get("fade") ?? "90") * 1000;
+    const BOTS = q.get("bots") === "1";
+    const HIDE_USERS = new Set(["nightbot", "streamelements", "moobot", "fossabot", "streamlabs", "soundalerts"]);
+    const MAX = 30;
+    const box = document.getElementById("box");
+
+    const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    function withEmotes(text, emotes) {          // emotes tag: id:start-end,start-end/id:...
+      if (!emotes) return esc(text);
+      const parts = [];
+      emotes.split("/").forEach((e) => {
+        const [id, spots] = e.split(":");
+        spots.split(",").forEach((r) => { const [a, b] = r.split("-").map(Number); parts.push([a, b, id]); });
+      });
+      parts.sort((x, y) => x[0] - y[0]);
+      const chars = Array.from(text);            // emote positions count characters, not bytes
+      let out = "", i = 0;
+      for (const [a, b, id] of parts) {
+        out += esc(chars.slice(i, a).join(""));
+        out += `<img class="emote" alt="" src="https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/2.0">`;
+        i = b + 1;
+      }
+      return out + esc(chars.slice(i).join(""));
+    }
+
+    function add({ id = "", user = "", name, text, emotes = "", badges = "", action = false }) {
+      if (!BOTS && (HIDE_USERS.has(user) || text.startsWith("!"))) return;
+      const el = document.createElement("div");
+      el.className = "msg" + (/(broadcaster|moderator)/.test(badges) ? " mod" : "");
+      el.dataset.id = id; el.dataset.user = user;
+      const tag = /broadcaster/.test(badges) ? '<span class="badge">HOST</span>' : /moderator/.test(badges) ? '<span class="badge">MOD</span>' : "";
+      el.innerHTML = `${tag}<span class="who">${esc(name)}</span><span class="${action ? "action" : ""}">${withEmotes(text, emotes)}</span>`;
+      box.appendChild(el);
+      while (box.children.length > MAX) box.firstChild.remove();
+      if (FADE > 0) setTimeout(() => remove(el), FADE);
+    }
+    function remove(el) { if (!el.isConnected) return; el.classList.add("gone"); setTimeout(() => el.remove(), 420); }
+    function status(t) {
+      let el = document.getElementById("status");
+      if (!t) { if (el) el.remove(); return; }
+      if (!el) { el = document.createElement("div"); el.id = "status"; el.className = "status"; box.appendChild(el); }
+      el.textContent = t;
+    }
+
+    // ---- Twitch chat (anonymous, read-only) ----
+    function parse(line) {
+      const m = { tags: {} };
+      if (line.startsWith("@")) {
+        const sp = line.indexOf(" ");
+        line.slice(1, sp).split(";").forEach((kv) => { const i = kv.indexOf("="); m.tags[kv.slice(0, i)] = kv.slice(i + 1).replace(/\\s/g, " "); });
+        line = line.slice(sp + 1);
+      }
+      if (line.startsWith(":")) { const sp = line.indexOf(" "); m.prefix = line.slice(1, sp); line = line.slice(sp + 1); }
+      const t = line.indexOf(" :");
+      m.trailing = t >= 0 ? line.slice(t + 2) : "";
+      const head = (t >= 0 ? line.slice(0, t) : line).split(" ");
+      m.cmd = head[0]; m.params = head.slice(1);
+      return m;
+    }
+    function connect() {
+      if (!CHANNEL) { status("chat: run stream-stats-setup first (or add ?channel=yourname)"); return; }
+      const ws = new WebSocket("wss://irc-ws.chat.twitch.tv:443");
+      ws.onopen = () => {
+        ws.send("CAP REQ :twitch.tv/tags twitch.tv/commands");
+        ws.send("PASS SCHMOOPIIE");
+        ws.send("NICK justinfan" + Math.floor(10000 + Math.random() * 80000));
+        ws.send("JOIN #" + CHANNEL);
+      };
+      ws.onmessage = (ev) => ev.data.split("\r\n").filter(Boolean).forEach((raw) => {
+        const m = parse(raw);
+        if (m.cmd === "PING") return ws.send("PONG :" + m.trailing);
+        if (m.cmd === "JOIN") return status("");
+        if (m.cmd === "PRIVMSG") {
+          let text = m.trailing, action = false;
+          const act = /^\u0001ACTION (.*)\u0001$/.exec(text);
+          if (act) { text = act[1]; action = true; }
+          const user = (m.prefix || "").split("!")[0];
+          add({ id: m.tags.id, user, name: m.tags["display-name"] || user, text, emotes: m.tags.emotes, badges: m.tags.badges || "", action });
+        } else if (m.cmd === "CLEARMSG") {          // a mod deleted one message
+          box.querySelectorAll(`.msg[data-id="${m.tags["target-msg-id"]}"]`).forEach(remove);
+        } else if (m.cmd === "CLEARCHAT") {         // timeout / ban (one user) or /clear (everyone)
+          const who = m.trailing.toLowerCase();
+          box.querySelectorAll(who ? `.msg[data-user="${who}"]` : ".msg").forEach(remove);
+        }
+      });
+      ws.onclose = () => { status("chat: reconnecting…"); setTimeout(connect, 3000); };
+    }
+    connect();
+
+    // stream-test chat
+    window.onStreamTest = (t) => {
+      if (t.type !== "chat") return;
+      (t.lines || []).forEach(([name, text], i) => setTimeout(() => add({ user: name.toLowerCase(), name, text, badges: name === "you" ? "broadcaster/1" : "" }), i * 700));
+    };
+  </script>
+</body></html>

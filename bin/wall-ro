@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# wall-ro -- wallpaper rotate: switch to the next wallpaper in ~/Pictures/wallpapers/daily
+#   wall-ro          next wallpaper now (the daily rotation carries on from it)
+#   wall-ro --list   show the rotation, ▶ marks the current one
+case "${1:-}" in
+    -l|--list) exec "$HOME/.local/bin/wallpaper-daily" --list ;;
+    -h|--help) sed -n '2,4p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *)         "$HOME/.local/bin/wallpaper-daily" --next && "$HOME/.local/bin/wallpaper-daily" --list ;;
+esac

@@ -1,0 +1,468 @@
+#!/usr/bin/env python3
+"""Build a PyCharm theme plugin that matches the monochrome rice.
+
+Palette comes from matugen's output (~/.config/hypr/colors.lua) and kitty's
+ANSI colors. The UI theme and editor scheme are derived from PyCharm's own
+"Islands Dark" (read from the installed jar), recolored to the rice grays:
+  - UI: gray ramp -> neutral grays anchored on bg/container/fg, blue accent -> gray
+  - editor: every syntax color desaturated (luminance kept), keywords/definitions
+    bold white; red/green/yellow kept only for errors, warnings and VCS status
+  - console: kitty's 16 ANSI colors
+
+Re-run after matugen regenerates colors or after a PyCharm update, then restart
+PyCharm.  Usage: pycharm-rice-theme [--no-settings]
+"""
+import colorsys
+import glob
+import io
+import json
+import os
+import re
+import sys
+import xml.etree.ElementTree as ET
+import zipfile
+
+HOME = os.path.expanduser("~")
+IDE_JAR = f"{HOME}/.local/share/JetBrains/Toolbox/apps/pycharm/lib/intellij.platform.ide.impl.jar"
+COLORS_LUA = f"{HOME}/.config/hypr/colors.lua"
+KITTY_CONF = f"{HOME}/.config/kitty/kitty.conf"
+FONT = "3270 Nerd Font Mono"
+FONT_SIZE = "16"
+THEME_ID = "monochrome-rice"
+THEME_NAME = "Monochrome Rice"
+
+
+def latest(pattern):
+    dirs = sorted(glob.glob(pattern))
+    if not dirs:
+        sys.exit(f"not found: {pattern}")
+    return dirs[-1]
+
+
+CONFIG_DIR = latest(f"{HOME}/.config/JetBrains/PyCharm20*")
+PLUGIN_DIR = os.path.join(latest(f"{HOME}/.local/share/JetBrains/PyCharm20*"), THEME_ID)
+
+
+# ---------------------------------------------------------------- palette
+def hexc(r, g, b):
+    return "#%02X%02X%02X" % (round(r), round(g), round(b))
+
+
+def read_matugen():
+    pal = {}
+    for name, r, g, b in re.findall(r"(\w+)\s*=\s*\"rgba\((\d+),\s*(\d+),\s*(\d+)", open(COLORS_LUA).read()):
+        pal[name] = hexc(int(r), int(g), int(b))
+    return pal
+
+
+def read_kitty():
+    ansi = {}
+    for line in open(KITTY_CONF):
+        m = re.match(r"\s*(color\d+|background|foreground|selection_background)\s+(#[0-9a-fA-F]{6})", line)
+        if m:
+            ansi[m.group(1)] = m.group(2).upper()
+    return ansi
+
+
+def mix(a, b, t):
+    """a -> b by t (0..1)."""
+    a, b = [int(a[i:i + 2], 16) for i in (1, 3, 5)], [int(b[i:i + 2], 16) for i in (1, 3, 5)]
+    return hexc(*[x + (y - x) * t for x, y in zip(a, b)])
+
+
+def gray(level):
+    return hexc(level, level, level)
+
+
+def desaturate(rgb6):
+    """RRGGBB[AA] -> neutral gray of the same perceived lightness."""
+    h, alpha = rgb6[:6], rgb6[6:]
+    r, g, b = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    lin = lambda c: c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    y = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+    s = 12.92 * y if y <= 0.0031308 else 1.055 * y ** (1 / 2.4) - 0.055
+    return gray(s * 255)[1:] + alpha
+
+
+M = read_matugen()
+K = read_kitty()
+BG, CONTAINER, FG = M["bg"], M["container"], M["fg"]
+MUTED, OUTLINE, PRIMARY, ON_PRIMARY = M["fg_muted"], M["outline"], M["primary"], M["on_primary"]
+
+# neutral ramp, 10 = window background ... 160 = near white
+# (anchored so 10 = bg, 30 = container, 100 = outline, 150 = fg)
+RAMP = {
+    10: BG, 20: mix(BG, CONTAINER, 0.5), 30: CONTAINER, 40: mix(CONTAINER, OUTLINE, 0.12),
+    50: mix(CONTAINER, OUTLINE, 0.2), 60: mix(CONTAINER, OUTLINE, 0.33), 70: mix(CONTAINER, OUTLINE, 0.5),
+    80: mix(CONTAINER, OUTLINE, 0.68), 90: mix(CONTAINER, OUTLINE, 0.85), 100: OUTLINE,
+    110: mix(OUTLINE, MUTED, 0.4), 120: mix(OUTLINE, MUTED, 0.75), 130: MUTED,
+    140: mix(MUTED, FG, 0.5), 150: FG, 160: mix(FG, PRIMARY, 0.6),
+}
+# readable but still visibly "off"
+TEXT_DISABLED = mix(OUTLINE, MUTED, 0.3)
+# editor/console text is mapped into [TEXT_FLOOR, 1] lightness so nothing is dark
+TEXT_FLOOR = 0.70
+
+
+# ---------------------------------------------------------------- UI theme
+def build_theme(src, parents=()):
+    t = json.loads(src)
+    t.update(name=THEME_NAME, author=os.environ.get("USER", "me"), editorScheme=f"/colors/{THEME_ID}.xml")
+    c = t["colors"]
+    for k in list(c):
+        m = re.match(r"(gray|blue|purple|teal)-(\d+)$", k)
+        if m:
+            c[k] = RAMP[int(m.group(2))]
+    c.update({
+        "transparent": BG + "00",
+        "text-default": FG, "text-muted": FG, "text-secondary": MUTED, "text-disabled": TEXT_DISABLED,
+        "text-over-accent": PRIMARY, "text-over-accent-inverted": PRIMARY, "got-it-text-step": MUTED,
+        "text-link": PRIMARY,
+        "editor-text": K.get("foreground", FG),
+        # accent: mid gray that white text/checkmarks still read on
+        "accent-brand-bg": RAMP[80], "accent-brand-border": RAMP[100],
+        "accent-brand-bg-secondary": RAMP[50], "accent-brand-border-secondary": RAMP[70],
+        "accent-ai-bg": RAMP[30], "accent-ai-border": RAMP[60],
+        "selection-bg-active": RAMP[50], "selection-bg-active-muted": RAMP[40], "selection-bg-inactive": RAMP[40],
+        "tab-selected-bg-active": RAMP[40], "tab-selected-border-active": OUTLINE,
+        "tab-selected-border-inactive": RAMP[60],
+        "toolbar-selected-bg": RAMP[60], "toolbar-selected-bg-hovered": RAMP[70],
+        "got-it-bg": RAMP[50], "got-it-border": RAMP[70], "got-it-text-link": PRIMARY,
+        "presentation-assistant-bg": RAMP[50],
+        "popup-completion-match-text": PRIMARY,
+        "search-match-bg": RAMP[100],
+        "tab-file-color-mask-bg": BG + "80",
+        "icon-default-stroke": RAMP[130],
+    })
+    ui = t["ui"]
+    # Hyprland: rounding 8 (arc = diameter), gaps_in 4 / gaps_out 8
+    ui["Island"].update({"arc": 16, "arc.compact": 12, "borderArcLength": 12, "borderArcLength.compact": 8})
+    # focus ring like the active window border
+    ui["*"]["focusColor"] = OUTLINE
+    # primary buttons: gray with white text (all text stays light)
+    ui.setdefault("Button", {}).setdefault("default", {}).update({
+        "foreground": PRIMARY, "startBackground": RAMP[70], "endBackground": RAMP[70],
+        "startBorderColor": OUTLINE, "endBorderColor": OUTLINE, "focusedBorderColor": BG,
+    })
+    ui["ScrollBar"] = {**ui.get("ScrollBar", {}),
+                       "Transparent.thumbColor": RAMP[60] + "80", "Transparent.hoverThumbColor": RAMP[80] + "B0",
+                       "thumbColor": RAMP[60] + "80", "hoverThumbColor": RAMP[80] + "B0"}
+    # project color gradients / avatars (toolbar + welcome screen) -> gray
+    for k in c:
+        if k.startswith("grad-") and HEX.fullmatch(c[k]):
+            c[k] = "#" + desaturate(c[k][1:])
+    for group in ("RecentProject", "ProjectGradients", "WelcomeScreen"):
+        grayscale_tree(ui.get(group, {}))
+
+    # text keys only set by the parent themes (ExperimentalDark -> Darcula) are
+    # never overridden by Islands; copy them in so the lift below reaches them
+    own = set(flatten(ui))
+    for pui, pcolors in parents:
+        for k, v in flatten(pui).items():
+            if k not in own and isinstance(v, str) and TEXT_KEY.search(k.rsplit(".", 1)[-1]) \
+                    and not re.search(r"(?i)background|border", k.rsplit(".", 1)[-1]):
+                r = pcolors.get(v, v)
+                if isinstance(r, str) and HEX.fullmatch(r):
+                    ui[k] = r
+                    own.add(k)
+    # Jewel/Compose screens (welcome screen, new dialogs) read the numbered
+    # palette inherited from ExperimentalDark: backgrounds low, text high
+    jewel_gray = [BG, CONTAINER, RAMP[40], RAMP[50], RAMP[70], TEXT_DISABLED, MUTED,
+                  mix(MUTED, FG, 0.5), FG, FG, mix(FG, PRIMARY, 0.5), PRIMARY, PRIMARY, PRIMARY]
+    for i, v in enumerate(jewel_gray, 1):
+        c[f"Gray{i}"] = v
+    # the welcome screen subtitle is drawn with gray(1) in dark themes (secondaryFontColor
+    # in WelcomeScreenRightTab); IDE Jewel components take their styles from UI keys,
+    # so the slot is safe to use as text
+    c["Gray1"] = MUTED
+    for i in range(1, 14):
+        c[f"Blue{i}"] = jewel_gray[min(i, 13)]
+    # text keys that live in the LaF .properties files, not in any theme JSON
+    for k in ("Component.infoForeground", "Label.infoForeground", "ContextHelp.foreground",
+              "Label.disabledForeground", "Component.disabledForeground"):
+        ui.setdefault(k, TEXT_DISABLED if "disabled" in k else MUTED)
+    lift_ui_text(ui, c)
+    return json.dumps(t, indent=2)
+
+
+HEX = re.compile(r"#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?")
+# text that should keep its hue
+STATUS_KEY = re.compile(r"(?i)error|warning|exception|success|conflict|expiring|install|trialwidget|"
+                        r"greenOutline|NoConflicts|deleted|added")
+
+
+def flatten(d, p=""):
+    out = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            out.update(flatten(v, f"{p}{k}."))
+        else:
+            out[p + k] = v
+    return out
+
+
+def grayscale_tree(d):
+    for k, v in d.items():
+        if isinstance(v, dict):
+            grayscale_tree(v)
+        elif isinstance(v, str) and HEX.fullmatch(v):
+            d[k] = "#" + desaturate(v[1:])
+
+
+def saturation(h):
+    r, g, b = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    return colorsys.rgb_to_hsv(r, g, b)[1]
+
+
+TEXT_KEY = re.compile(r"(?i)(foreground|text|title|label)[^.]*$")
+DISABLED_KEY = re.compile(r"(?i)disabled|inactive")
+
+
+def lift_ui_text(ui, c):
+    """Every text color resolves to white/near-white; disabled text to a light gray."""
+    def resolve(v):
+        for _ in range(10):
+            if isinstance(v, str) and v in c:
+                v = c[v]
+        return v
+
+    def walk(d):
+        for k, v in d.items():
+            if isinstance(v, dict):
+                walk(v)
+            elif isinstance(v, str) and TEXT_KEY.search(k) and not re.search(r"(?i)background|border", k):
+                r = resolve(v)
+                if not (isinstance(r, str) and HEX.fullmatch(r)):
+                    continue
+                if STATUS_KEY.search(k) and lightness(r) >= 0.4:    # readable status color: keep hue
+                    continue
+                if lightness(r) < 0.6:
+                    d[k] = TEXT_DISABLED if DISABLED_KEY.search(k) else FG
+                elif saturation(r) > 0.25:      # blue links, match highlights, ...
+                    d[k] = PRIMARY
+    walk(ui)
+
+
+def lightness(h):
+    h = h.lstrip("#")
+    return (0.299 * int(h[0:2], 16) + 0.587 * int(h[2:4], 16) + 0.114 * int(h[4:6], 16)) / 255
+
+
+# ---------------------------------------------------------------- editor scheme
+# colors that must stay colored to stay useful
+KEEP = re.compile(r"ERROR|WARNING|WRONG|BAD_CHARACTER|DEPRECATED|FILESTATUS|ADDED|DELETED|MODIFIED|DIFF|"
+                  r"VCS|CONFLICT|BREAKPOINT|EXECUTIONPOINT|MERGE|RUNTIME_ERROR|TYPO|GRAMMAR|STYLE_", re.I)
+
+ATTR = {
+    # name: (foreground, font_type)   font_type: 0 plain, 1 bold, 2 italic, 3 bold italic
+    "DEFAULT_KEYWORD": (PRIMARY, 1),
+    "DEFAULT_FUNCTION_DECLARATION": (PRIMARY, 1),
+    "DEFAULT_CLASS_NAME": (PRIMARY, 1),
+    "DEFAULT_FUNCTION_CALL": (FG, 0),
+    "DEFAULT_IDENTIFIER": (K.get("foreground", FG), 0),
+    "DEFAULT_STRING": (RAMP[110], 0),
+    "DEFAULT_VALID_STRING_ESCAPE": (RAMP[140], 1),
+    "DEFAULT_NUMBER": (RAMP[140], 0),
+    "DEFAULT_CONSTANT": (RAMP[140], 2),
+    "DEFAULT_LINE_COMMENT": (RAMP[80], 2),
+    "DEFAULT_BLOCK_COMMENT": (RAMP[80], 2),
+    "DEFAULT_DOC_COMMENT": (RAMP[90], 2),
+    "DEFAULT_METADATA": (RAMP[100], 0),
+    "DEFAULT_PARAMETER": (RAMP[140], 0),
+    "DEFAULT_OPERATION_SIGN": (RAMP[110], 0),
+    "DEFAULT_PREDEFINED_SYMBOL": (RAMP[130], 2),
+    "PY.KEYWORD": (PRIMARY, 1),
+    "PY.FUNC_DEFINITION": (PRIMARY, 1),
+    "PY.CLASS_DEFINITION": (PRIMARY, 1),
+    "PY.DECORATOR": (RAMP[100], 0),
+    "PY.BUILTIN_NAME": (RAMP[130], 2),
+    "PY.PREDEFINED_DEFINITION": (RAMP[130], 0),
+    "PY.PREDEFINED_USAGE": (RAMP[130], 0),
+    "PY.SELF_PARAMETER": (RAMP[100], 2),
+    "PY.KEYWORD_ARGUMENT": (RAMP[120], 0),
+    "PY.STRING.B": (RAMP[110], 0),
+    "PY.STRING.U": (RAMP[110], 0),
+    "PY.FSTRING_FRAGMENT_BRACES": (PRIMARY, 1),
+}
+
+COLORS = {
+    "CARET_COLOR": PRIMARY[1:], "CARET_ROW_COLOR": RAMP[20][1:],
+    "CONSOLE_BACKGROUND_KEY": BG[1:], "LOOKUP_COLOR": RAMP[30][1:], "DOCUMENTATION_COLOR": RAMP[30][1:],
+    "LINE_NUMBERS_COLOR": RAMP[60][1:], "LINE_NUMBER_ON_CARET_ROW_COLOR": MUTED[1:],
+    "INDENT_GUIDE": RAMP[40][1:], "SELECTED_INDENT_GUIDE": RAMP[70][1:], "VISUAL_INDENT_GUIDE": RAMP[30][1:],
+    "RIGHT_MARGIN_COLOR": RAMP[40][1:], "METHOD_SEPARATORS_COLOR": RAMP[50][1:],
+    "SELECTION_BACKGROUND": RAMP[60][1:], "SELECTION_FOREGROUND": "",
+    "NOTIFICATION_BACKGROUND": RAMP[40][1:], "PROMOTION_PANE": RAMP[40][1:], "QUESTION_HINT": RAMP[40][1:],
+    "INFORMATION_HINT": RAMP[30][1:], "HINT_BORDER": RAMP[60][1:],
+}
+
+# kitty ANSI -> console
+ANSI = ["BLACK", "RED", "GREEN", "YELLOW", "BLUE", "MAGENTA", "CYAN", "WHITE"]
+
+
+def set_attr(attrs, name, fg=None, font=None, bg=None):
+    opt = attrs.find(f"option[@name='{name}']")
+    if opt is None:
+        opt = ET.SubElement(attrs, "option", name=name)
+    opt.attrib.pop("baseAttributes", None)
+    val = opt.find("value")
+    if val is None:
+        val = ET.SubElement(opt, "value")
+    for key, v in (("FOREGROUND", fg), ("FONT_TYPE", font), ("BACKGROUND", bg)):
+        if v is None:
+            continue
+        o = val.find(f"option[@name='{key}']")
+        if o is None:
+            o = ET.SubElement(val, "option", name=key)
+        o.set("value", str(v).lstrip("#"))
+
+
+def build_scheme(src):
+    root = ET.fromstring(src)
+    root.set("name", THEME_NAME)
+    root.set("parent_scheme", "Darcula")
+
+    # 1. desaturate everything that isn't a status color
+    for section in ("colors", "attributes"):
+        for opt in root.find(section):
+            name = opt.get("name", "")
+            if KEEP.search(name):
+                continue
+            nodes = [opt] if section == "colors" else opt.iter("option")
+            for n in nodes:
+                v = n.get("value", "")
+                if re.fullmatch(r"[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?", v) and n.get("name") != "FONT_TYPE" \
+                        and n.get("name") != "EFFECT_TYPE":
+                    n.set("value", desaturate(v))
+                for cb in ("deuteranopia", "protanopia"):
+                    n.attrib.pop(cb, None)
+
+    # 2. rice backgrounds / chrome
+    colors = root.find("colors")
+    for name, v in COLORS.items():
+        o = colors.find(f"option[@name='{name}']")
+        if o is None:
+            o = ET.SubElement(colors, "option", name=name)
+        o.set("value", v)
+
+    # 3. syntax
+    attrs = root.find("attributes")
+    set_attr(attrs, "TEXT", fg=K.get("foreground", FG), bg=BG)
+    for name, (fg, font) in ATTR.items():
+        set_attr(attrs, name, fg=fg, font=font)
+    set_attr(attrs, "IDENTIFIER_UNDER_CARET_ATTRIBUTES", bg=RAMP[40])
+    set_attr(attrs, "WRITE_IDENTIFIER_UNDER_CARET_ATTRIBUTES", bg=RAMP[50])
+    set_attr(attrs, "SEARCH_RESULT_ATTRIBUTES", bg=RAMP[70])
+    set_attr(attrs, "TEXT_SEARCH_RESULT_ATTRIBUTES", bg=RAMP[70])
+    set_attr(attrs, "MATCHED_BRACE_ATTRIBUTES", fg=PRIMARY, font=1, bg=RAMP[50])
+
+    # 4. console = kitty
+    for i, n in enumerate(ANSI):
+        if f"color{i}" in K:
+            set_attr(attrs, f"CONSOLE_{n}_OUTPUT", fg=K[f"color{i}"])
+        if f"color{i + 8}" in K:
+            set_attr(attrs, f"CONSOLE_{n}_BRIGHT_OUTPUT", fg=K[f"color{i + 8}"])
+    set_attr(attrs, "CONSOLE_NORMAL_OUTPUT", fg=K.get("foreground", FG))
+    set_attr(attrs, "CONSOLE_GRAY_OUTPUT", fg=K.get("color8", RAMP[70]))
+    set_attr(attrs, "CONSOLE_DARKGRAY_OUTPUT", fg=K.get("color8", RAMP[70]))
+    set_attr(attrs, "CONSOLE_SYSTEM_OUTPUT", fg=RAMP[100])
+    set_attr(attrs, "CONSOLE_USER_INPUT", fg=PRIMARY, font=0)
+
+    # 5. no dark text: map every non-status text color into [TEXT_FLOOR, 1]
+    #    (order is kept, so white keywords > strings > comments still reads)
+    for opt in attrs:
+        name = opt.get("name", "")
+        if KEEP.search(name) or "COVERAGE" in name:
+            continue
+        for n in opt.iter("option"):
+            v = n.get("value", "")
+            if n.get("name") == "FOREGROUND" and re.fullmatch(r"[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?", v):
+                level = TEXT_FLOOR + (1 - TEXT_FLOOR) * lightness(desaturate(v))
+                n.set("value", gray(level * 255)[1:] + v[6:])
+    for name, v in (("LINE_NUMBERS_COLOR", TEXT_DISABLED), ("LINE_NUMBER_ON_CARET_ROW_COLOR", PRIMARY),
+                    ("ANNOTATIONS_COLOR", MUTED)):
+        colors.find(f"option[@name='{name}']").set("value", v[1:])
+
+    ET.indent(root, "    ")
+    return ET.tostring(root, encoding="unicode")
+
+
+PLUGIN_XML = f"""<idea-plugin>
+  <id>local.{THEME_ID}</id>
+  <name>{THEME_NAME} Theme</name>
+  <version>1.0.0</version>
+  <vendor>local</vendor>
+  <description>Monochrome theme generated from the desktop rice (matugen + kitty) by ~/.local/bin/pycharm-rice-theme.</description>
+  <idea-version since-build="252"/>
+  <depends>com.intellij.modules.platform</depends>
+  <extensions defaultExtensionNs="com.intellij">
+    <themeProvider id="{THEME_ID}" path="/themes/{THEME_ID}.theme.json"/>
+  </extensions>
+</idea-plugin>
+"""
+
+
+# ---------------------------------------------------------------- IDE settings
+def write_option_file(name, content):
+    path = os.path.join(CONFIG_DIR, "options", name)
+    if os.path.exists(path) and not os.path.exists(path + ".pre-rice"):
+        os.rename(path, path + ".pre-rice")
+    with open(path, "w") as f:
+        f.write(content)
+
+
+def font_file(component):
+    return f"""<application>
+  <component name="{component}">
+    <option name="VERSION" value="1" />
+    <option name="FONT_FAMILY" value="{FONT}" />
+    <option name="FONT_SIZE" value="{FONT_SIZE}" />
+    <option name="FONT_REGULAR_SUB_FAMILY" value="Regular" />
+    <option name="FONT_BOLD_SUB_FAMILY" value="Bold" />
+    <option name="LINE_SPACING" value="1.2" />
+  </component>
+</application>
+"""
+
+
+def main():
+    with zipfile.ZipFile(IDE_JAR) as z:
+        theme_src = z.read("themes/islands/ManyIslandsDark.theme.json").decode()
+        parents = []
+        for name in ("themes/expUI/expUI_dark.theme.json", "themes/darcula.theme.json"):
+            pt = json.loads(z.read(name))
+            parents.append((pt.get("ui", {}), pt.get("colors", {})))
+        scheme_src = z.read("themes/islands/IslandSchemeDark.xml").decode()
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("META-INF/plugin.xml", PLUGIN_XML)
+        z.writestr(f"themes/{THEME_ID}.theme.json", build_theme(theme_src, parents))
+        z.writestr(f"colors/{THEME_ID}.xml", build_scheme(scheme_src))
+    os.makedirs(os.path.join(PLUGIN_DIR, "lib"), exist_ok=True)
+    jar = os.path.join(PLUGIN_DIR, "lib", f"{THEME_ID}.jar")
+    with open(jar, "wb") as f:
+        f.write(buf.getvalue())
+    print(f"theme plugin: {jar}")
+
+    if "--no-settings" not in sys.argv:
+        write_option_file("laf.xml", f"""<application>
+  <component name="LafManager" autodetect="false">
+    <laf themeId="{THEME_ID}" />
+  </component>
+</application>
+""")
+        write_option_file("colors.scheme.xml", f"""<application>
+  <component name="EditorColorsManagerImpl">
+    <global_color_scheme name="{THEME_NAME}" />
+  </component>
+</application>
+""")
+        write_option_file("editor-font.xml", font_file("DefaultFont"))
+        write_option_file("console-font.xml", font_file("ConsoleFont"))
+        print(f"settings: theme + scheme + {FONT} {FONT_SIZE} selected in {CONFIG_DIR}/options")
+    print("restart PyCharm to apply")
+
+
+if __name__ == "__main__":
+    main()

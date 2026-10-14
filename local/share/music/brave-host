@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+"""Native messaging helper for the "Local music" browser extension.
+
+Brave starts this when the extension's button is used; it speaks Chrome's native messaging
+protocol (4-byte length + JSON on stdin/stdout). Downloads run as separate `music get --job`
+processes so they keep going after the popup closes.
+
+  {"cmd": "ping"}                                   -> what is installed
+  {"cmd": "check", "id": VIDEO_ID}                  -> is it already in the library?
+  {"cmd": "add", "url": U, "id": V, "artist": A, "title": T, "force": false}  -> start a download
+  {"cmd": "status", "job": JOB}                     -> progress of a download
+  {"cmd": "play", "id": VIDEO_ID}                   -> play the library copy
+  {"cmd": "open"}                                   -> open the music player in kitty
+"""
+import importlib.util, json, os, re, shutil, struct, subprocess, sys, time
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, HERE)
+import musiclib as M  # noqa: E402
+
+MUSIC = os.path.join(HERE, "music")
+ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
+
+
+def read_msg():
+    raw = sys.stdin.buffer.read(4)
+    if len(raw) < 4:
+        return None
+    n = struct.unpack("=I", raw)[0]
+    return json.loads(sys.stdin.buffer.read(n).decode("utf-8"))
+
+
+def send(obj):
+    data = json.dumps(obj, ensure_ascii=False).encode("utf-8")
+    sys.stdout.buffer.write(struct.pack("=I", len(data)) + data)
+    sys.stdout.buffer.flush()
+
+
+def env():
+    e = dict(os.environ)
+    home = os.path.expanduser("~")
+    e["PATH"] = os.pathsep.join([os.path.join(home, ".local", "bin"), "/usr/local/bin", "/usr/bin", "/bin",
+                                 e.get("PATH", "")])
+    return e
+
+
+def spawn(argv):
+    subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                     start_new_session=True, env=env(), cwd=os.path.expanduser("~"))
+
+
+def title_of(path):
+    t = M.read_tags(path)
+    return (t["title"] or os.path.basename(path)) + (f" — {t['artist']}" if t["artist"] else "")
+
+
+def handle(m):
+    cmd = m.get("cmd")
+    if cmd == "ping":
+        return {"ok": True, "ready": {
+            "yt-dlp": importlib.util.find_spec("yt_dlp") is not None or bool(shutil.which("yt-dlp")),
+            "mutagen": M._mutagen(), "mpv": bool(shutil.which("mpv"))}}
+
+    vid = m.get("id", "")
+    if vid and not ID.match(vid):
+        return {"ok": False, "error": "bad video id"}
+
+    if cmd == "check":
+        p = M.source_path(vid)
+        return {"ok": True, "inLibrary": bool(p), "path": p, "title": title_of(p) if p else ""}
+
+    if cmd == "add":
+        url = m.get("url", "")
+        if not re.match(r"^https://(www\.|music\.)?youtube\.com/watch\?v=[A-Za-z0-9_-]{11}$", url):
+            return {"ok": False, "error": "not a single-song YouTube link"}
+        if not m.get("force"):
+            p = M.source_path(vid)
+            if p:
+                return {"ok": True, "already": True, "path": p, "title": title_of(p)}
+        job = f"{vid}-{int(time.time())}"
+        argv = [MUSIC, "get", url, "--job", job]
+        for k in ("artist", "title"):
+            v = (m.get(k) or "").strip()
+            if v:
+                argv += ["--" + k, v[:200]]
+        spawn(argv)
+        return {"ok": True, "job": job}
+
+    if cmd == "status":
+        job = "".join(ch for ch in m.get("job", "") if ch.isalnum() or ch in "-_")
+        try:
+            with open(os.path.join(M.JOBS_DIR, job + ".json"), encoding="utf-8") as f:
+                st = json.load(f)
+        except (OSError, ValueError):
+            st = {"state": "running", "msg": "starting…", "pct": 0}
+        return {"ok": True, **st}
+
+    if cmd == "play":
+        p = M.source_path(vid)
+        if not p:
+            return {"ok": False, "error": "not in the library"}
+        spawn([MUSIC, "play", p])
+        return {"ok": True}
+
+    if cmd == "open":
+        term = shutil.which("kitty", path=env()["PATH"])
+        if not term:
+            return {"ok": False, "error": "kitty not found"}
+        spawn([term, "--class", "music", "-e", MUSIC])
+        return {"ok": True}
+
+    return {"ok": False, "error": f"unknown command {cmd!r}"}
+
+
+def main():
+    while True:
+        try:
+            m = read_msg()
+        except Exception as e:
+            send({"ok": False, "error": f"bad message: {e}"})
+            return
+        if m is None:
+            return
+        try:
+            send(handle(m))
+        except Exception as e:
+            send({"ok": False, "error": str(e)})
+
+
+if __name__ == "__main__":
+    main()

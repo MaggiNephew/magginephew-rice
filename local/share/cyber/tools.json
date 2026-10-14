@@ -1,0 +1,7829 @@
+{
+"generated": 1791863712.9621515,
+"tools": [
+{
+"name": "3proxy",
+"version": "0.9.6-1",
+"desc": "Tiny free proxy server.",
+"url": "https://github.com/3proxy/3proxy",
+"cats": [
+"proxy"
+],
+"stars": 5485,
+"explicit": true,
+"bins": [
+"3proxy",
+"ftppr",
+"mycrypt",
+"pop3p",
+"socks",
+"tcppm",
+"tlspr",
+"udppm"
+],
+"man": [
+"3proxy",
+"3proxy-proxy",
+"ftppr",
+"pop3p",
+"smtpp",
+"socks",
+"tcppm",
+"tlspr",
+"udppm"
+],
+"paths": []
+},
+{
+"name": "above",
+"version": "1:v2.8.1.r0.g313f550-1",
+"desc": "Network Protocols Sniffer.",
+"url": "https://github.com/casterbyte/Above",
+"cats": [
+"fingerprint",
+"networking",
+"recon",
+"scanner",
+"sniffer",
+"voip"
+],
+"stars": 872,
+"explicit": true,
+"bins": [
+"above"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ace",
+"version": "1.11-1",
+"desc": "A simple yet powerful VoIP Corporate Directory enumeration tool that mimics the behavior of an IP Phone in order to download the name and extension entries that a given phone can display on its screen interface.",
+"url": "https://ucsniff.sourceforge.net/ace.html",
+"cats": [
+"voip"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"ace"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "adversarial-robustness-toolbox",
+"version": "1.20.1.r155.g23539e2-2",
+"desc": "Python Library for Machine Learning Security.",
+"url": "https://github.com/Trusted-AI/adversarial-robustness-toolbox",
+"cats": [
+"ai",
+"defensive"
+],
+"stars": 6243,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "afflib",
+"version": "3.7.22-2",
+"desc": "An extensible open format for the storage of disk images and related forensic information.",
+"url": "https://github.com/sshock/AFFLIBv3",
+"cats": [
+"forensic"
+],
+"stars": 94,
+"explicit": false,
+"bins": [
+"affcat",
+"affcompare",
+"affconvert",
+"affcopy",
+"affcrypto",
+"affdiskprint",
+"affinfo",
+"affix",
+"affrecover",
+"affsegment",
+"affsign",
+"affstats",
+"affuse",
+"affverify",
+"affxml"
+],
+"man": [
+"affcat",
+"affcompare",
+"affconvert",
+"affcopy",
+"affcrypto",
+"affdiskprint",
+"affinfo",
+"affix",
+"affrecover",
+"affsegment",
+"affsign",
+"affstats",
+"affuse",
+"affverify",
+"affxml"
+],
+"paths": []
+},
+{
+"name": "aimap",
+"version": "1.1.1-1",
+"desc": "Security scanner and fingerprinter for AI/ML infrastructure. Identifies 23 service types including LLMs, vector databases, and model servers.",
+"url": "https://github.com/Nicholas-Kloster/aimap",
+"cats": [
+"ai",
+"networking",
+"recon",
+"scanner"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"aimap"
+],
+"man": [
+"aimap"
+],
+"paths": []
+},
+{
+"name": "airgeddon",
+"version": "1:v12.02.r0.g700ad7d-1",
+"desc": "Multi-use bash script for Linux systems to audit wireless networks.",
+"url": "https://github.com/v1s1t0r1sh3r3/airgeddon",
+"cats": [
+"automation",
+"wireless"
+],
+"stars": 8030,
+"explicit": true,
+"bins": [
+"airgeddon"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "airspyhf",
+"version": "1.6.8.r75.g24fe8ff-1",
+"desc": "Host code for AirspyHF+ SDR.",
+"url": "https://airspy.com",
+"cats": [
+"radio",
+"wireless"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"airspyhf_calibrate",
+"airspyhf_gpio",
+"airspyhf_info",
+"airspyhf_lib_version",
+"airspyhf_rx"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "amap",
+"version": "2:5.4-1",
+"desc": "Next-generation tool for assisting network penetration testing.",
+"url": "http://freeworld.thc.org/releases.php",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"amap",
+"amap6",
+"amapcrap"
+],
+"man": [
+"amap"
+],
+"paths": []
+},
+{
+"name": "amass",
+"version": "3:v5.1.1.r0.g79299dc-1",
+"desc": "In-depth subdomain enumeration written in Go.",
+"url": "https://github.com/OWASP/Amass",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 15236,
+"explicit": true,
+"bins": [
+"amass"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "androguard",
+"version": "3:3.3.5-6",
+"desc": "Reverse engineering, Malware and goodware analysis of Android applications and more.",
+"url": "https://github.com/androguard/androguard",
+"cats": [
+"binary",
+"disassembler",
+"malware"
+],
+"stars": 6300,
+"explicit": true,
+"bins": [
+"androguard",
+"androarsc",
+"androaxml",
+"androcg",
+"androdd",
+"androdis",
+"androgui",
+"androlyze",
+"androsign"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "android-apktool",
+"version": "2.7.0-1",
+"desc": "A tool for reverse engineering Android apk files.",
+"url": "https://github.com/iBotPeaches/Apktool/releases",
+"cats": [
+"disassembler",
+"reversing"
+],
+"stars": 25680,
+"explicit": true,
+"bins": [
+"apktool"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "android-backup-extractor",
+"version": "latest.r0.g38fd634-1",
+"desc": "Android backup extractor",
+"url": "https://github.com/nelenkov/android-backup-extractor",
+"cats": [
+"mobile"
+],
+"stars": 2586,
+"explicit": true,
+"bins": [
+"abe"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "apkid",
+"version": "2:3.0.0-1",
+"desc": "Android Application Identifier for Packers, Protectors, Obfuscators and Oddities.",
+"url": "https://github.com/rednaga/APKiD",
+"cats": [
+"mobile"
+],
+"stars": 2578,
+"explicit": true,
+"bins": [
+"apkid"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "apkleaks",
+"version": "v2.6.3.r2.gdd5271a-2",
+"desc": "Scanning APK file for URIs, endpoints & secrets.",
+"url": "https://github.com/dwisiswant0/apkleaks",
+"cats": [
+"misc",
+"mobile"
+],
+"stars": 6313,
+"explicit": true,
+"bins": [
+"apkleaks"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "arachni",
+"version": "1.6.1.3.5.g9cd73f254-1",
+"desc": "A feature-full, modular, high-performance Ruby framework aimed towards helping penetration testers and administrators evaluate the security of web applications.",
+"url": "https://www.arachni-scanner.com",
+"cats": [
+"webapp"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"arachni",
+"arachni-console",
+"arachni-multi",
+"arachni-reporter",
+"arachni-rest-server",
+"arachni-restore",
+"arachni-rpc",
+"arachni-rpcd",
+"arachni-rpcd-monitor",
+"arachni-script"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "arpspoof-smikims",
+"version": "31.ef5f0b1-4",
+"desc": "Performs an ARP spoofing attack using the Linux kernel's raw sockets.",
+"url": "https://github.com/smikims/arpspoof",
+"cats": [
+"exploitation",
+"networking",
+"spoof"
+],
+"stars": 194,
+"explicit": true,
+"bins": [
+"arpspoof-smikims",
+"arpspoof-smikims-cage",
+"arpspoof-smikims-sweep"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "assetnote-wordlists",
+"version": "183.6dea231-1",
+"desc": "Assetnote generated wordlists.",
+"url": "https://github.com/assetnote/wordlists",
+"cats": [
+"wordlist"
+],
+"stars": 1732,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/assetnote-wordlists"
+]
+},
+{
+"name": "autopsy",
+"version": "1:4.23.1-1",
+"desc": "The forensic browser. A GUI for the Sleuth Kit.",
+"url": "https://github.com/sleuthkit/autopsy",
+"cats": [
+"forensic"
+],
+"stars": 3354,
+"explicit": true,
+"bins": [
+"autopsy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "autorecon",
+"version": "297.e7e98f6-2",
+"desc": "A multi-threaded network reconnaissance tool which performs automated enumeration of services.",
+"url": "https://github.com/Tib3rius/AutoRecon",
+"cats": [
+"automation",
+"recon",
+"scanner"
+],
+"stars": 6121,
+"explicit": true,
+"bins": [
+"autorecon"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "autosploit",
+"version": "1:v4.0.r2.g9a6a5ef-1",
+"desc": "Automate the exploitation of remote hosts.",
+"url": "https://github.com/NullArray/AutoSploit",
+"cats": [
+"automation",
+"exploitation"
+],
+"stars": 5256,
+"explicit": true,
+"bins": [
+"autosploit"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "avaloniailspy",
+"version": "1:v7.2.rc.r11.g21d4939-1",
+"desc": ".NET Decompiler (port of ILSpy)",
+"url": "https://github.com/icsharpcode/AvaloniaILSpy",
+"cats": [
+"decompiler"
+],
+"stars": 1811,
+"explicit": true,
+"bins": [
+"avaloniailspy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "backdoor-apk",
+"version": "141.2710126-1",
+"desc": "Shell script that simplifies the process of adding a backdoor to any Android APK file",
+"url": "https://github.com/dana-at-cp/backdoor-apk",
+"cats": [
+"backdoor",
+"mobile"
+],
+"stars": 2368,
+"explicit": true,
+"bins": [
+"backdoor-apk"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "backdoor-factory",
+"version": "1:210.0c53045-3",
+"desc": "Patch win32/64 binaries with shellcode.",
+"url": "https://github.com/secretsquirrel/the-backdoor-factory",
+"cats": [
+"backdoor",
+"binary"
+],
+"stars": 3438,
+"explicit": true,
+"bins": [
+"backdoor-factory"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bbot",
+"version": "3:v3.0.2.r0.ga6fb827-1",
+"desc": "Multipurpose scanner built to automate your Recon, Bug Bounties, and ASM.",
+"url": "https://github.com/blacklanternsecurity/bbot",
+"cats": [
+"recon"
+],
+"stars": 10639,
+"explicit": true,
+"bins": [
+"bbot"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bdfproxy",
+"version": "107.276c367-1",
+"desc": "Patch Binaries via MITM: BackdoorFactory + mitmProxy",
+"url": "https://github.com/secretsquirrel/BDFProxy",
+"cats": [
+"binary",
+"proxy"
+],
+"stars": 1016,
+"explicit": true,
+"bins": [
+"bdfproxy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "beef",
+"version": "2:v0.6.0.0.r451.gebca028-1",
+"desc": "The Browser Exploitation Framework that focuses on the web browser.",
+"url": "https://github.com/beefproject/beef",
+"cats": [
+"exploitation"
+],
+"stars": 11037,
+"explicit": true,
+"bins": [
+"beef"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "beeswarm",
+"version": "1183.db51ea0-8",
+"desc": "Honeypot deployment made easy.",
+"url": "https://github.com/honeynet/beeswarm/",
+"cats": [
+"honeypot"
+],
+"stars": 237,
+"explicit": true,
+"bins": [
+"beeswarm"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "binnavi",
+"version": "6.1.0-3",
+"desc": "A binary analysis IDE that allows to inspect, navigate, edit and annotate control flow graphs and call graphs of disassembled code.",
+"url": "https://github.com/google/binnavi",
+"cats": [
+"binary",
+"disassembler",
+"reversing"
+],
+"stars": 2884,
+"explicit": true,
+"bins": [
+"binnavi"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bkcrack",
+"version": "v1.8.1.r53.g980b9ad-1",
+"desc": "Crack legacy zip encryption with Biham and Kocher known plaintext attack.",
+"url": "https://github.com/kimci86/bkcrack",
+"cats": [
+"cracker"
+],
+"stars": 2205,
+"explicit": true,
+"bins": [
+"bkcrack"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "blacknurse",
+"version": "12.934b6a2-1",
+"desc": "A low bandwidth ICMP attack that is capable of doing denial of service to well known firewalls.",
+"url": "https://github.com/jedisct1/blacknurse",
+"cats": [
+"dos"
+],
+"stars": 172,
+"explicit": true,
+"bins": [
+"blacknurse"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "blindsql",
+"version": "1.0-3",
+"desc": "Set of bash scripts for blind SQL injection attacks.",
+"url": "http://www.enye-sec.org/programas.html",
+"cats": [
+"database"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"sqlcheck",
+"sqldata"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bloodhound",
+"version": "1:v4.3.1.r61.ge8eda86-1",
+"desc": "Six Degrees of Domain Admin",
+"url": "https://github.com/SpecterOps/BloodHound-Legacy",
+"cats": [
+"recon",
+"windows"
+],
+"stars": 10613,
+"explicit": true,
+"bins": [
+"bloodhound"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "blue-hydra",
+"version": "710.1c2372d-3",
+"desc": "A Bluetooth device discovery service built on top of the bluez library.",
+"url": "https://github.com/pwnieexpress/blue_hydra",
+"cats": [
+"bluetooth",
+"scanner"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"blue-hydra"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bluebox-ng",
+"version": "1:1.1.0-6",
+"desc": "A GPL VoIP/UC vulnerability scanner.",
+"url": "https://github.com/jesusprubio/bluebox-ng",
+"cats": [
+"fuzzer",
+"scanner",
+"voip"
+],
+"stars": 264,
+"explicit": true,
+"bins": [
+"bluebox-ng"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bluebugger",
+"version": "0.1-4",
+"desc": "An implementation of the bluebug technique which was discovered by Martin Herfurt.",
+"url": "http://packetstormsecurity.com/files/54024/bluebugger-0.1.tar.gz.html",
+"cats": [
+"bluetooth"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"bluebugger"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bluediving",
+"version": "0.9-8",
+"desc": "A Bluetooth penetration testing suite.",
+"url": "http://bluediving.sourceforge.net/",
+"cats": [
+"bluetooth"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"bluediving-bdaddr",
+"bluedivingNG.pl",
+"atshell",
+"attest",
+"btftp",
+"btobex",
+"greenplaque",
+"hcidump-crash",
+"hstest",
+"l2cap-packet",
+"l2cap_headersize_overflow",
+"rfcomm_shell"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bluefog",
+"version": "0.0.4-3",
+"desc": "A tool that can generate an essentially unlimited number of phantom Bluetooth devices.",
+"url": "",
+"cats": [
+"bluetooth"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"bluefog"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bluepot",
+"version": "0.2-1",
+"desc": "A Bluetooth Honeypot written in Java, it runs on Linux.",
+"url": "https://github.com/andrewmichaelsmith/bluepot",
+"cats": [
+"bluetooth",
+"honeypot"
+],
+"stars": 279,
+"explicit": true,
+"bins": [
+"bluepot"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bluphish",
+"version": "9.a7200bd-2",
+"desc": "Bluetooth device and service discovery tool that can be used for security assessment and penetration testing.",
+"url": "https://github.com/olivo/BluPhish",
+"cats": [
+"bluetooth"
+],
+"stars": 16,
+"explicit": true,
+"bins": [
+"bluphish"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bonesi",
+"version": "12.733c9e9-1",
+"desc": "The DDoS Botnet Simulator.",
+"url": "https://github.com/Markus-Go/bonesi",
+"cats": [
+"dos"
+],
+"stars": 775,
+"explicit": true,
+"bins": [
+"bonesi"
+],
+"man": [
+"bonesi"
+],
+"paths": []
+},
+{
+"name": "boofuzz",
+"version": "v0.4.2.r44.g41a808e-1",
+"desc": "None",
+"url": "https://github.com/jtpereyda/boofuzz",
+"cats": [
+"fuzzer"
+],
+"stars": 2361,
+"explicit": true,
+"bins": [
+"boofuzz"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "box-js",
+"version": "859.f4bb994-1",
+"desc": "A tool for studying JavaScript malware.",
+"url": "https://github.com/CapacitorSet/box-js",
+"cats": [
+"malware"
+],
+"stars": 674,
+"explicit": true,
+"bins": [
+"box-js"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "brute-force",
+"version": "52.78d1d8e-9",
+"desc": "Brute-Force attack tool for Gmail Hotmail Twitter Facebook Netflix.",
+"url": "https://github.com/Matrix07ksa/Brute_Force",
+"cats": [
+"cracker",
+"social",
+"webapp"
+],
+"stars": 1830,
+"explicit": true,
+"bins": [
+"brute-force"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "brutex",
+"version": "114.eacd084-1",
+"desc": "Automatically brute force all services running on a target.",
+"url": "https://github.com/1N3/BruteX",
+"cats": [
+"automation",
+"cracker"
+],
+"stars": 2308,
+"explicit": false,
+"bins": [
+"brutex",
+"brutex-masscan"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "btlejack",
+"version": "1:v2.1.1.r1.gc487859-1",
+"desc": "Bluetooth Low Energy Swiss-army knife.",
+"url": "https://github.com/virtualabs/btlejack",
+"cats": [
+"bluetooth"
+],
+"stars": 2112,
+"explicit": true,
+"bins": [
+"btlejack"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "btproxy-mitm",
+"version": "71.cd1c906-6",
+"desc": "Man in the Middle analysis tool for Bluetooth.",
+"url": "https://github.com/conorpp/btproxy",
+"cats": [
+"bluetooth"
+],
+"stars": 542,
+"explicit": true,
+"bins": [
+"btproxy-mitm",
+"bluez_simple_agent_nouser",
+"replace_bluetoothd"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "bulk-extractor",
+"version": "1562.1c67a75-1",
+"desc": "Bulk Email and URL extraction tool.",
+"url": "https://github.com/simsong/bulk_extractor",
+"cats": [
+"forensic",
+"misc"
+],
+"stars": 1426,
+"explicit": true,
+"bins": [
+"bulk_extractor",
+"BEViewer",
+"BEViewer.jar",
+"plugin_test"
+],
+"man": [
+"bulk_extractor"
+],
+"paths": []
+},
+{
+"name": "bytecode-viewer",
+"version": "1:2.12-1",
+"desc": "A Java 8/Android APK Reverse Engineering Suite.",
+"url": "https://github.com/Konloch/bytecode-viewer",
+"cats": [
+"binary",
+"reversing"
+],
+"stars": 15655,
+"explicit": true,
+"bins": [
+"bytecode-viewer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "cai",
+"version": "1:1.6dc7925-1",
+"desc": "The framework for AI Security.",
+"url": "https://github.com/aliasrobotics/cai",
+"cats": [
+"ai",
+"automation"
+],
+"stars": 9838,
+"explicit": true,
+"bins": [
+"cai"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "can-utils",
+"version": "1283.cbbad5e-1",
+"desc": "Linux-CAN / SocketCAN user space applications.",
+"url": "https://github.com/linux-can/can-utils",
+"cats": [
+"automobile"
+],
+"stars": 2923,
+"explicit": true,
+"bins": [
+"can-calc-bit-timing",
+"canbusload",
+"candump",
+"canerrsim",
+"canfdtest",
+"cangen",
+"cangw",
+"canlogserver",
+"canplayer",
+"cansend",
+"cansequence",
+"cansniffer",
+"asc2log",
+"bcmserver",
+"isobusfs-cli",
+"isobusfs-srv",
+"isotpdump",
+"isotpperf",
+"isotprecv",
+"isotpsend",
+"isotpserver",
+"isotpsniffer",
+"isotptun",
+"j1939-timedate-cli",
+"j1939-timedate-srv",
+"j1939acd",
+"j1939cat",
+"j1939spy",
+"j1939sr",
+"log2asc",
+"log2long",
+"mcp251xfd-dump",
+"slcan_attach",
+"slcand",
+"slcanpty",
+"testj1939"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "canalyzat0r",
+"version": "41.6bc251e-11",
+"desc": "Security analysis toolkit for proprietary car protocols.",
+"url": "https://github.com/schutzwerk/CANalyzat0r",
+"cats": [
+"automobile"
+],
+"stars": 794,
+"explicit": true,
+"bins": [
+"canalyzat0r"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "canari",
+"version": "3.3.10-5",
+"desc": "Maltego rapid transform development and execution framework.",
+"url": "https://pypi.org/project/canari/#files",
+"cats": [
+"forensic",
+"recon",
+"scanner"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"canari",
+"dispatcher",
+"pysudo"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "cantoolz",
+"version": "1:425.82d330b-12",
+"desc": "Framework for black-box CAN network analysis.",
+"url": "https://github.com/CANToolz/CANToolz",
+"cats": [
+"automobile",
+"fuzzer",
+"recon",
+"scanner"
+],
+"stars": 305,
+"explicit": true,
+"bins": [
+"cantoolz"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "capa",
+"version": "7.4.0-1",
+"desc": "The FLARE team's open-source tool to identify capabilities in executable files.",
+"url": "https://github.com/mandiant/capa",
+"cats": [
+"defensive"
+],
+"stars": 6204,
+"explicit": true,
+"bins": [
+"capa"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "certipy",
+"version": "5.1.0.r12.g3ae3442-1",
+"desc": "Active Directory Certificate Services enumeration and abuse.",
+"url": "https://github.com/ly4k/Certipy",
+"cats": [
+"exploitation",
+"windows"
+],
+"stars": 3677,
+"explicit": true,
+"bins": [
+"certipy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "chainsaw",
+"version": "v2.7.3.r6.g5d908fd-1",
+"desc": "A powerful ‘first-response’ capability to quickly identify threats within Windows event logs.",
+"url": "https://github.com/countercept/chainsaw",
+"cats": [
+"defensive",
+"forensic",
+"windows"
+],
+"stars": 3677,
+"explicit": true,
+"bins": [
+"chainsaw"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "checkov",
+"version": "3.3.20.r1.g29ba1746d0-1",
+"desc": "Prevent cloud misconfigurations and find vulnerabilities during build-time in infrastructure as code, container images and open source packages.",
+"url": "https://github.com/bridgecrewio/checkov",
+"cats": [
+"code-audit"
+],
+"stars": 9034,
+"explicit": true,
+"bins": [
+"checkov"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "chipsec",
+"version": "5:2.0.9.r0.g3ada858-1",
+"desc": "Platform Security Assessment Framework.",
+"url": "https://github.com/chipsec/chipsec",
+"cats": [
+"binary",
+"forensic",
+"fuzzer",
+"hardware",
+"scanner"
+],
+"stars": 3307,
+"explicit": true,
+"bins": [
+"chipsec-main",
+"chipsec-util"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "chisel",
+"version": "261.3c00f04-1",
+"desc": "A fast TCP tunnel over HTTP.",
+"url": "https://github.com/jpillora/chisel",
+"cats": [
+"proxy",
+"tunnel"
+],
+"stars": 16595,
+"explicit": true,
+"bins": [
+"chisel"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "chownat",
+"version": "0.08b-9",
+"desc": "Allows two peers behind two separate NATs with no port forwarding and no DMZ setup on their routers to directly communicate with each other",
+"url": "http://samy.pl/chownat/",
+"cats": [
+"tunnel"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"chownat"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "cisco-snmp-slap",
+"version": "5.daf0589-5",
+"desc": "IP address spoofing tool in order to bypass an ACL protecting an SNMP service on Cisco IOS devices.",
+"url": "https://github.com/nccgroup/cisco-snmp-slap",
+"cats": [
+"exploitation",
+"networking",
+"spoof"
+],
+"stars": 59,
+"explicit": true,
+"bins": [
+"cisco-snmp-slap"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "cisco-torch",
+"version": "0.4b-13",
+"desc": "Cisco Torch mass scanning, fingerprinting, and exploitation tool.",
+"url": "https://github.com/foreni-packages/cisco-torch/",
+"cats": [
+"exploitation",
+"fingerprint",
+"scanner"
+],
+"stars": 44,
+"explicit": false,
+"bins": [
+"cisco-torch"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "clair",
+"version": "2222.c9ac9a0a-1",
+"desc": "Vulnerability Static Analysis for Containers.",
+"url": "https://github.com/quay/clair",
+"cats": [
+"scanner"
+],
+"stars": 11066,
+"explicit": true,
+"bins": [
+"clair",
+"clairctl"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "cleverhans",
+"version": "v4.0.0.r7.g574efc1-2",
+"desc": "Python library to benchmark machine learning systems vulnerability to adversarial examples.",
+"url": "https://github.com/cleverhans-lab/cleverhans",
+"cats": [
+"ai",
+"defensive"
+],
+"stars": 6451,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "country-ip-blocks",
+"version": "6365.1ad7ecd-1",
+"desc": "CIDR country-level IP data, straight from the Regional Internet Registries, updated hourly.",
+"url": "https://github.com/herrbischoff/country-ip-blocks",
+"cats": [
+"misc",
+"wordlist"
+],
+"stars": 925,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/country-ip-blocks"
+]
+},
+{
+"name": "cpp2il",
+"version": "1:2022.0.7.r17.g20ccab2-1",
+"desc": "A tool to reverse unity's IL2PP toolchain",
+"url": "https://github.com/SamboyCoding/Cpp2IL",
+"cats": [
+"binary",
+"reversing"
+],
+"stars": 2639,
+"explicit": true,
+"bins": [
+"cpp2il"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "crackmapexec",
+"version": "3:v6.0.1.r198.gda472cb-5",
+"desc": "A swiss army knife for pentesting Windows/Active Directory environments.",
+"url": "https://github.com/byt3bl33d3r/CrackMapExec",
+"cats": [
+"exploitation",
+"scanner",
+"windows"
+],
+"stars": 9164,
+"explicit": true,
+"bins": [
+"crackmapexec",
+"cme",
+"cmedb"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "create_ap",
+"version": "265.462c09f-1",
+"desc": "A shell script to create a NATed/Bridged Software Access Point.",
+"url": "https://github.com/oblique/create_ap",
+"cats": [
+"wireless"
+],
+"stars": 4511,
+"explicit": true,
+"bins": [
+"create_ap"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "credmaster",
+"version": "206.0a79f34-3",
+"desc": "Refactored & improved CredKing password spraying tool, uses FireProx APIs to rotate IP addresses, stay anonymous, and beat throttling.",
+"url": "https://github.com/knavesec/CredMaster",
+"cats": [
+"cracker"
+],
+"stars": 1291,
+"explicit": true,
+"bins": [
+"credmaster"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "crowbar",
+"version": "1:v4.2.r1.g4b563dc-5",
+"desc": "Brute forcing tool that can be used during penetration tests.",
+"url": "https://github.com/galkan/crowbar",
+"cats": [
+"cracker"
+],
+"stars": 1532,
+"explicit": true,
+"bins": [
+"crowbar"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "crozono",
+"version": "1:5.6a51669-10",
+"desc": "A modular framework designed to automate the penetration testing of wireless networks from drones and such unconventional devices.",
+"url": "https://github.com/crozono/crozono-free",
+"cats": [
+"drone",
+"wireless"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"crozono"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "csdr",
+"version": "0.18.2.r68.g1f15b8c-1",
+"desc": "A simple DSP library and command-line tool for Software Defined Radio.",
+"url": "https://github.com/jketterl/csdr",
+"cats": [
+"radio"
+],
+"stars": 66,
+"explicit": false,
+"bins": [
+"csdr",
+"nmux"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ctypes-sh",
+"version": "165.ca66ae5-1",
+"desc": "Allows you to call routines in shared libraries from within bash.",
+"url": "https://github.com/taviso/ctypes.sh",
+"cats": [
+"exploitation",
+"reversing"
+],
+"stars": 2179,
+"explicit": true,
+"bins": [
+"ctypes-sh"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "cubicsdr",
+"version": "0.2.7-1",
+"desc": "Cross-Platform Software-Defined Radio Application.",
+"url": "https://github.com/cjcliffe/CubicSDR",
+"cats": [
+"radio"
+],
+"stars": 2288,
+"explicit": true,
+"bins": [
+"cubicsdr",
+"CubicSDR"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "cutycapt",
+"version": "3:11.0-1",
+"desc": "A Qt and WebEngine-based command-line utility that captures a web page's rendered output.",
+"url": "https://cutycapt.sourceforge.net/",
+"cats": [
+"recon"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"cutycapt"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ddosify",
+"version": "1:v2.6.0.r32.g5cf7df3-1",
+"desc": "High-performance load testing tool, written in Golang.",
+"url": "https://github.com/ddosify/ddosify",
+"cats": [
+"dos",
+"misc"
+],
+"stars": 8518,
+"explicit": true,
+"bins": [
+"ddosify"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "de4dot",
+"version": "2090.b7d5728-1",
+"desc": ".NET deobfuscator and unpacker.",
+"url": "https://github.com/de4dot/de4dot",
+"cats": [
+"binary",
+"reversing",
+"unpacker",
+"windows"
+],
+"stars": 7433,
+"explicit": true,
+"bins": [
+"de4dot",
+"de4dot-x64"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "demiguise",
+"version": "11.58d5681-6",
+"desc": "HTA encryption tool for RedTeams.",
+"url": "https://github.com/nccgroup/demiguise",
+"cats": [
+"backdoor",
+"crypto",
+"windows"
+],
+"stars": 1428,
+"explicit": true,
+"bins": [
+"demiguise"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "depix",
+"version": "38.f7d1850-1",
+"desc": "A tool for recovering passwords from pixelized screenshots.",
+"url": "https://github.com/beurtschipper/Depix",
+"cats": [
+"misc"
+],
+"stars": 4537,
+"explicit": true,
+"bins": [
+"depix"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "detect-it-easy",
+"version": "3:3.10-1",
+"desc": "A program for determining types of files.",
+"url": "https://github.com/horsicq/DIE-engine/releases",
+"cats": [
+"binary",
+"reversing"
+],
+"stars": 3276,
+"explicit": true,
+"bins": [
+"die",
+"diec",
+"diel"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "detect-secrets",
+"version": "v1.5.0.r50.g5e141933-1",
+"desc": "An enterprise friendly way of detecting and preventing secrets in code.",
+"url": "https://github.com/Yelp/detect-secrets",
+"cats": [
+"code-audit"
+],
+"stars": 4647,
+"explicit": true,
+"bins": [
+"detect-secrets",
+"detect-secrets-hook"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dex2jar",
+"version": "2.1-2",
+"desc": "A tool for converting Android's .dex format to Java's .class format",
+"url": "http://code.google.com/p/dex2jar",
+"cats": [
+"hardware",
+"reversing"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"d2j-apk-sign",
+"d2j-asm-verify",
+"d2j-baksmali",
+"d2j-class-version-switch",
+"d2j-decrypt-string",
+"d2j-dex-recompute-checksum",
+"d2j-dex-weaver",
+"d2j-dex2jar",
+"d2j-dex2smali",
+"d2j-jar-access",
+"d2j-jar-weaver",
+"d2j-jar2dex",
+"d2j-jar2jasmin",
+"d2j-jasmin2jar",
+"d2j-smali",
+"d2j-std-apk"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dharma",
+"version": "98.6b1e511-7",
+"desc": "Generation-based, context-free grammar fuzzer.",
+"url": "https://github.com/MozillaSecurity/dharma",
+"cats": [
+"fuzzer"
+],
+"stars": 494,
+"explicit": true,
+"bins": [
+"dharma"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dirsearch",
+"version": "2977.902b8918-1",
+"desc": "HTTP(S) directory/file brute forcer.",
+"url": "https://github.com/maurosoria/dirsearch",
+"cats": [
+"scanner",
+"webapp"
+],
+"stars": 14762,
+"explicit": true,
+"bins": [
+"dirsearch"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dislocker",
+"version": "1:v0.7.3.r46.g4572dc7-1",
+"desc": "Read BitLocker encrypted volumes under Linux.",
+"url": "https://github.com/Aorimn/dislocker",
+"cats": [
+"crypto"
+],
+"stars": 1933,
+"explicit": true,
+"bins": [
+"dislocker",
+"dislocker-bek",
+"dislocker-file",
+"dislocker-find",
+"dislocker-fuse",
+"dislocker-metadata"
+],
+"man": [
+"dislocker",
+"dislocker-file",
+"dislocker-find",
+"dislocker-fuse"
+],
+"paths": []
+},
+{
+"name": "dns-spoof",
+"version": "13.81ba29f-1",
+"desc": "Yet another DNS spoof utility.",
+"url": "https://github.com/maurotfilho/dns-spoof",
+"cats": [
+"spoof"
+],
+"stars": 31,
+"explicit": true,
+"bins": [
+"dns-spoof"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dnsenum",
+"version": "1.2.4.2-7",
+"desc": "Script that enumerates DNS information from a domain, attempts zone transfers, performs a brute force dictionary style attack, and then performs reverse look-ups on the results.",
+"url": "https://github.com/fwaeytens/dnsenum/",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 707,
+"explicit": false,
+"bins": [
+"dnsenum"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dnspy",
+"version": "6.1.8-2",
+"desc": ".NET debugger and assembly editor.",
+"url": "https://github.com/0xd4d/dnSpy/",
+"cats": [
+"binary",
+"decompiler",
+"reversing",
+"windows"
+],
+"stars": 29672,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "dnsrecon",
+"version": "2:1.6.3-1",
+"desc": "Python script for enumeration of hosts, subdomains and emails from a given domain using google.",
+"url": "https://github.com/darkoperator/dnsrecon",
+"cats": [
+"recon"
+],
+"stars": 3074,
+"explicit": false,
+"bins": [
+"dnsrecon",
+"restdnsrecon"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "domato",
+"version": "133.fadff39-4",
+"desc": "DOM fuzzer.",
+"url": "https://github.com/googleprojectzero/domato",
+"cats": [
+"fuzzer"
+],
+"stars": 1783,
+"explicit": true,
+"bins": [
+"domato-generator"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "donut",
+"version": "529.47758d7-4",
+"desc": "Generates x86, x64 or AMD64+x86 P.I. shellcode loading .NET Assemblies from memory.",
+"url": "https://github.com/TheWover/donut",
+"cats": [
+"backdoor",
+"exploitation"
+],
+"stars": 4712,
+"explicit": true,
+"bins": [
+"donut"
+],
+"man": [
+"donut"
+],
+"paths": []
+},
+{
+"name": "drozer",
+"version": "2.4.4-11",
+"desc": "A security testing framework for Android - Precompiled binary from official repository.",
+"url": "https://github.com/mwrlabs/drozer",
+"cats": [
+"fuzzer",
+"mobile",
+"scanner"
+],
+"stars": 4622,
+"explicit": true,
+"bins": [
+"drozer",
+"drozer-complete",
+"drozer-repository"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dshell",
+"version": "142.695c891-3",
+"desc": "A network forensic analysis framework.",
+"url": "https://github.com/USArmyResearchLab/Dshell",
+"cats": [
+"forensic",
+"networking"
+],
+"stars": 5495,
+"explicit": true,
+"bins": [
+"dshell",
+"dshell-decode"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "dynamorio",
+"version": "9.0.19046-1",
+"desc": "A dynamic binary instrumentation framework.",
+"url": "https://github.com/DynamoRIO/dynamorio",
+"cats": [
+"binary",
+"reversing"
+],
+"stars": 3168,
+"explicit": true,
+"bins": [
+"drconfig",
+"drinject",
+"drloader",
+"drrun",
+"nudgeunix"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "eaphammer",
+"version": "1:v1.14.1.r0.g91e8956-5",
+"desc": "Targeted evil twin attacks against WPA2-Enterprise networks. Indirect wireless pivots using hostile portal attacks.",
+"url": "https://github.com/s0lst1c3/eaphammer",
+"cats": [
+"wireless"
+],
+"stars": 2571,
+"explicit": true,
+"bins": [
+"eaphammer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "edb",
+"version": "3337.eedd97a0-1",
+"desc": "A cross platform AArch32/x86/x86-64 debugger.",
+"url": "https://github.com/eteran/edb-debugger/",
+"cats": [
+"debugger",
+"reversing"
+],
+"stars": 2965,
+"explicit": true,
+"bins": [
+"edb"
+],
+"man": [
+"edb"
+],
+"paths": []
+},
+{
+"name": "eggshell",
+"version": "157.eaeeea7-3",
+"desc": "iOS/macOS/Linux Remote Administration Tool.",
+"url": "https://github.com/neoneggplant/EggShell",
+"cats": [
+"backdoor"
+],
+"stars": 1773,
+"explicit": true,
+"bins": [
+"eggshell"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "electric-fence",
+"version": "2.2.5-1",
+"desc": "A malloc(3) debugger that uses virtual memory hardware to detect illegal memory accesses.",
+"url": "https://packages.debian.org/sid/electric-fence",
+"cats": [
+"debugger"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"electric-fence"
+],
+"man": [
+"libefence"
+],
+"paths": []
+},
+{
+"name": "empire",
+"version": "3:v6.7.1.r0.gca5b774-1",
+"desc": "A PowerShell and Python post-exploitation agent.",
+"url": "https://github.com/BC-SECURITY/Empire",
+"cats": [
+"automation"
+],
+"stars": 5312,
+"explicit": true,
+"bins": [
+"empire",
+"empire-client",
+"empire-server"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "enum4linux",
+"version": "0.9.1-4",
+"desc": "A tool for enumerating information from Windows and Samba systems.",
+"url": "http://labs.portcullis.co.uk/application/enum4linux/",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"enum4linux"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "erase-registrations",
+"version": "1.0-3",
+"desc": "An IAX flooder.",
+"url": "http://www.hackingexposedvoip.com/",
+"cats": [
+"voip"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"erase-registrations"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "evil-winrm",
+"version": "1:v4.1.r0.g64d8e0f-1",
+"desc": "The ultimate WinRM shell for hacking/pentesting.",
+"url": "https://github.com/Hackplayers/evil-winrm",
+"cats": [
+"backdoor",
+"exploitation"
+],
+"stars": 5525,
+"explicit": true,
+"bins": [
+"evil-winrm"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "exe2hex",
+"version": "1.5.1.r6.ge563b35-5",
+"desc": "Inline file transfer using in-built Windows tools (DEBUG.exe or PowerShell).",
+"url": "https://github.com/g0tmi1k/exe2hex",
+"cats": [
+"disassembler"
+],
+"stars": 320,
+"explicit": true,
+"bins": [
+"exe2hex"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "fakenet-ng",
+"version": "320.7c8e006-1",
+"desc": "Next Generation Dynamic Network Analysis Tool.",
+"url": "https://github.com/fireeye/flare-fakenet-ng",
+"cats": [
+"malware",
+"networking",
+"proxy",
+"sniffer"
+],
+"stars": 2206,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "fakenetbios",
+"version": "7.b83701e-3",
+"desc": "A family of tools designed to simulate Windows hosts (NetBIOS) on a LAN.",
+"url": "https://github.com/mubix/FakeNetBIOS",
+"cats": [
+"honeypot",
+"networking",
+"spoof"
+],
+"stars": 44,
+"explicit": true,
+"bins": [
+"fakenetbiosdgm",
+"fakenetbiosns"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "fastnetmon",
+"version": "v1.2.9.r56.g2436f447-1",
+"desc": "High performance DoS/DDoS load analyzer built on top of multiple packet capture engines.",
+"url": "https://github.com/pavel-odintsov/fastnetmon",
+"cats": [
+"defensive",
+"sniffer"
+],
+"stars": 3708,
+"explicit": true,
+"bins": [
+"fastnetmon",
+"fastnetmon-client",
+"fastnetmon_api_client"
+],
+"man": [
+"fastnetmon",
+"fastnetmon_client"
+],
+"paths": []
+},
+{
+"name": "fernflower",
+"version": "802.c03cae7a-1",
+"desc": "An analytical decompiler for Java.",
+"url": "https://github.com/fesh0r/fernflower",
+"cats": [
+"decompiler"
+],
+"stars": 4408,
+"explicit": true,
+"bins": [
+"fernflower"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "feroxbuster",
+"version": "1:v2.13.1.r23.g1f595da-1",
+"desc": "A fast, simple, recursive content discovery tool written in Rust.",
+"url": "https://github.com/epi052/feroxbuster",
+"cats": [
+"fuzzer",
+"scanner",
+"webapp"
+],
+"stars": 8089,
+"explicit": false,
+"bins": [
+"feroxbuster"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ffdec",
+"version": "26.2.1-2",
+"desc": "Open Source Flash SWF decompiler and editor.",
+"url": "https://github.com/jindrapetrik/jpexs-decompiler",
+"cats": [
+"decompiler",
+"misc"
+],
+"stars": 5892,
+"explicit": true,
+"bins": [
+"ffdec"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ffuf",
+"version": "1:v2.3.0.r7.g8d65e03-1",
+"desc": "Fast web fuzzer written in Go.",
+"url": "https://github.com/ffuf/ffuf",
+"cats": [
+"fuzzer",
+"webapp"
+],
+"stars": 16755,
+"explicit": true,
+"bins": [
+"ffuf"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "find3",
+"version": "604.5964026-1",
+"desc": "High-precision indoor positioning framework.",
+"url": "https://github.com/schollz/find3",
+"cats": [
+"misc"
+],
+"stars": 4806,
+"explicit": true,
+"bins": [
+"find3"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "firefox-decrypt",
+"version": "1.1.3.r3.g01fe020-1",
+"desc": "Extract passwords from Mozilla Firefox, Waterfox, Thunderbird, SeaMonkey profiles.",
+"url": "https://github.com/unode/firefox_decrypt",
+"cats": [
+"forensic"
+],
+"stars": 2480,
+"explicit": true,
+"bins": [
+"firefox-decrypt"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "fireprox",
+"version": "51.a6e1300-7",
+"desc": "AWS API Gateway management tool for creating on the fly HTTP pass-through proxies for unique IP rotation.",
+"url": "https://github.com/ustayready/fireprox",
+"cats": [
+"networking",
+"proxy",
+"webapp"
+],
+"stars": 2286,
+"explicit": true,
+"bins": [
+"fireprox"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "firmwalker",
+"version": "101.23ff299-1",
+"desc": "Script for searching the extracted firmware file system for goodies.",
+"url": "https://github.com/craigz28/firmwalker",
+"cats": [
+"firmware"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"firmwalker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "firmware-mod-kit",
+"version": "1:0.99.r119.gc72f45d-1",
+"desc": "Modify firmware images without recompiling.",
+"url": "https://github.com/rampageX/firmware-mod-kit",
+"cats": [
+"firmware"
+],
+"stars": 999,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/firmware-mod-kit"
+]
+},
+{
+"name": "flare-floss",
+"version": "2:quantumstrand.beta3.r570.g151b462-1",
+"desc": "Obfuscated String Solver - Automatically extract obfuscated strings from malware.",
+"url": "https://github.com/mandiant/flare-floss",
+"cats": [
+"malware"
+],
+"stars": 4161,
+"explicit": true,
+"bins": [
+"floss"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "fluxion",
+"version": "8:v6.32.r8.gf064d24-1",
+"desc": "A security auditing and social-engineering research tool.",
+"url": "https://github.com/FluxionNetwork/fluxion",
+"cats": [
+"social",
+"wireless"
+],
+"stars": 5955,
+"explicit": true,
+"bins": [
+"fluxion"
+],
+"man": [
+"fluxion"
+],
+"paths": []
+},
+{
+"name": "fraud-bridge",
+"version": "1:rel.0.32s.r3.g88a5baa-1",
+"desc": "ICMP and DNS tunneling via IPv4 and IPv6.",
+"url": "https://github.com/stealth/fraud-bridge",
+"cats": [
+"networking",
+"tunnel"
+],
+"stars": 232,
+"explicit": true,
+"bins": [
+"fraud-bridge"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "freewifi",
+"version": "30.1cb752b-11",
+"desc": "How to get free wifi.",
+"url": "https://github.com/kylemcdonald/FreeWifi",
+"cats": [
+"wireless"
+],
+"stars": 3008,
+"explicit": true,
+"bins": [
+"freewifi"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "frida-ios-dump",
+"version": "53.56e99b2-3",
+"desc": "Pull decrypted ipa from jailbreak device.",
+"url": "https://github.com/AloneMonkey/frida-ios-dump",
+"cats": [
+"binary",
+"mobile",
+"reversing"
+],
+"stars": 3931,
+"explicit": true,
+"bins": [
+"frida-ios-dump"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "fscan",
+"version": "2:v2.2.1.r2.g2c921c3-1",
+"desc": "A Security Auditing Tool.",
+"url": "https://github.com/shadow1ng/fscan",
+"cats": [
+"scanner"
+],
+"stars": 14592,
+"explicit": true,
+"bins": [
+"fscan"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "fuzzdb",
+"version": "475.5656ab2-3",
+"desc": "Attack and Discovery Pattern Dictionary for Application Fault Injection Testing.",
+"url": "https://github.com/fuzzdb-project/fuzzdb",
+"cats": [
+"fuzzer"
+],
+"stars": 8994,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/fuzzdb"
+]
+},
+{
+"name": "fuzzowski",
+"version": "41.e39f665-7",
+"desc": "A Network Protocol Fuzzer made by NCCGroup based on Sulley and BooFuzz.",
+"url": "https://github.com/nccgroup/fuzzowski",
+"cats": [
+"fuzzer",
+"networking"
+],
+"stars": 794,
+"explicit": true,
+"bins": [
+"fuzzowski"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "gadgetinspector",
+"version": "6.ac7832d-1",
+"desc": "A byte code analyzer for finding deserialization gadget chains in Java applications.",
+"url": "https://github.com/JackOfMostTrades/gadgetinspector",
+"cats": [
+"binary",
+"decompiler"
+],
+"stars": 1092,
+"explicit": true,
+"bins": [
+"gadgetinspector"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "garak",
+"version": "0.17.0.r4.g8d1259e-1",
+"desc": "The LLM vulnerability scanner.",
+"url": "https://github.com/NVIDIA/garak",
+"cats": [
+"ai",
+"scanner"
+],
+"stars": 9372,
+"explicit": true,
+"bins": [
+"garak"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "gcat",
+"version": "29.39b266c-3",
+"desc": "A fully featured backdoor that uses Gmail as a C&C server.",
+"url": "https://github.com/byt3bl33d3r/gcat",
+"cats": [
+"exploitation",
+"malware"
+],
+"stars": 1350,
+"explicit": true,
+"bins": [
+"gcat"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "gdbgui",
+"version": "1:438.773b916-2",
+"desc": "Browser-based gdb frontend using Flask and JavaScript to visually debug C, C++, Go, or Rust.",
+"url": "https://github.com/cs01/gdbgui",
+"cats": [
+"binary",
+"debugger"
+],
+"stars": 10349,
+"explicit": true,
+"bins": [
+"gdbgui"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "getsids",
+"version": "1.0.0-1",
+"desc": "Enumerate Oracle Sids by sending the services command to the Oracle TNS listener.",
+"url": "http://www.cqure.net/wp/getsids/",
+"cats": [
+"database"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"getsids"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ghidriff",
+"version": "v1.0.0.r6.g4f5d895-1",
+"desc": "Python Command-Line Ghidra Binary Diffing Engine.",
+"url": "https://github.com/clearbluejar/ghidriff",
+"cats": [
+"automation",
+"reversing"
+],
+"stars": 807,
+"explicit": true,
+"bins": [
+"ghidriff"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ghost",
+"version": "426.bf38c7e-2",
+"desc": "Android post-exploitation framework that exploits the Android Debug Bridge to remotely access an Android device.",
+"url": "https://github.com/EntySec/Ghost",
+"cats": [
+"exploitation",
+"mobile"
+],
+"stars": 3421,
+"explicit": true,
+"bins": [
+"ghost"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ghunt",
+"version": "v2.2.0.r30.g5ee8939-1",
+"desc": "An offensive OSINT Google framework.",
+"url": "https://github.com/mxrch/GHunt",
+"cats": [
+"recon"
+],
+"stars": 19632,
+"explicit": true,
+"bins": [
+"ghunt"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "gibberish-detector",
+"version": "v0.1.1.r2.gecac969-6",
+"desc": "Train a model and detect gibberish strings with it.",
+"url": "https://github.com/domanchi/gibberish-detector",
+"cats": [
+"misc"
+],
+"stars": 68,
+"explicit": false,
+"bins": [
+"gibberish-detector"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "githound",
+"version": "v3.2.r0.g15701b7-1",
+"desc": "Find secret information in git repositories.",
+"url": "https://github.com/tillson/git-hound",
+"cats": [
+"code-audit",
+"recon"
+],
+"stars": 1466,
+"explicit": true,
+"bins": [
+"githound"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "goldeneye",
+"version": "28.792862f-6",
+"desc": "A HTTP DoS test tool. Attack Vector exploited: HTTP Keep Alive + NoCache.",
+"url": "https://github.com/jseidl/GoldenEye",
+"cats": [
+"dos"
+],
+"stars": 1469,
+"explicit": true,
+"bins": [
+"goldeneye"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "golismero",
+"version": "73.7d605b9-3",
+"desc": "Opensource web security testing framework.",
+"url": "https://github.com/golismero/golismero",
+"cats": [
+"webapp"
+],
+"stars": 887,
+"explicit": false,
+"bins": [
+"golismero"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "goofuzz",
+"version": "2.0.r1.gc32df39-1",
+"desc": "A Bash script that uses advanced Google search techniques to obtain sensitive information in files or directories without making requests to the web server.",
+"url": "https://github.com/m3n0sd0n4ld/GooFuzz",
+"cats": [
+"fuzzer",
+"recon",
+"scanner"
+],
+"stars": 1591,
+"explicit": true,
+"bins": [
+"goofuzz"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "goohak",
+"version": "31.815a31e-1",
+"desc": "Automatically Launch Google Hacking Queries Against A Target Domain.",
+"url": "https://github.com/1N3/Goohak",
+"cats": [
+"automation",
+"recon",
+"scanner"
+],
+"stars": 742,
+"explicit": false,
+"bins": [
+"goohak"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "gophish",
+"version": "815.95618469-1",
+"desc": "Open-Source Phishing Framework.",
+"url": "https://github.com/gophish/gophish",
+"cats": [
+"social"
+],
+"stars": 14262,
+"explicit": true,
+"bins": [
+"gophish"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "gps-sdr-sim",
+"version": "224.28ca29a-1",
+"desc": "Software-Defined GPS Signal Simulator.",
+"url": "https://github.com/osqzss/gps-sdr-sim",
+"cats": [
+"radio"
+],
+"stars": 3469,
+"explicit": true,
+"bins": [
+"gps-sdr-sim",
+"gps-sdr-sim-uhd"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "gr-gsm",
+"version": "1:1191.71e9630-1",
+"desc": "Gnuradio blocks and tools for receiving GSM transmissions.",
+"url": "https://github.com/ptrkrysik/gr-gsm",
+"cats": [
+"radio"
+],
+"stars": 1501,
+"explicit": true,
+"bins": [
+"grgsm_capture",
+"grgsm_channelize",
+"grgsm_decode",
+"grgsm_livemon",
+"grgsm_livemon_headless",
+"grgsm_scanner",
+"grgsm_trx"
+],
+"man": [
+"grgsm_livemon"
+],
+"paths": []
+},
+{
+"name": "graudit",
+"version": "726.7d19c1a-1",
+"desc": "Grep rough source code auditing tool.",
+"url": "https://github.com/wireghoul/graudit",
+"cats": [
+"code-audit"
+],
+"stars": 1690,
+"explicit": true,
+"bins": [
+"graudit"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "grype",
+"version": "1:0.33.1-1",
+"desc": "A vulnerability scanner for container images and filesystems.",
+"url": "https://github.com/anchore/grype",
+"cats": [
+"scanner"
+],
+"stars": 12939,
+"explicit": true,
+"bins": [
+"grype"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "halberd",
+"version": "0.2.4-6",
+"desc": "Halberd discovers HTTP load balancers. It is useful for web application security auditing and for load balancer configuration testing.",
+"url": "http://halberd.superadditive.com/",
+"cats": [
+"scanner",
+"webapp"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"halberd"
+],
+"man": [
+"halberd"
+],
+"paths": []
+},
+{
+"name": "hash-buster",
+"version": "50.befb02a-5",
+"desc": "A python script which scraps online hash crackers to find cleartext of a hash.",
+"url": "https://github.com/UltimateHackers/Hash-Buster/",
+"cats": [
+"crypto"
+],
+"stars": 1899,
+"explicit": true,
+"bins": [
+"hash-buster"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "hashid",
+"version": "1:397.7e8473a-7",
+"desc": "Software to identify the different types of hashes used to encrypt data.",
+"url": "https://github.com/psypanda/hashID",
+"cats": [
+"crypto"
+],
+"stars": 1470,
+"explicit": true,
+"bins": [
+"hashid"
+],
+"man": [
+"hashid"
+],
+"paths": []
+},
+{
+"name": "hdcp-genkey",
+"version": "18.e8d342d-7",
+"desc": "Generate HDCP source and sink keys from the leaked master key.",
+"url": "https://github.com/rjw57/hdcp-genkey",
+"cats": [
+"cracker",
+"crypto"
+],
+"stars": 163,
+"explicit": false,
+"bins": [
+"hdcp-genkey"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "hdmi-sniff",
+"version": "5.f7fbc0e-5",
+"desc": "HDMI DDC (I2C) inspection tool. It is designed to demonstrate just how easy it is to recover HDCP crypto keys from HDMI devices.",
+"url": "https://github.com/ApertureLabsLtd/hdmi-sniff",
+"cats": [
+"cracker",
+"hardware",
+"sniffer"
+],
+"stars": 96,
+"explicit": true,
+"bins": [
+"hdmi-sniff"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "heaptrace",
+"version": "2.2.8.2.r20.g06f43fc-2",
+"desc": "Helps visualize heap operations for pwn and debugging.",
+"url": "https://github.com/Arinerron/heaptrace",
+"cats": [
+"debugger"
+],
+"stars": 330,
+"explicit": true,
+"bins": [
+"heaptrace"
+],
+"man": [
+"heaptrace"
+],
+"paths": []
+},
+{
+"name": "hetty",
+"version": "1:v0.7.0.r7.gf7def87-1",
+"desc": "HTTP toolkit for security research. Aims to become an open source alternative to commercial software like Burp Suite Pro.",
+"url": "https://github.com/dstotijn/hetty",
+"cats": [
+"proxy",
+"webapp"
+],
+"stars": 12502,
+"explicit": true,
+"bins": [
+"hetty"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "hoaxshell",
+"version": "150.e1bba89-3",
+"desc": "A Windows reverse shell payload generator and handler that abuses the http(s) protocol to establish a beacon-like reverse shell.",
+"url": "https://github.com/t3l3machus/hoaxshell",
+"cats": [
+"backdoor",
+"exploitation",
+"networking",
+"windows"
+],
+"stars": 3499,
+"explicit": true,
+"bins": [
+"hoaxshell"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "holehe",
+"version": "434.14da70f-5",
+"desc": "A tool for Efficiently finding registered accounts from emails.",
+"url": "https://github.com/megadose/holehe",
+"cats": [
+"recon",
+"social"
+],
+"stars": 15037,
+"explicit": true,
+"bins": [
+"holehe"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "honeyd",
+"version": "337.a0f3d64-2",
+"desc": "A small daemon that creates virtual hosts on a network.",
+"url": "https://github.com/DataSoft/Honeyd/",
+"cats": [
+"honeypot"
+],
+"stars": 396,
+"explicit": true,
+"bins": [
+"honeyd",
+"honeydctl",
+"honeydstats",
+"hsniff"
+],
+"man": [
+"honeyd",
+"honeydctl"
+],
+"paths": []
+},
+{
+"name": "honeypy",
+"version": "600.6ca3d6e-3",
+"desc": "A low interaction Honeypot.",
+"url": "https://github.com/foospidy/HoneyPy",
+"cats": [
+"defensive",
+"honeypot"
+],
+"stars": 476,
+"explicit": true,
+"bins": [
+"honeypy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "horusec",
+"version": "v2.9.0.beta.2.r1.g873d4104-1",
+"desc": "Static code analysis to identify security flaws for many languages.",
+"url": "https://github.com/ZupIT/horusec",
+"cats": [
+"code-audit"
+],
+"stars": 1342,
+"explicit": true,
+"bins": [
+"horusec"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "howmanypeoplearearound",
+"version": "123.b05e06a-9",
+"desc": "Count the number of people around you by monitoring wifi signals.",
+"url": "https://github.com/schollz/howmanypeoplearearound",
+"cats": [
+"recon",
+"wireless"
+],
+"stars": 7089,
+"explicit": true,
+"bins": [
+"howmanypeoplearearound"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "hpfeeds",
+"version": "414.34bf4d4-5",
+"desc": "Honeynet Project generic authenticated datafeed protocol.",
+"url": "https://github.com/rep/hpfeeds",
+"cats": [
+"honeypot",
+"networking"
+],
+"stars": 218,
+"explicit": true,
+"bins": [
+"hpfeeds",
+"hpfeeds-broker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "httpx",
+"version": "1:v1.11.0.r17.gd3b9d3d-1",
+"desc": "A fast and multi-purpose HTTP toolkit allow to run multiple probers using retryablehttp library.",
+"url": "https://github.com/projectdiscovery/httpx",
+"cats": [
+"scanner",
+"webapp"
+],
+"stars": 10430,
+"explicit": true,
+"bins": [
+"httpx-pd"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "hulk",
+"version": "27.ed2b11c-2",
+"desc": "A webserver DoS tool (Http Unbearable Load King) ported to Go with some additional features.",
+"url": "https://github.com/grafov/hulk",
+"cats": [
+"dos"
+],
+"stars": 907,
+"explicit": true,
+"bins": [
+"hulk"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ibrute",
+"version": "12.3a6a11e-4",
+"desc": "An AppleID password bruteforce tool. It uses Find My Iphone service API, where bruteforce protection was not implemented.",
+"url": "https://github.com/hackappcom/ibrute/",
+"cats": [
+"cracker",
+"mobile"
+],
+"stars": 1322,
+"explicit": true,
+"bins": [
+"ibrute"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ike-scan",
+"version": "1.9.5-3",
+"desc": "A tool that uses IKE protocol to discover, fingerprint and test IPSec VPN servers.",
+"url": "http://www.nta-monitor.com/tools/ike-scan/",
+"cats": [
+"scanner"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"ike-scan",
+"psk-crack"
+],
+"man": [
+"ike-scan",
+"psk-crack"
+],
+"paths": []
+},
+{
+"name": "ilty",
+"version": "1.0-7",
+"desc": "An interception phone system for VoIP network.",
+"url": "http://chdir.org/~nico/ilty/",
+"cats": [
+"voip"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"ilty"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "imhex",
+"version": "18:nightly.r0.g4308ef2-1",
+"desc": "A Hex Editor for Reverse Engineers, Programmers and people that value their eye sight when working at 3 AM.",
+"url": "https://github.com/WerWolv/ImHex",
+"cats": [
+"misc"
+],
+"stars": 54928,
+"explicit": true,
+"bins": [
+"imhex"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "impacket-ba",
+"version": "0.13.0-1",
+"desc": "Collection of classes for working with network protocols.",
+"url": "https://github.com/fortra/impacket",
+"cats": [
+"exploitation",
+"networking"
+],
+"stars": 16130,
+"explicit": true,
+"bins": [
+"addcomputer.py",
+"atexec.py",
+"attrib.py",
+"badsuccessor.py",
+"changepasswd.py",
+"CheckLDAPStatus.py",
+"dacledit.py",
+"dcomexec.py",
+"describeTicket.py",
+"dpapi.py",
+"DumpNTLMInfo.py",
+"esentutl.py",
+"exchanger.py",
+"filetime.py",
+"findDelegation.py",
+"Get-GPPPassword.py",
+"GetADComputers.py",
+"GetADUsers.py",
+"getArch.py",
+"GetLAPSPassword.py",
+"GetNPUsers.py",
+"getPac.py",
+"getST.py",
+"getTGT.py",
+"GetUserSPNs.py",
+"goldenPac.py",
+"karmaSMB.py",
+"keylistattack.py",
+"kintercept.py",
+"lookupsid.py",
+"machine_role.py",
+"mimikatz.py",
+"mqtt_check.py",
+"mssqlclient.py",
+"mssqlinstance.py",
+"net.py",
+"netview.py",
+"ntfs-read.py",
+"ntlmrelayx.py",
+"owneredit.py",
+"ping.py",
+"ping6.py",
+"psexec.py",
+"raiseChild.py",
+"rbcd.py",
+"rdp_check.py",
+"reg.py",
+"registry-read.py",
+"regsecrets.py",
+"rpcdump.py",
+"rpcmap.py",
+"sambaPipe.py",
+"samedit.py",
+"samrdump.py",
+"secretsdump.py",
+"services.py",
+"smbclient.py",
+"smbexec.py",
+"smbserver.py",
+"sniff.py",
+"sniffer.py",
+"split.py",
+"ticketConverter.py",
+"ticketer.py",
+"tstool.py",
+"wmiexec.py",
+"wmipersist.py",
+"wmiquery.py"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "impulse",
+"version": "79.592a91b-2",
+"desc": "Modern Denial-of-service ToolKit.",
+"url": "https://github.com/LimerBoy/Impulse",
+"cats": [
+"dos",
+"spoof"
+],
+"stars": 2852,
+"explicit": true,
+"bins": [
+"impulse"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "infection-monkey",
+"version": "1:v2.2.0.r3599.ga55fc8d-2",
+"desc": "Automated security testing tool for networks.",
+"url": "https://github.com/guardicore/monkey",
+"cats": [
+"automation",
+"networking"
+],
+"stars": 7096,
+"explicit": true,
+"bins": [
+"infection-monkey",
+"monkey-island"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "invoke-obfuscation",
+"version": "45.f20e7f8-1",
+"desc": "PowerShell Obfuscator.",
+"url": "https://github.com/danielbohannon/Invoke-Obfuscation",
+"cats": [
+"automation"
+],
+"stars": 4334,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "ip-https-tools",
+"version": "7.170691f-4",
+"desc": "Tools for the IP over HTTPS (IP-HTTPS) Tunneling Protocol.",
+"url": "https://github.com/takeshixx/ip-https-tools",
+"cats": [
+"networking",
+"tunnel"
+],
+"stars": 9,
+"explicit": true,
+"bins": [
+"ip-https-test"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "isip",
+"version": "2.fad1f10-5",
+"desc": "Interactive sip toolkit for packet manipulations, sniffing, man in the middle attacks, fuzzing, simulating of dos attacks.",
+"url": "https://github.com/halitalptekin/isip",
+"cats": [
+"dos",
+"fuzzer",
+"networking",
+"voip"
+],
+"stars": 79,
+"explicit": true,
+"bins": [
+"isip"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ja3",
+"version": "117.cb29184-10",
+"desc": "Standard for creating SSL client fingerprints in an easy to produce and shareable way.",
+"url": "https://github.com/salesforce/ja3",
+"cats": [
+"crypto",
+"crypto",
+"misc"
+],
+"stars": 3099,
+"explicit": true,
+"bins": [
+"ja3"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "jd-gui",
+"version": "1.6.6-3",
+"desc": "A standalone graphical utility that displays Java source codes of .class files.",
+"url": "https://github.com/java-decompiler/jd-gui",
+"cats": [
+"decompiler",
+"reversing"
+],
+"stars": 15198,
+"explicit": true,
+"bins": [
+"jd-gui"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "jefferson",
+"version": "v0.4.8.r0.g21fdbe9-1",
+"desc": "JFFS2 filesystem extraction tool.",
+"url": "https://github.com/onekey-sec/jefferson",
+"cats": [
+"forensic",
+"reversing"
+],
+"stars": 96,
+"explicit": false,
+"bins": [
+"jefferson"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "jpexs-decompiler",
+"version": "15.1.0-1",
+"desc": "JPEXS Free Flash Decompiler.",
+"url": "https://github.com/jindrapetrik/jpexs-decompiler",
+"cats": [
+"decompiler"
+],
+"stars": 5892,
+"explicit": true,
+"bins": [
+"jpexs-decompiler"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "jsfuck",
+"version": "242.6f8fdf3-1",
+"desc": "Write any JavaScript with 6 Characters: []()!+.",
+"url": "https://github.com/aemkei/jsfuck",
+"cats": [
+"misc"
+],
+"stars": 8599,
+"explicit": true,
+"bins": [
+"jsfuck"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "jwt-cracker",
+"version": "23.8130879-2",
+"desc": "JWT brute force cracker written in C.",
+"url": "https://github.com/brendan-rius/c-jwt-cracker",
+"cats": [
+"cracker"
+],
+"stars": 2559,
+"explicit": true,
+"bins": [
+"jwt-cracker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "jwt-tool",
+"version": "1:v2.3.0.r0.g3bc7407-2",
+"desc": "Toolkit for validating, forging and cracking JWTs (JSON Web Tokens).",
+"url": "https://github.com/ticarpi/jwt_tool",
+"cats": [
+"cracker"
+],
+"stars": 6767,
+"explicit": true,
+"bins": [
+"jwt-tool"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "katana-pd",
+"version": "1:v1.6.1.r204.g09c83e9-1",
+"desc": "Crawling and spidering framework.",
+"url": "https://github.com/projectdiscovery/katana",
+"cats": [
+"scanner",
+"webapp"
+],
+"stars": 17586,
+"explicit": true,
+"bins": [
+"katana"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "kautilya",
+"version": "52.1c9d5b0-13",
+"desc": "Pwnage with Human Interface Devices using Teensy++2.0 and Teensy 3.0 devices.",
+"url": "https://github.com/samratashok/Kautilya/releases",
+"cats": [
+"hardware"
+],
+"stars": 871,
+"explicit": true,
+"bins": [
+"kautilya"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "kerbrute",
+"version": "90.9cfb81e-2",
+"desc": "A tool to perform Kerberos pre-auth bruteforcing.",
+"url": "https://github.com/ropnop/kerbrute",
+"cats": [
+"cracker"
+],
+"stars": 3456,
+"explicit": true,
+"bins": [
+"kerbrute"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "kippo",
+"version": "287.b9eb06a-3",
+"desc": "A medium interaction SSH honeypot designed to log brute force attacks and most importantly, the entire shell interaction by the attacker.",
+"url": "https://github.com/desaster/kippo",
+"cats": [
+"honeypot"
+],
+"stars": 1714,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/kippo"
+]
+},
+{
+"name": "klee",
+"version": "2.1-2",
+"desc": "A symbolic virtual machine built on top of the LLVM compiler infrastructure.",
+"url": "https://github.com/klee/klee",
+"cats": [
+"binary",
+"debugger",
+"reversing"
+],
+"stars": 2980,
+"explicit": true,
+"bins": [
+"klee",
+"klee-replay",
+"klee-stats",
+"gen-bout",
+"gen-random-bout",
+"kleaver",
+"ktest-tool"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "lans",
+"version": "1:148.9f8ef2d-6",
+"desc": "A Multithreaded asynchronous packet parsing/injecting arp spoofer.",
+"url": "https://github.com/DanMcInerney/LANs.py",
+"cats": [
+"networking",
+"spoof"
+],
+"stars": 2632,
+"explicit": true,
+"bins": [
+"lans"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "lazagne",
+"version": "1:v2.4.7.r6.g858ff6f-1",
+"desc": "An open source application used to retrieve lots of passwords stored on a local computer.",
+"url": "https://github.com/AlessandroZ/LaZagne",
+"cats": [
+"forensic",
+"social"
+],
+"stars": 10997,
+"explicit": true,
+"bins": [
+"lazagne"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ldapwordlistharvester",
+"version": "1.2.r20.g78cd116-1",
+"desc": "Tool to generate wordlist from information present in LDAP, in order to crack passwords of domain accounts.",
+"url": "https://github.com/p0dalirius/pyLDAPWordlistHarvester",
+"cats": [
+"wordlist",
+"wordlist"
+],
+"stars": 379,
+"explicit": true,
+"bins": [
+"ldapwordlistharvester"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "libc-database",
+"version": "45.69815cd-1",
+"desc": "Database of libc offsets to simplify exploitation.",
+"url": "https://github.com/niklasb/libc-database",
+"cats": [
+"exploitation",
+"reversing"
+],
+"stars": 1871,
+"explicit": true,
+"bins": [
+"libc-add",
+"libc-download",
+"libc-dump",
+"libc-find",
+"libc-get",
+"libc-identify"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "libosmocore",
+"version": "2:1.14.0-1",
+"desc": "Collection of common code used in various sub-projects inside the Osmocom family of projects.",
+"url": "https://osmocom.org/projects/libosmocore/wiki/Libosmocore",
+"cats": [
+"radio"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"osmo-aka-verify",
+"osmo-arfcn",
+"osmo-auc-gen",
+"osmo-config-merge",
+"osmo-gsmtap-logsend",
+"osmo-release.sh"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "lief",
+"version": "0.17.3-1",
+"desc": "Library to instrument executable formats.",
+"url": "https://github.com/lief-project/lief",
+"cats": [
+"disassembler",
+"reversing"
+],
+"stars": 5573,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "ligolo-ng",
+"version": "v0.9.2.r0.ge543732-1",
+"desc": "An advanced, yet simple, tunneling tool that uses a TUN interface.",
+"url": "https://github.com/nicocha30/ligolo-ng/releases",
+"cats": [
+"networking",
+"tunnel"
+],
+"stars": 5021,
+"explicit": true,
+"bins": [
+"ligolo-ng-agent",
+"ligolo-ng-proxy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "linenum",
+"version": "75.c47f9b2-1",
+"desc": "Scripted Local Linux Enumeration & Privilege Escalation Checks",
+"url": "https://github.com/rebootuser/LinEnum",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 8041,
+"explicit": true,
+"bins": [
+"linenum"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "loadlibrary",
+"version": "104.c40033b-1",
+"desc": "Porting Windows Dynamic Link Libraries to Linux.",
+"url": "https://github.com/taviso/loadlibrary",
+"cats": [
+"binary"
+],
+"stars": 4507,
+"explicit": true,
+"bins": [
+"mpclient"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "logkeys",
+"version": "97.98aac72-2",
+"desc": "A GNU/Linux keylogger that worked.",
+"url": "https://github.com/kernc/logkeys",
+"cats": [
+"keylogger"
+],
+"stars": 833,
+"explicit": true,
+"bins": [
+"logkeys",
+"llk",
+"llkk"
+],
+"man": [
+"logkeys"
+],
+"paths": []
+},
+{
+"name": "loic",
+"version": "2.9.9.99-1",
+"desc": "An open source network stress tool for Windows.",
+"url": "https://github.com/NewEraCracker/LOIC",
+"cats": [
+"networking",
+"windows"
+],
+"stars": 2969,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "loki-scanner",
+"version": "1258.7688421-1",
+"desc": "Simple IOC and Incident Response Scanner.",
+"url": "https://github.com/Neo23x0/Loki",
+"cats": [
+"forensic",
+"scanner"
+],
+"stars": 3793,
+"explicit": true,
+"bins": [
+"loki-scanner"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "lte-cell-scanner",
+"version": "1:26.e7f71cb-1",
+"desc": "An OpenCL accelerated TDD/FDD LTE Scanner.",
+"url": "https://github.com/JiaoXianjun/LTE-Cell-Scanner",
+"cats": [
+"mobile",
+"radio",
+"scanner"
+],
+"stars": 797,
+"explicit": true,
+"bins": [
+"CellSearch",
+"LTE-Tracker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "luyten",
+"version": "0.5.4-1",
+"desc": "An Open Source Java Decompiler Gui for Procyon.",
+"url": "https://github.com/deathmarine/Luyten",
+"cats": [
+"decompiler",
+"misc"
+],
+"stars": 5112,
+"explicit": true,
+"bins": [
+"luyten"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "maigret",
+"version": "2:0.6.5-1",
+"desc": "OSINT username checker. Collect a dossier on a person by username from a huge number of sites.",
+"url": "https://github.com/soxoj/maigret",
+"cats": [
+"recon",
+"social"
+],
+"stars": 38031,
+"explicit": true,
+"bins": [
+"maigret",
+"update_sitesmd"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mailsend-go",
+"version": "150.fd086ac-1",
+"desc": "A multi-platform command line tool to send mail via SMTP protocol.",
+"url": "https://github.com/muquit/mailsend-go",
+"cats": [
+"misc",
+"spoof"
+],
+"stars": 196,
+"explicit": true,
+"bins": [
+"mailsend-go"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "maltrail",
+"version": "2:3.4.r60.g5547c07-1",
+"desc": "Malicious traffic detection system.",
+"url": "https://github.com/stamparm/maltrail",
+"cats": [
+"defensive",
+"networking",
+"sniffer"
+],
+"stars": 8609,
+"explicit": true,
+"bins": [
+"maltrail-sensor",
+"maltrail-server"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "maltrieve",
+"version": "342.b9e7560-2",
+"desc": "Originated as a fork of mwcrawler. It retrieves malware directly from the sources as listed at a number of sites.",
+"url": "https://github.com/technoskald/maltrieve",
+"cats": [
+"disassembler",
+"malware"
+],
+"stars": 564,
+"explicit": true,
+"bins": [
+"maltrieve",
+"maltrievecategorizer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "manticore",
+"version": "1:0.3.7.r88.gcdf6c4b-1",
+"desc": "Symbolic execution tool.",
+"url": "https://github.com/trailofbits/manticore",
+"cats": [
+"binary"
+],
+"stars": 3857,
+"explicit": true,
+"bins": [
+"manticore",
+"manticore-verifier"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "marshalsec",
+"version": "10.2dc4018-1",
+"desc": "Java Unmarshaller Security - Turning your data into code execution.",
+"url": "https://github.com/mbechler/marshalsec/",
+"cats": [
+"exploitation"
+],
+"stars": 3715,
+"explicit": true,
+"bins": [
+"marshalsec"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "massbleed",
+"version": "20.44b7e85-6",
+"desc": "SSL Vulnerability Scanner.",
+"url": "https://github.com/1N3/Sn1per",
+"cats": [
+"automation",
+"recon",
+"scanner"
+],
+"stars": 11279,
+"explicit": true,
+"bins": [
+"massbleed"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "massdns",
+"version": "316.6bfa471-1",
+"desc": "A high-performance DNS stub resolver in C.",
+"url": "https://github.com/blechschmidt/massdns",
+"cats": [
+"networking"
+],
+"stars": 3651,
+"explicit": true,
+"bins": [
+"massdns"
+],
+"man": [
+"massdns"
+],
+"paths": []
+},
+{
+"name": "matroschka",
+"version": "58.2f026a4-5",
+"desc": "Python steganography tool to hide images or text in images.",
+"url": "https://github.com/fgrimme/Matroschka",
+"cats": [
+"stego"
+],
+"stars": 436,
+"explicit": true,
+"bins": [
+"matroschka"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mdk3",
+"version": "v6-10",
+"desc": "WLAN penetration tool.",
+"url": "https://aspj.aircrack-ng.org/",
+"cats": [
+"exploitation",
+"fuzzer",
+"wireless"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"mdk3"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "meanalyzer",
+"version": "1.273.0-7",
+"desc": "Intel Engine Firmware Analysis Tool.",
+"url": "https://github.com/platomav/MEAnalyzer",
+"cats": [
+"firmware"
+],
+"stars": 1327,
+"explicit": true,
+"bins": [
+"meanalyzer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mercury",
+"version": "1:2.16.1.r0.g0d7fbce-1",
+"desc": "Network metadata capture and analysis.",
+"url": "https://github.com/cisco/mercury",
+"cats": [
+"fingerprint",
+"networking",
+"sniffer"
+],
+"stars": 519,
+"explicit": true,
+"bins": [
+"mercury"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "merlin-server",
+"version": "1.3.0-1",
+"desc": "Merlin is a cross-platform post-exploitation HTTP/2 Command & Control server and agent written in golang.",
+"url": "https://github.com/Ne0nd0g/merlin",
+"cats": [
+"automation",
+"exploitation"
+],
+"stars": 5609,
+"explicit": true,
+"bins": [
+"merlin-server"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "metacoretex",
+"version": "0.8.0-4",
+"desc": "MetaCoretex is an entirely JAVA vulnerability scanning framework for databases.",
+"url": "http://metacoretex.sourceforge.net/",
+"cats": [
+"database"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"metacoretex"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mimikatz",
+"version": "2.2.0_20220919-1",
+"desc": "A little tool to play with Windows security.",
+"url": "https://github.com/gentilkiwi/mimikatz",
+"cats": [
+"cracker",
+"windows"
+],
+"stars": 21875,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "mimipenguin",
+"version": "153.ecb2ffc-2",
+"desc": "A tool to dump the login password from the current linux user.",
+"url": "https://github.com/huntergregal/mimipenguin",
+"cats": [
+"cracker",
+"forensic"
+],
+"stars": 4169,
+"explicit": true,
+"bins": [
+"mimipenguin"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "missionplanner",
+"version": "1.3.83-1",
+"desc": "A GroundControl Station for Ardupilot.",
+"url": "https://firmware.ardupilot.org/Tools/MissionPlanner/",
+"cats": [
+"drone"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"missionplanner"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mitmap",
+"version": "89.b590f9a-9",
+"desc": "A python program to create a fake AP and sniff data.",
+"url": "https://github.com/xdavidhu/mitmAP",
+"cats": [
+"sniffer",
+"wireless"
+],
+"stars": 1692,
+"explicit": true,
+"bins": [
+"mitmap"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mobsf",
+"version": "2:v4.5.3.r3.g7a4785f-1",
+"desc": "An intelligent, all-in-one open source mobile application (Android/iOS) automated pen-testing framework capable of performing static, dynamic analysis and web API testing.",
+"url": "https://github.com/MobSF/Mobile-Security-Framework-MobSF",
+"cats": [
+"mobile"
+],
+"stars": 21846,
+"explicit": true,
+"bins": [
+"mobsf"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "modlishka",
+"version": "v.1.1.1.r11.g214dd6c-1",
+"desc": "A powerful and flexible HTTP reverse proxy.",
+"url": "https://github.com/drk1wi/Modlishka",
+"cats": [
+"proxy"
+],
+"stars": 5416,
+"explicit": true,
+"bins": [
+"modlishka"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "moloch",
+"version": "0.11.3-1",
+"desc": "An open source large scale IPv4 full PCAP capturing, indexing and database system.",
+"url": "https://github.com/aol/moloch",
+"cats": [
+"networking"
+],
+"stars": 7504,
+"explicit": true,
+"bins": [
+"moloch-capture"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "motsa-dns-spoofing",
+"version": "2.6ac6980-5",
+"desc": "ManOnTheSideAttack-DNS Spoofing.",
+"url": "https://github.com/waytoalpit/ManOnTheSideAttack-DNS-Spoofing",
+"cats": [
+"networking",
+"spoof"
+],
+"stars": 5,
+"explicit": true,
+"bins": [
+"motsa-dnsdetect",
+"motsa-dnsinject"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mrsip",
+"version": "110.bdd98ad-1",
+"desc": "SIP-Based Audit and Attack Tool.",
+"url": "https://github.com/meliht/mr.sip",
+"cats": [
+"voip"
+],
+"stars": 437,
+"explicit": true,
+"bins": [
+"mrsip"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mubeng",
+"version": "254.a77f2d5-1",
+"desc": "An incredibly fast proxy checker & IP rotator with ease.",
+"url": "https://github.com/kitabisa/mubeng",
+"cats": [
+"proxy"
+],
+"stars": 2716,
+"explicit": true,
+"bins": [
+"mubeng"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mylg",
+"version": "659.faba867-2",
+"desc": "Network Diagnostic Tool.",
+"url": "https://github.com/mehrdadrad/mylg",
+"cats": [
+"networking",
+"recon",
+"sniffer"
+],
+"stars": 2719,
+"explicit": true,
+"bins": [
+"mylg"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "mysql2sqlite",
+"version": "1:14.e5b2c31-1",
+"desc": "Converts a mysqldump file into a Sqlite 3 compatible file.",
+"url": "https://gist.github.com/esperlu/943776",
+"cats": [
+"database",
+"misc"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"mysql2sqlite"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "neo-regeorg",
+"version": "1:v5.3.0.r3.g5357264-1",
+"desc": "Improved version of reGeorg, HTTP tunneling pivot tool",
+"url": "https://github.com/L-codes/Neo-reGeorg",
+"cats": [
+"proxy",
+"tunnel"
+],
+"stars": 3419,
+"explicit": true,
+"bins": [
+"neo-regeorg"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "nerva",
+"version": "v1.70.1.r0.g1272690-1",
+"desc": "Fast service fingerprinting CLI for 170+ protocols (TCP/UDP/SCTP).",
+"url": "https://github.com/praetorian-inc/nerva",
+"cats": [
+"fingerprint",
+"recon",
+"scanner"
+],
+"stars": 359,
+"explicit": true,
+"bins": [
+"nerva"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "net-creds",
+"version": "87.07a25e1-3",
+"desc": "Sniffs sensitive data from interface or pcap.",
+"url": "https://github.com/DanMcInerney/net-creds",
+"cats": [
+"sniffer"
+],
+"stars": 1864,
+"explicit": true,
+"bins": [
+"net-creds"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "netexec",
+"version": "v1.5.1.r914.g4702580-1",
+"desc": "A Windows / Active Directory environments pentest tool.",
+"url": "https://netexec.wiki/",
+"cats": [
+"exploitation",
+"networking",
+"scanner",
+"windows"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"netexec",
+"nxc"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "nettacker",
+"version": "0.4.1.r12.gcee419f-1",
+"desc": "Automated Penetration Testing Framework.",
+"url": "https://github.com/OWASP/Nettacker",
+"cats": [
+"automation",
+"recon",
+"scanner"
+],
+"stars": 5625,
+"explicit": true,
+"bins": [
+"nettacker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "netzob",
+"version": "1.0.2-13",
+"desc": "An open source tool for reverse engineering, traffic generation and fuzzing of communication protocols.",
+"url": "https://github.com/netzob/netzob/",
+"cats": [
+"fuzzer",
+"networking",
+"reversing"
+],
+"stars": 836,
+"explicit": true,
+"bins": [
+"netzob"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "nfcutils",
+"version": "61.49aa178-1",
+"desc": "A simple command that lists tags which are in your NFC device field.",
+"url": "https://github.com/nfc-tools/nfcutils",
+"cats": [
+"nfc"
+],
+"stars": 29,
+"explicit": true,
+"bins": [
+"lsnfc"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "nimbostratus",
+"version": "54.c7c206f-5",
+"desc": "Tools for fingerprintinging and exploiting Amazon cloud infrastructures.",
+"url": "https://github.com/andresriancho/nimbostratus",
+"cats": [
+"exploitation",
+"fingerprint",
+"fuzzer"
+],
+"stars": 515,
+"explicit": true,
+"bins": [
+"nimbostratus"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "nipe",
+"version": "302.9e628df-1",
+"desc": "A script to make Tor Network your default gateway.",
+"url": "https://github.com/GouveaHeitor/nipe",
+"cats": [
+"defensive",
+"networking"
+],
+"stars": 2394,
+"explicit": true,
+"bins": [
+"nipe"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "noriben",
+"version": "1:2.0.r30.g4c84a98-1",
+"desc": "Portable, Simple, Malware Analysis Sandbox.",
+"url": "https://github.com/Rurik/Noriben",
+"cats": [
+"malware"
+],
+"stars": 1304,
+"explicit": true,
+"bins": [
+"noriben",
+"noriben-sandbox"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "nsntrace",
+"version": "82.ed3532e-1",
+"desc": "Perform network trace of a single process by using network namespaces.",
+"url": "https://github.com/jonasdn/nsntrace",
+"cats": [
+"sniffer"
+],
+"stars": 548,
+"explicit": true,
+"bins": [
+"nsntrace"
+],
+"man": [
+"nsntrace"
+],
+"paths": []
+},
+{
+"name": "nuclei",
+"version": "2:v3.11.1.r147.gc5611b9-1",
+"desc": "A fast tool for configurable targeted scanning based on templates offering massive extensibility and ease of use.",
+"url": "https://github.com/projectdiscovery/nuclei",
+"cats": [
+"fingerprint",
+"recon",
+"scanner",
+"webapp"
+],
+"stars": 31589,
+"explicit": true,
+"bins": [
+"nuclei"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ollydbg",
+"version": "201g-8",
+"desc": "A 32-bit assembler-level analysing debugger.",
+"url": "http://www.ollydbg.de",
+"cats": [
+"debugger",
+"windows"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"ollydbg"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "oniongrok",
+"version": "v1.1.11.r0.gcbae9e7-1",
+"desc": "Onion addresses for anything.",
+"url": "https://github.com/cmars/oniongrok",
+"cats": [
+"tunnel"
+],
+"stars": 618,
+"explicit": true,
+"bins": [
+"oniongrok"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "openpuff",
+"version": "4.01-3",
+"desc": "Yet not another steganography SW.",
+"url": "https://embeddedsw.net/OpenPuff_Steganography_Home.html",
+"cats": [
+"stego",
+"windows"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"openpuff"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "openstego",
+"version": "0.8.6-1",
+"desc": "A tool implemented in Java for generic steganography, with support for password-based encryption of the data.",
+"url": "https://github.com/syvaidya/openstego/releases",
+"cats": [
+"crypto",
+"stego"
+],
+"stars": 1442,
+"explicit": true,
+"bins": [
+"openstego"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "openwebrx",
+"version": "1.2.2.r389.g640c5b0-5",
+"desc": "Open source, multi-user SDR receiver software with a web interface.",
+"url": "https://github.com/jketterl/openwebrx",
+"cats": [
+"radio"
+],
+"stars": 1323,
+"explicit": true,
+"bins": [
+"openwebrx"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "operative",
+"version": "1:148.163acdf-1",
+"desc": "Framework based on fingerprint action, this tool is used for get information on a website or a enterprise target with multiple modules (Viadeo search,Linkedin search, Reverse email whois, Reverse ip whois, SQL file forensics ...).",
+"url": "https://github.com/graniet/operative-framework",
+"cats": [
+"fingerprint"
+],
+"stars": 751,
+"explicit": true,
+"bins": [
+"operative"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "oscanner",
+"version": "1.0.6-7",
+"desc": "An Oracle assessment framework developed in Java.",
+"url": "http://www.cqure.net/wp/oscanner/",
+"cats": [
+"fuzzer"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"oscanner",
+"reportviewer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "osert",
+"version": "100.4eef9b9-1",
+"desc": "Markdown Templates for Offensive Security exam reports.",
+"url": "https://github.com/noraj/OSCP-Exam-Report-Template-Markdown",
+"cats": [
+"misc"
+],
+"stars": 4202,
+"explicit": true,
+"bins": [
+"osert"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "osintgram",
+"version": "2.0.r1.gcfb7038-1",
+"desc": "OSINT tool offering an interactive shell to perform analysis on Instagram account of any users by its nickname.",
+"url": "https://github.com/Datalux/Osintgram",
+"cats": [
+"recon"
+],
+"stars": 14701,
+"explicit": true,
+"bins": [
+"osintgram"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ostinato",
+"version": "0.9-4",
+"desc": "An open-source, cross-platform packet/traffic generator and analyzer with a friendly GUI. It aims to be \"Wireshark in Reverse\" and thus become complementary to Wireshark.",
+"url": "https://github.com/pstavirs/ostinato/",
+"cats": [
+"networking",
+"sniffer"
+],
+"stars": 772,
+"explicit": true,
+"bins": [
+"ostinato",
+"drone"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "packetsender",
+"version": "1326.9714b2e-1",
+"desc": "An open source utility to allow sending and receiving TCP and UDP packets.",
+"url": "https://github.com/dannagle/PacketSender",
+"cats": [
+"networking"
+],
+"stars": 2683,
+"explicit": true,
+"bins": [
+"packetsender"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pacu",
+"version": "1:v1.6.2.r1.g575a4b6-1",
+"desc": "The AWS exploitation framework, designed for testing the security of Amazon Web Services environments.",
+"url": "https://github.com/RhinoSecurityLabs/pacu",
+"cats": [
+"exploitation"
+],
+"stars": 5347,
+"explicit": true,
+"bins": [
+"pacu"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "passivedns",
+"version": "297.be48a8e-1",
+"desc": "A network sniffer that logs all DNS server replies for use in a passive DNS setup.",
+"url": "https://github.com/gamelinux/passivedns",
+"cats": [
+"sniffer"
+],
+"stars": 1735,
+"explicit": true,
+"bins": [
+"passivedns"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "patator",
+"version": "2:1.1.0.r4.g964e87c-1",
+"desc": "A multi-purpose bruteforcer.",
+"url": "https://github.com/lanjelot/patator",
+"cats": [
+"cracker"
+],
+"stars": 3932,
+"explicit": true,
+"bins": [
+"patator"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "payloadsallthethings",
+"version": "1:4.2.r116.g3ac2790-1",
+"desc": "A list of useful payloads and bypass for Web Application Security and Pentest/CTF.",
+"url": "https://github.com/swisskyrepo/PayloadsAllTheThings/",
+"cats": [
+"misc"
+],
+"stars": 81286,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/payloadsallthethings"
+]
+},
+{
+"name": "pcapxray",
+"version": "2:v5.2.r1.ga454d12-1",
+"desc": "A Network Forensics Tool - To visualize a Packet Capture offline as a Network Diagram including device identification, highlight important communication and file extraction.",
+"url": "https://github.com/Srinivas11789/PcapXray",
+"cats": [
+"forensic",
+"networking"
+],
+"stars": 1884,
+"explicit": true,
+"bins": [
+"pcapxray"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pcileech",
+"version": "4.19.5-1",
+"desc": "Tool, which uses PCIe hardware devices to read and write from the target system memory.",
+"url": "https://github.com/ufrisk/pcileech/releases",
+"cats": [
+"hardware",
+"reversing"
+],
+"stars": 7935,
+"explicit": true,
+"bins": [
+"pcileech"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pe-bear",
+"version": "0.7.2-1",
+"desc": "A freeware reversing tool for PE files.",
+"url": "https://github.com/hasherezade/pe-bear",
+"cats": [
+"binary",
+"disassembler",
+"malware",
+"reversing",
+"windows"
+],
+"stars": 3823,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "pe-sieve",
+"version": "0.4.1.1-1",
+"desc": "Scans a given process. Recognizes and dumps a variety of potentially malicious implants (replaced/injected PEs, shellcodes, hooks, in-memory patches).",
+"url": "https://github.com/hasherezade/pe-sieve",
+"cats": [
+"binary",
+"malware",
+"windows"
+],
+"stars": 3907,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "peass",
+"version": "20260927.30e48b1d.r0.g36d56f1-1",
+"desc": "Privilege Escalation Awesome Scripts SUITE (with colors).",
+"url": "https://github.com/carlospolop/PEASS-ng",
+"cats": [
+"scanner"
+],
+"stars": 20582,
+"explicit": true,
+"bins": [
+"linpeas",
+"linpeas_fat"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "peframe",
+"version": "135.70683b6-10",
+"desc": "Tool to perform static analysis on (portable executable) malware.",
+"url": "https://github.com/guelfoweb/peframe",
+"cats": [
+"binary",
+"malware",
+"reversing"
+],
+"stars": 629,
+"explicit": true,
+"bins": [
+"peframe"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pentestgpt",
+"version": "v0.14.0.r21.ge8b1bb7-1",
+"desc": "A penetration testing tool empowered by ChatGPT. It is designed to automate the penetration testing process.",
+"url": "https://github.com/GreyDGL/PentestGPT",
+"cats": [
+"automation"
+],
+"stars": 15631,
+"explicit": true,
+"bins": [
+"pentestgpt"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "persistencesniper",
+"version": "v1.17.1.r0.g13006aa-1",
+"desc": "Hunt persistences implanted in Windows machines.",
+"url": "https://github.com/last-byte/PersistenceSniper",
+"cats": [
+"defensive",
+"windows"
+],
+"stars": 2142,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "pgdbf",
+"version": "113.4e84775-1",
+"desc": "Convert XBase / FoxPro databases to PostgreSQL",
+"url": "https://github.com/kstrauser/pgdbf",
+"cats": [
+"database"
+],
+"stars": 144,
+"explicit": true,
+"bins": [
+"pgdbf"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "phoneinfoga",
+"version": "v2.11.0.r6.g55807b0-1",
+"desc": "Information gathering & OSINT framework for phone numbers.",
+"url": "https://github.com/sundowndev/PhoneInfoga",
+"cats": [
+"mobile",
+"social"
+],
+"stars": 18000,
+"explicit": true,
+"bins": [
+"phoneinfoga"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "photon",
+"version": "1:v1.2.2.r49.g635c25a-1",
+"desc": "Incredibly fast crawler which extracts urls, emails, files, website accounts and much more.",
+"url": "https://github.com/s0md3v/Photon",
+"cats": [
+"recon",
+"webapp"
+],
+"stars": 13243,
+"explicit": true,
+"bins": [
+"photon"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "phpstan",
+"version": "15401.dda82d9b3-1",
+"desc": "PHP Static Analysis Tool - discover bugs in your code without running it.",
+"url": "https://github.com/phpstan/phpstan",
+"cats": [
+"code-audit"
+],
+"stars": 14112,
+"explicit": true,
+"bins": [
+"phpstan"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "phpstress",
+"version": "5.f987a7e-2",
+"desc": "A PHP denial of service / stress test for Web Servers running PHP-FPM or PHP-CGI.",
+"url": "https://github.com/nightlionsecurity/phpstress",
+"cats": [
+"dos"
+],
+"stars": 40,
+"explicit": true,
+"bins": [
+"phpstress"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pintool",
+"version": "24.d538a79-3",
+"desc": "This tool can be useful for solving some reversing challenges in CTFs events.",
+"url": "https://github.com/wagiro/pintool",
+"cats": [
+"binary",
+"reversing"
+],
+"stars": 145,
+"explicit": true,
+"bins": [
+"pintool"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "plasma-disasm",
+"version": "922.ec7df9b-9",
+"desc": "An interactive disassembler for x86/ARM/MIPS. It can generates indented pseudo-code with colored syntax.",
+"url": "https://github.com/joelpx/plasma",
+"cats": [
+"binary",
+"debugger",
+"disassembler"
+],
+"stars": 3068,
+"explicit": true,
+"bins": [
+"plasma-disasm"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pngcheck",
+"version": "3.0.3-1",
+"desc": "Verifies the integrity of PNG, JNG and MNG files by checking the CRCs and decompressing the image data.",
+"url": "http://www.libpng.org/pub/png/apps/pngcheck.html",
+"cats": [
+"defensive",
+"forensic",
+"stego"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"pngcheck",
+"png-fix-IDAT-windowsize",
+"pngsplit"
+],
+"man": [
+"pngcheck"
+],
+"paths": []
+},
+{
+"name": "powersploit",
+"version": "591.d943001-1",
+"desc": "A PowerShell Post-Exploitation Framework.",
+"url": "https://github.com/mattifestation/PowerSploit",
+"cats": [
+"exploitation",
+"windows"
+],
+"stars": 13079,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "pret",
+"version": "108.a04bd04-6",
+"desc": "Printer Exploitation Toolkit - The tool that made dumpster diving obsolete.",
+"url": "https://github.com/RUB-NDS/PRET",
+"cats": [
+"exploitation",
+"fuzzer",
+"recon",
+"scanner"
+],
+"stars": 4310,
+"explicit": true,
+"bins": [
+"pret"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "procdump",
+"version": "1:3.5.1.r0.g5c01514-1",
+"desc": "Generate coredumps based off performance triggers.",
+"url": "https://github.com/Microsoft/ProcDump-for-Linux",
+"cats": [
+"binary",
+"misc"
+],
+"stars": 3085,
+"explicit": true,
+"bins": [
+"procdump"
+],
+"man": [
+"procdump"
+],
+"paths": []
+},
+{
+"name": "procyon",
+"version": "0.6-1",
+"desc": "A suite of Java metaprogramming tools focused on code generation and analysis.",
+"url": "https://github.com/mstrobel/procyon",
+"cats": [
+"code-audit",
+"decompiler"
+],
+"stars": 1220,
+"explicit": true,
+"bins": [
+"procyon"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "promptfoo",
+"version": "0.120.20-1",
+"desc": "Test and evaluate LLM outputs - AI red teaming, pentesting, and vulnerability scanning.",
+"url": "https://github.com/promptfoo/promptfoo",
+"cats": [
+"ai"
+],
+"stars": 25527,
+"explicit": true,
+"bins": [
+"promptfoo",
+"pf"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "prowler",
+"version": "1:9215.c2b8092461-1",
+"desc": "Tool for AWS security assessment, auditing and hardening.",
+"url": "https://github.com/alfresco/prowler",
+"cats": [
+"defensive",
+"scanner"
+],
+"stars": 14887,
+"explicit": true,
+"bins": [
+"prowler"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "proxify",
+"version": "904.cb35116-1",
+"desc": "Swiss Army knife Proxy tool for HTTP/HTTPS traffic capture, manipulation, and replay on the go.",
+"url": "https://github.com/projectdiscovery/proxify",
+"cats": [
+"proxy"
+],
+"stars": 3070,
+"explicit": true,
+"bins": [
+"proxify"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pshitt",
+"version": "23.dae7931-2",
+"desc": "A lightweight fake SSH server designed to collect authentication data sent by intruders.",
+"url": "https://github.com/regit/pshitt",
+"cats": [
+"honeypot"
+],
+"stars": 160,
+"explicit": true,
+"bins": [
+"pshitt"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pspy",
+"version": "159.2312eed-4",
+"desc": "Monitor linux processes without root permissions.",
+"url": "https://github.com/DominicBreuker/pspy",
+"cats": [
+"misc",
+"recon"
+],
+"stars": 6201,
+"explicit": true,
+"bins": [
+"pspy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ptf",
+"version": "1517.74f58d6-5",
+"desc": "The Penetration Testers Framework: Way for modular support for up-to-date tools.",
+"url": "https://github.com/trustedsec/ptf",
+"cats": [
+"automation",
+"exploitation",
+"recon",
+"scanner"
+],
+"stars": 5573,
+"explicit": true,
+"bins": [
+"ptf"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pth-toolkit",
+"version": "7.3641cdc-2",
+"desc": "Modified version of the passing-the-hash tool collection made to work straight out of the box.",
+"url": "https://github.com/byt3bl33d3r/pth-toolkit",
+"cats": [
+"networking",
+"sniffer"
+],
+"stars": 616,
+"explicit": true,
+"bins": [
+"pth-net",
+"pth-rpcclient",
+"pth-smbclient",
+"pth-smbget",
+"pth-winexe",
+"pth-wmic",
+"pth-wmis"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pupy",
+"version": "2988.4b78dc58-1",
+"desc": "Opensource, cross-platform (Windows, Linux, OSX, Android) remote administration and post-exploitation tool mainly written in python.",
+"url": "https://github.com/n1nj4sec/pupy",
+"cats": [
+"automation",
+"exploitation"
+],
+"stars": 9000,
+"explicit": true,
+"bins": [
+"pupygen",
+"pupysh"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pwncat",
+"version": "0.1.2-6",
+"desc": "Bind and reverse shell handler with FW/IDS/IPS evasion, self-inject and port-scanning.",
+"url": "https://github.com/cytopia/pwncat",
+"cats": [
+"backdoor",
+"networking",
+"proxy",
+"scanner"
+],
+"stars": 1961,
+"explicit": true,
+"bins": [
+"pwncat"
+],
+"man": [
+"pwncat"
+],
+"paths": []
+},
+{
+"name": "pyaxmlparser",
+"version": "v0.3.31.r13.g446bf7c-2",
+"desc": "A simple parser to parse Android XML file.",
+"url": "https://github.com/appknox/pyaxmlparser",
+"cats": [
+"misc",
+"mobile"
+],
+"stars": 151,
+"explicit": false,
+"bins": [
+"apkinfo"
+],
+"man": [
+"apkinfo"
+],
+"paths": []
+},
+{
+"name": "pyinstaller",
+"version": "2:6.22.3-1",
+"desc": "Bundles a Python application and all its dependencies into a single package.",
+"url": "https://pyinstaller.org",
+"cats": [
+"misc"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"pyinstaller",
+"pyi-archive_viewer",
+"pyi-bindepend",
+"pyi-grab_version",
+"pyi-makespec",
+"pyi-set_version"
+],
+"man": [
+"pyi-makespec",
+"pyinstaller"
+],
+"paths": []
+},
+{
+"name": "pyinstaller-hooks-contrib",
+"version": "2026.7-1",
+"desc": "PyInstaller community hooks.",
+"url": "https://github.com/pyinstaller/pyinstaller-hooks-contrib",
+"cats": [
+"misc"
+],
+"stars": 124,
+"explicit": false,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "pyinstxtractor",
+"version": "2026.07.r0.g815d31c-1",
+"desc": "PyInstaller Extractor.",
+"url": "https://github.com/extremecoders-re/pyinstxtractor",
+"cats": [
+"reversing"
+],
+"stars": 4490,
+"explicit": true,
+"bins": [
+"pyinstxtractor"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "pyrdp",
+"version": "2107.b610809-1",
+"desc": "Python 3 RDP MITM and library.",
+"url": "https://github.com/GoSecure/pyrdp",
+"cats": [
+"networking",
+"sniffer"
+],
+"stars": 1780,
+"explicit": true,
+"bins": [
+"pyrdp-clonecert",
+"pyrdp-convert",
+"pyrdp-mitm",
+"pyrdp-player",
+"pyrdp-player-gui"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python-keylogger",
+"version": "2.7.3-12",
+"desc": "Simple keystroke logger.",
+"url": "https://github.com/GiacomoLaw/Keylogger",
+"cats": [
+"keylogger"
+],
+"stars": 2436,
+"explicit": true,
+"bins": [
+"python-keylogger"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python-lief",
+"version": "0.17.3-1",
+"desc": "Library to instrument executable formats.",
+"url": "https://github.com/lief-project/lief",
+"cats": [
+"disassembler",
+"reversing"
+],
+"stars": 5573,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "python-oletools",
+"version": "1:0.60.2-3",
+"desc": "Tools to analyze Microsoft OLE2 files.",
+"url": "https://pypi.org/project/oletools/",
+"cats": [
+"binary",
+"forensic"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"ezhexviewer",
+"ftguess",
+"mraptor",
+"msodde",
+"olebrowse",
+"oledir",
+"olefile",
+"oleid",
+"olemap",
+"olemeta",
+"oleobj",
+"oletimes",
+"olevba",
+"pyxswf",
+"rtfobj"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python-pcodedmp",
+"version": "1.2.6-9",
+"desc": "A VBA p-code disassembler.",
+"url": "https://pypi.org/project/pcodedmp/#files",
+"cats": [
+"disassembler"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"pcodedmp"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python-trackerjacker",
+"version": "2.0.5-4",
+"desc": "Finds and tracks wifi devices through raw 802.11 monitoring.",
+"url": "https://github.com/calebmadrigal/trackerjacker",
+"cats": [
+"wireless"
+],
+"stars": 2740,
+"explicit": true,
+"bins": [
+"trackerjacker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-capstone",
+"version": "4.0.1-4",
+"desc": "A disassembly framework with the target of becoming the ultimate disasm engine for binary analysis and reversing in the security community.",
+"url": "https://github.com/aquynh/capstone",
+"cats": [
+"disassembler",
+"reversing"
+],
+"stars": 9041,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-darts.util.lru",
+"version": "7.5ef01b1-5",
+"desc": "Simple dictionary with LRU behaviour.",
+"url": "https://pypi.python.org/pypi/darts.util.lru",
+"cats": [
+"misc"
+],
+"stars": 0,
+"explicit": false,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-frida",
+"version": "15.2.2-4",
+"desc": "Dynamic instrumentation toolkit for developers, reverse-engineers, and security researchers.",
+"url": "https://pypi.org/project/frida/#files",
+"cats": [
+"binary",
+"reversing"
+],
+"stars": 0,
+"explicit": false,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-frida-tools",
+"version": "11.0.0-4",
+"desc": "Frida CLI tools.",
+"url": "https://pypi.org/project/frida-tools/#files",
+"cats": [
+"binary",
+"mobile",
+"reversing"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"frida-apk2",
+"frida-compile2",
+"frida-create2",
+"frida-discover2",
+"frida-join2",
+"frida-kill2",
+"frida-ls-devices2",
+"frida-ls2",
+"frida-ps2",
+"frida-pull2",
+"frida-push2",
+"frida-rm2",
+"frida-trace2",
+"frida2"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-hpfeeds",
+"version": "414.34bf4d4-5",
+"desc": "Honeynet Project generic authenticated datafeed protocol.",
+"url": "https://github.com/rep/hpfeeds",
+"cats": [
+"honeypot",
+"networking"
+],
+"stars": 218,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-jsbeautifier",
+"version": "1.13.4-1",
+"desc": "JavaScript unobfuscator and beautifier.",
+"url": "https://github.com/beautify-web/js-beautify",
+"cats": [
+"reversing",
+"webapp"
+],
+"stars": 8999,
+"explicit": true,
+"bins": [
+"js-beautify2"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-minidump",
+"version": "19.749e6da-2",
+"desc": "Python library to parse and read Microsoft minidump file format.",
+"url": "https://github.com/skelsec/minidump",
+"cats": [
+"windows"
+],
+"stars": 305,
+"explicit": false,
+"bins": [
+"minidump2"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-minikerberos",
+"version": "17.e7e8d0a-2",
+"desc": "Kerberos manipulation library in pure Python.",
+"url": "https://github.com/skelsec/minikerberos",
+"cats": [
+"windows"
+],
+"stars": 302,
+"explicit": false,
+"bins": [
+"ccache2kirbi2",
+"ccacheedit2",
+"kerberoscomm2",
+"kirbi2ccache2"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "python2-shodan",
+"version": "1.28.0-1",
+"desc": "Python library and command-line utility for Shodan (https://developer.shodan.io).",
+"url": "https://pypi.org/project/shodan/#files",
+"cats": [
+"automation",
+"recon",
+"scanner"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"shodan2"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "qark",
+"version": "301.ba1b265-4",
+"desc": "Tool to look for several security related Android application vulnerabilities.",
+"url": "https://github.com/linkedin/qark",
+"cats": [
+"exploitation",
+"fuzzer",
+"mobile",
+"scanner"
+],
+"stars": 3392,
+"explicit": true,
+"bins": [
+"qark"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "radare2-keystone",
+"version": "940.614d949-1",
+"desc": "Keystone assembler plugins for radare2.",
+"url": "https://github.com/radare/radare2-extras/tree/master/unicorn",
+"cats": [
+"binary",
+"disassembler",
+"reversing"
+],
+"stars": 262,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/radare2-extras"
+]
+},
+{
+"name": "radare2-unicorn",
+"version": "922.7a6e373-1",
+"desc": "Unicorn Emulator Plugin for radare2.",
+"url": "https://github.com/radare/radare2-extras/tree/master/unicorn",
+"cats": [
+"binary",
+"disassembler",
+"reversing"
+],
+"stars": 262,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "rbndr",
+"version": "9.a189ffd-1",
+"desc": "Simple DNS Rebinding Service.",
+"url": "https://github.com/taviso/rbndr",
+"cats": [
+"spoof"
+],
+"stars": 759,
+"explicit": true,
+"bins": [
+"rbndr"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "recaf",
+"version": "4.0.0.alpha.r536.g6a58f86-1",
+"desc": "Modern Java bytecode editor.",
+"url": "https://github.com/Col-E/Recaf",
+"cats": [
+"decompiler",
+"reversing"
+],
+"stars": 7400,
+"explicit": true,
+"bins": [
+"recaf"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "redsocks",
+"version": "211.19b822e-2",
+"desc": "Transparent redirector of any TCP connection to proxy.",
+"url": "https://github.com/darkk/redsocks",
+"cats": [
+"networking",
+"proxy"
+],
+"stars": 3624,
+"explicit": true,
+"bins": [
+"redsocks"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "regeorg",
+"version": "30.1ca54c2-4",
+"desc": "The successor to reDuh, pwn a bastion webserver and create SOCKS proxies through the DMZ. Pivot and pwn.",
+"url": "https://github.com/sensepost/reGeorg",
+"cats": [
+"proxy",
+"tunnel"
+],
+"stars": 3180,
+"explicit": true,
+"bins": [
+"regeorg"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "rekall",
+"version": "1:1.7.2rc1.r68.g55d1925-2",
+"desc": "Memory Forensic Framework.",
+"url": "https://github.com/google/rekall",
+"cats": [
+"forensic"
+],
+"stars": 2006,
+"explicit": true,
+"bins": [
+"rekall",
+"rekal",
+"rekal.py"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "responder",
+"version": "4:v3.2.2.0.r8.g424fbe5-1",
+"desc": "A LLMNR and NBT-NS poisoner, with built-in HTTP/SMB/MSSQL/FTP/LDAP rogue authentication server supporting NTLMv1/NTLMv2/LMv2 (multirelay version).",
+"url": "https://github.com/lgandx/Responder",
+"cats": [
+"fuzzer",
+"networking",
+"scanner",
+"spoof"
+],
+"stars": 6603,
+"explicit": false,
+"bins": [
+"responder",
+"responder-dnsupdate",
+"responder-dumphash",
+"responder-findsqlsrv",
+"responder-icmp-redirect",
+"responder-multirelay",
+"responder-report",
+"responder-runfinger",
+"responder-secretsdump"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "roguehostapd",
+"version": "1:1.0.r45.g381b373-1",
+"desc": "Hostapd fork including Wi-Fi attacks and providing Python bindings with ctypes.",
+"url": "https://github.com/wifiphisher/roguehostapd",
+"cats": [
+"wireless"
+],
+"stars": 189,
+"explicit": false,
+"bins": [
+"roguehostapd"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ropeadope",
+"version": "1.1-5",
+"desc": "A linux log cleaner.",
+"url": "http://www.highhacksociety.com/",
+"cats": [
+"anti-forensic"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"ropeadope"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "rpivot",
+"version": "5.4963487-3",
+"desc": "Socks4 reverse proxy for penetration testing.",
+"url": "https://github.com/artkond/rpivot",
+"cats": [
+"proxy"
+],
+"stars": 668,
+"explicit": true,
+"bins": [
+"rpivot-client",
+"rpivot-server"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "rr",
+"version": "6869.556551e4-1",
+"desc": "A Record and Replay Framework.",
+"url": "https://github.com/mozilla/rr",
+"cats": [
+"debugger",
+"misc"
+],
+"stars": 10686,
+"explicit": true,
+"bins": [
+"rr",
+"rr-collect-symbols.py",
+"rr_exec_stub",
+"signal-rr-recording.sh"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "rsactftool",
+"version": "2:653.fb8532a-1",
+"desc": "RSA tool for ctf - retrieve private key from weak public key and/or uncipher data.",
+"url": "https://github.com/Ganapati/RsaCtfTool",
+"cats": [
+"cracker",
+"crypto"
+],
+"stars": 7148,
+"explicit": true,
+"bins": [
+"rsactftool"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "rsatool",
+"version": "34.b34862a-1",
+"desc": "Tool that can be used to calculate RSA and RSA-CRT parameters.",
+"url": "https://github.com/ius/rsatool",
+"cats": [
+"crypto"
+],
+"stars": 1669,
+"explicit": true,
+"bins": [
+"rsatool"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "rtl-433",
+"version": "2:25.12+391.r4089.20260926.02cd4b69-1",
+"desc": "A generic software defined radio data receiver, mainly for the 433.92 MHz, 868 MHz (SRD), 315 MHz, 345 MHz, and 915 MHz ISM bands.",
+"url": "https://github.com/merbanan/rtl_433",
+"cats": [
+"radio",
+"wireless"
+],
+"stars": 7830,
+"explicit": true,
+"bins": [
+"rtl-433"
+],
+"man": [
+"rtl_433"
+],
+"paths": []
+},
+{
+"name": "rtlamr",
+"version": "197.03369d1-4",
+"desc": "An rtl-sdr receiver for smart meters operating in the 900MHz ISM band.",
+"url": "https://github.com/bemasher/rtlamr/",
+"cats": [
+"hardware",
+"radio"
+],
+"stars": 2544,
+"explicit": true,
+"bins": [
+"rtlamr"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sagan",
+"version": "2.0.2-1",
+"desc": "A snort-like log analysis engine.",
+"url": "https://quadrantsec.com/sagan_log_analysis_engine/",
+"cats": [
+"defensive",
+"ids"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"sagan"
+],
+"man": [
+"sagan"
+],
+"paths": []
+},
+{
+"name": "saleae-logic",
+"version": "2.3.47-1",
+"desc": "Debug happy.",
+"url": "https://www.saleae.com/downloads",
+"cats": [
+"debugger"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"saleae-logic"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sandsifter",
+"version": "2.8375e61-1",
+"desc": "The x86 processor fuzzer.",
+"url": "https://github.com/xoreaxeaxeax/sandsifter",
+"cats": [
+"fuzzer",
+"hardware"
+],
+"stars": 5082,
+"explicit": true,
+"bins": [
+"sifter",
+"summarize"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sasm",
+"version": "3.16.0-1",
+"desc": "A simple crossplatform IDE for NASM, MASM, GAS and FASM assembly languages.",
+"url": "https://github.com/Dman95/SASM",
+"cats": [
+"misc"
+],
+"stars": 5985,
+"explicit": true,
+"bins": [
+"sasm",
+"fasm",
+"listing"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "savvycan",
+"version": "5:continuous.r0.g2f683fd-1",
+"desc": "QT-based CAN bus analysis tool.",
+"url": "https://github.com/collin80/SavvyCAN",
+"cats": [
+"automobile"
+],
+"stars": 1851,
+"explicit": true,
+"bins": [
+"savvycan"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "scannerl",
+"version": "76.8133065-1",
+"desc": "The modular distributed fingerprinting engine.",
+"url": "https://github.com/kudelskisecurity/scannerl",
+"cats": [
+"fingerprint"
+],
+"stars": 220,
+"explicit": true,
+"bins": [
+"scannerl"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "scratchabit",
+"version": "571.e52ba4b-1",
+"desc": "Easily retargetable and hackable interactive disassembler with IDAPython-compatible plugin API.",
+"url": "https://github.com/pfalcon/ScratchABit",
+"cats": [
+"disassembler"
+],
+"stars": 412,
+"explicit": true,
+"bins": [
+"scratchabit"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sdrangel",
+"version": "v7.27.1.r164.gf6ed9b8-1",
+"desc": "Qt6/OpenGL SDR and signal analyzer frontend.",
+"url": "https://github.com/f4exb/sdrangel",
+"cats": [
+"radio"
+],
+"stars": 4076,
+"explicit": true,
+"bins": [
+"sdrangel",
+"sdrangelbench",
+"sdrangelsrv"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sdrtrunk",
+"version": "0.6.0-1",
+"desc": "A cross-platform java application for decoding, monitoring, recording and streaming trunked mobile and related radio protocols using SDR.",
+"url": "https://github.com/DSheirer/sdrtrunk",
+"cats": [
+"radio"
+],
+"stars": 2195,
+"explicit": true,
+"bins": [
+"sdr-trunk"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "seccomp-tools",
+"version": "1.6.1-1",
+"desc": "Seccomp analysis toolkit.",
+"url": "https://github.com/david942j/seccomp-tools",
+"cats": [
+"automation",
+"binary",
+"crypto",
+"debugger",
+"reversing"
+],
+"stars": 1139,
+"explicit": true,
+"bins": [
+"seccomp-tools"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "seclists",
+"version": "1:2026.1.r378.gc5a0525-1",
+"desc": "A collection of multiple types of lists used during security assessments.",
+"url": "https://github.com/danielmiessler/SecLists/",
+"cats": [
+"wordlist"
+],
+"stars": 73796,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/seclists"
+]
+},
+{
+"name": "secure-delete",
+"version": "1:1.b63d814-1",
+"desc": "Secure file, disk, swap, memory erasure utilities.",
+"url": "http://www.thc.org/",
+"cats": [
+"anti-forensic",
+"defensive"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"sdel",
+"sfill",
+"smem-secure-delete",
+"srm",
+"sswap",
+"the_cleaner.sh"
+],
+"man": [
+"sfill",
+"smem-secure-delete",
+"srm",
+"sswap"
+],
+"paths": []
+},
+{
+"name": "seeker",
+"version": "1:381.7bf501a-1",
+"desc": "Accurately Locate People using Social Engineering.",
+"url": "https://github.com/thewhiteh4t/seeker",
+"cats": [
+"recon",
+"social"
+],
+"stars": 10047,
+"explicit": true,
+"bins": [
+"seeker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "set",
+"version": "1:8.0.3-9",
+"desc": "Social-engineer toolkit. Aimed at penetration testing around Social-Engineering.",
+"url": "https://github.com/trustedsec/social-engineer-toolkit/tags",
+"cats": [
+"exploitation",
+"social"
+],
+"stars": 15336,
+"explicit": true,
+"bins": [
+"setoolkit"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sha1collisiondetection",
+"version": "106.a06f1ad-2",
+"desc": "Library and command line tool to detect SHA-1 collision in a file",
+"url": "https://github.com/cr-marcstevens/sha1collisiondetection",
+"cats": [
+"crypto"
+],
+"stars": 1419,
+"explicit": true,
+"bins": [
+"sha1dcsum",
+"sha1dcsum_partialcoll"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "shellinabox",
+"version": "428.98e6eeb-1",
+"desc": "Implements a web server that can export arbitrary command line tools to a web based terminal emulator.",
+"url": "https://github.com/shellinabox/shellinabox",
+"cats": [
+"backdoor",
+"webapp"
+],
+"stars": 3087,
+"explicit": true,
+"bins": [
+"shellinaboxd"
+],
+"man": [
+"shellinaboxd"
+],
+"paths": []
+},
+{
+"name": "shellnoob",
+"version": "37.6586133-1",
+"desc": "A toolkit that eases the writing and debugging of shellcode.",
+"url": "https://github.com/reyammer/shellnoob",
+"cats": [
+"debugger",
+"exploitation"
+],
+"stars": 696,
+"explicit": true,
+"bins": [
+"shellnoob"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sherlock",
+"version": "1:0.16.0-2",
+"desc": "Find usernames across social networks.",
+"url": "https://github.com/sherlock-project/sherlock",
+"cats": [
+"recon",
+"social"
+],
+"stars": 92954,
+"explicit": true,
+"bins": [
+"sherlock"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sherlocked",
+"version": "1.f190c2b-2",
+"desc": "Universal script packer-- transforms any type of script into a protected ELF executable, encrypted with anti-debugging.",
+"url": "https://github.com/elfmaster/sherlocked",
+"cats": [
+"backdoor",
+"binary",
+"crypto",
+"packer"
+],
+"stars": 105,
+"explicit": true,
+"bins": [
+"sherlocked",
+"gen-shellcode",
+"stripx",
+"stub"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "shuji",
+"version": "0.8.0.r132.g3531faa-1",
+"desc": "Reverse engineering JavaScript and CSS sources from sourcemaps.",
+"url": "https://github.com/paazmaya/shuji",
+"cats": [
+"decompiler"
+],
+"stars": 1242,
+"explicit": true,
+"bins": [
+"shuji"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sigma",
+"version": "0.20-7",
+"desc": "Generic Signature Format for SIEM Systems",
+"url": "https://github.com/SigmaHQ/sigma/releases",
+"cats": [
+"defensive"
+],
+"stars": 11117,
+"explicit": true,
+"bins": [
+"sigma2attack",
+"sigma2misp",
+"sigma_similarity",
+"sigma_uuid",
+"sigmac",
+"merge_sigma"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "silenteye",
+"version": "21.a53a7ff-1",
+"desc": "A cross-platform application design for an easy use of steganography.",
+"url": "https://github.com/achorein/silenteye/",
+"cats": [
+"stego"
+],
+"stars": 146,
+"explicit": true,
+"bins": [
+"silenteye"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "silenttrinity",
+"version": "293.08b1c61-6",
+"desc": "An asynchronous, collaborative post-exploitation agent powered by Python and .NET's DLR.",
+"url": "https://github.com/byt3bl33d3r/SILENTTRINITY",
+"cats": [
+"backdoor"
+],
+"stars": 2343,
+"explicit": true,
+"bins": [
+"silenttrinity",
+"silenttrinity-teamserver"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "simplify",
+"version": "1.3.0-1",
+"desc": "Generic Android Deobfuscator.",
+"url": "https://github.com/CalebFenton/simplify",
+"cats": [
+"mobile"
+],
+"stars": 4669,
+"explicit": true,
+"bins": [
+"simplify"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sipbrute",
+"version": "11.5be2fdd-3",
+"desc": "A utility to perform dictionary attacks against the VoIP SIP Register hash.",
+"url": "https://github.com/packetassailant/sipbrute",
+"cats": [
+"cracker",
+"voip"
+],
+"stars": 14,
+"explicit": true,
+"bins": [
+"sipbrute"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sippts",
+"version": "1:v4.2.1.r0.g44568c8-1",
+"desc": "Set of tools to audit SIP based VoIP Systems.",
+"url": "https://github.com/Pepelux/sippts",
+"cats": [
+"voip"
+],
+"stars": 574,
+"explicit": true,
+"bins": [
+"sippts",
+"sippts-gui"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sipsak",
+"version": "1:0.9.8.1-1",
+"desc": "A small command line tool for developers and administrators of Session Initiation Protocol (SIP) applications.",
+"url": "https://github.com/nils-ohlmeier/sipsak/releases",
+"cats": [
+"voip"
+],
+"stars": 176,
+"explicit": true,
+"bins": [
+"sipsak"
+],
+"man": [
+"sipsak"
+],
+"paths": []
+},
+{
+"name": "skydive",
+"version": "0.28.0-1",
+"desc": "An open source real-time network topology and protocols analyzer.",
+"url": "https://github.com/skydive-project/skydive",
+"cats": [
+"networking"
+],
+"stars": 2799,
+"explicit": true,
+"bins": [
+"skydive"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "skyjack",
+"version": "16.24e3878-2",
+"desc": "Takes over Parrot drones, deauthenticating their true owner and taking over control, turning them into zombie drones under your own control.",
+"url": "https://github.com/samyk/skyjack",
+"cats": [
+"drone"
+],
+"stars": 1835,
+"explicit": true,
+"bins": [
+"skyjack"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "slither",
+"version": "1:4851.f9710ded1-2",
+"desc": "Solidity static analysis framework written in Python 3.",
+"url": "https://github.com/crytic/slither",
+"cats": [
+"code-audit",
+"exploitation"
+],
+"stars": 6373,
+"explicit": true,
+"bins": [
+"slither",
+"slither-check-erc",
+"slither-check-kspec",
+"slither-check-upgradeability",
+"slither-doctor",
+"slither-documentation",
+"slither-find-paths",
+"slither-flat",
+"slither-format",
+"slither-interface",
+"slither-mutate",
+"slither-prop",
+"slither-read-storage",
+"slither-simil"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sliver",
+"version": "v1.7.7.r61.g8fe54f2-1",
+"desc": "Opensource C2 framework.",
+"url": "https://github.com/BishopFox/sliver",
+"cats": [
+"automation",
+"backdoor"
+],
+"stars": 11903,
+"explicit": true,
+"bins": [
+"sliver-client",
+"sliver-server"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "slowloris-py",
+"version": "30.eb7f632-1",
+"desc": "Low bandwidth DoS tool.",
+"url": "https://github.com/gkbrk/slowloris",
+"cats": [
+"dos"
+],
+"stars": 2836,
+"explicit": true,
+"bins": [
+"slowloris-py"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "smtp-user-enum",
+"version": "1.2-7",
+"desc": "Username guessing tool primarily for use against the default Solaris SMTP service. Can use either EXPN, VRFY or RCPT TO.",
+"url": "https://pentestmonkey.net/tools/user-enumeration/smtp-user-enum",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"smtp-user-enum"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sn1per",
+"version": "1:722.a5450bc-1",
+"desc": "Automated Pentest Recon Scanner.",
+"url": "https://github.com/1N3/Sn1per",
+"cats": [
+"automation",
+"cracker",
+"recon",
+"scanner"
+],
+"stars": 11279,
+"explicit": true,
+"bins": [
+"sn1per"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "snapception",
+"version": "8.c156f9e-13",
+"desc": "Intercept and decrypt all snapchats received over your network.",
+"url": "https://github.com/thebradbain/snapception",
+"cats": [
+"crypto",
+"sniffer"
+],
+"stars": 619,
+"explicit": true,
+"bins": [
+"snapception"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "snare",
+"version": "188.b17fdfe-5",
+"desc": "Super Next generation Advanced Reactive honeypot.",
+"url": "https://github.com/mushorg/snare",
+"cats": [
+"honeypot",
+"webapp"
+],
+"stars": 484,
+"explicit": true,
+"bins": [
+"snare",
+"clone"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "snoopy-ng",
+"version": "128.eac73f5-6",
+"desc": "A distributed, sensor, data collection, interception, analysis, and visualization framework.",
+"url": "https://github.com/sensepost/snoopy-ng",
+"cats": [
+"drone",
+"exploitation",
+"sniffer"
+],
+"stars": 442,
+"explicit": true,
+"bins": [
+"snoopy",
+"snoopy-auth",
+"sslstrip-snoopy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "snyk",
+"version": "1.1283.0-1",
+"desc": "CLI and build-time tool to find and fix known vulnerabilities in open-source dependencies.",
+"url": "https://github.com/snyk/cli",
+"cats": [
+"code-audit",
+"scanner"
+],
+"stars": 5666,
+"explicit": true,
+"bins": [
+"snyk"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sparrow-wifi",
+"version": "1:v2.0.r29.g7559b38-1",
+"desc": "Next-Gen GUI-based WiFi and Bluetooth Analyzer.",
+"url": "https://github.com/ghostop14/sparrow-wifi",
+"cats": [
+"bluetooth",
+"wireless"
+],
+"stars": 1628,
+"explicit": true,
+"bins": [
+"sparrow-wifi"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "spartan",
+"version": "23.babdd7d-3",
+"desc": "Frontpage and Sharepoint fingerprinting and attack tool.",
+"url": "https://github.com/sensepost/SPartan",
+"cats": [
+"fingerprint",
+"fuzzer"
+],
+"stars": 283,
+"explicit": true,
+"bins": [
+"spartan"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "spiderfoot",
+"version": "4.0-7",
+"desc": "The Open Source Footprinting Tool.",
+"url": "https://github.com/smicallef/spiderfoot",
+"cats": [
+"recon"
+],
+"stars": 22564,
+"explicit": true,
+"bins": [
+"spiderfoot",
+"spiderfoot-cli"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "spoofy",
+"version": "v1.0.3.r10.g8e6982e-1",
+"desc": "Check if a list of domains can be spoofed based on SPF and DMARC records.",
+"url": "https://github.com/MattKeeley/Spoofy",
+"cats": [
+"scanner",
+"spoof"
+],
+"stars": 772,
+"explicit": true,
+"bins": [
+"spoofy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "spotbugs",
+"version": "17817.eaabea0287-1",
+"desc": "A tool for static analysis to look for bugs in Java code.",
+"url": "https://github.com/spotbugs/spotbugs",
+"cats": [
+"code-audit"
+],
+"stars": 3948,
+"explicit": true,
+"bins": [
+"spotbugs"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ssh-honeypot",
+"version": "113.4bda71c-1",
+"desc": "Fake sshd that logs ip addresses, usernames, and passwords.",
+"url": "https://github.com/droberson/ssh-honeypot",
+"cats": [
+"honeypot"
+],
+"stars": 673,
+"explicit": true,
+"bins": [
+"ssh-honeypot"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sslsniff",
+"version": "0.8-6",
+"desc": "A tool to MITM all SSL connections on a LAN and dynamically generate certs for the domains that are being accessed on the fly.",
+"url": "https://github.com/moxie0/sslsniff",
+"cats": [
+"sniffer"
+],
+"stars": 573,
+"explicit": true,
+"bins": [
+"sslsniff"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sslstrip",
+"version": "0.9-13",
+"desc": "Python tool to hijack HTTPS connections during a MITM attack.",
+"url": "https://github.com/moxie0/sslstrip",
+"cats": [
+"exploitation",
+"networking",
+"proxy"
+],
+"stars": 2075,
+"explicit": true,
+"bins": [
+"sslstrip"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sslyze",
+"version": "6.3.1-1",
+"desc": "Python tool for analyzing the configuration of SSL servers and for identifying misconfigurations.",
+"url": "https://github.com/nabla-c0d3/sslyze",
+"cats": [
+"crypto",
+"scanner"
+],
+"stars": 3781,
+"explicit": true,
+"bins": [
+"sslyze"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "stegcracker",
+"version": "2.1.0-6",
+"desc": "Steganography brute-force utility to uncover hidden data inside files.",
+"url": "https://github.com/Paradoxis/StegCracker/tags",
+"cats": [
+"stego"
+],
+"stars": 604,
+"explicit": true,
+"bins": [
+"stegcracker"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "stegdetect",
+"version": "20.28a4f07-2",
+"desc": "An automated tool for detecting steganographic content in images.",
+"url": "https://github.com/redNixon/stegdetect",
+"cats": [
+"defensive",
+"forensic",
+"stego"
+],
+"stars": 70,
+"explicit": true,
+"bins": [
+"stegdetect",
+"stegbreak",
+"stegcompare",
+"stegdeimage"
+],
+"man": [
+"stegbreak",
+"stegdetect"
+],
+"paths": []
+},
+{
+"name": "stegolego",
+"version": "8.85354f6-4",
+"desc": "Simple program for using stegonography to hide data within BMP images.",
+"url": "https://github.com/razc411/StegoLeggo",
+"cats": [
+"stego"
+],
+"stars": 5,
+"explicit": true,
+"bins": [
+"stegolego"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "stegosip",
+"version": "11.5cda6d6-3",
+"desc": "TCP tunnel over RTP/SIP.",
+"url": "https://github.com/epinna/Stegosip",
+"cats": [
+"networking",
+"stego",
+"tunnel"
+],
+"stars": 97,
+"explicit": true,
+"bins": [
+"stegosip"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "stegseek",
+"version": "1:v0.6.r10.g5896978-2",
+"desc": "Lightning fast steghide cracker.",
+"url": "https://github.com/RickdeJager/stegseek",
+"cats": [
+"stego"
+],
+"stars": 1322,
+"explicit": true,
+"bins": [
+"stegseek"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "stegsolve",
+"version": "1.3-1",
+"desc": "Steganography Solver.",
+"url": "https://github.com/zardus/ctf-tools/blob/master/stegsolve/install",
+"cats": [
+"stego"
+],
+"stars": 9527,
+"explicit": true,
+"bins": [
+"stegsolve"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "stenographer",
+"version": "486.355604b-2",
+"desc": "A packet capture solution which aims to quickly spool all packets to disk, then provide simple, fast access to subsets of those packets.",
+"url": "https://github.com/google/stenographer",
+"cats": [
+"forensic",
+"networking",
+"sniffer"
+],
+"stars": 1797,
+"explicit": true,
+"bins": [
+"stenographer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "stepic",
+"version": "0.4-2",
+"desc": "A python image steganography tool.",
+"url": "http://domnit.org/stepic/doc/",
+"cats": [
+"stego"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"stepic"
+],
+"man": [
+"stepic"
+],
+"paths": []
+},
+{
+"name": "stowaway",
+"version": "v2.2.r43.g7f715be-1",
+"desc": "A Multi-hop proxy tool for security researchers and pentesters.",
+"url": "https://github.com/ph4ntonn/Stowaway",
+"cats": [
+"exploitation",
+"proxy"
+],
+"stars": 3419,
+"explicit": true,
+"bins": [
+"stowaway-admin",
+"stowaway-agent"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "subfinder",
+"version": "1:v2.14.0.r65.g4debdd5f-1",
+"desc": "Modular subdomain discovery tool that can discover massive amounts of valid subdomains for any target.",
+"url": "https://github.com/projectdiscovery/subfinder",
+"cats": [
+"recon"
+],
+"stars": 14512,
+"explicit": true,
+"bins": [
+"subfinder"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sublist3r",
+"version": "138.729d649-9",
+"desc": "A Fast subdomains enumeration tool for penetration testers.",
+"url": "https://github.com/aboul3la/Sublist3r",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 11046,
+"explicit": true,
+"bins": [
+"sublist3r"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "sulley",
+"version": "4:1.0.bff0dd1-3",
+"desc": "A pure-python fully automated and unattended fuzzing framework.",
+"url": "https://github.com/OpenRCE/sulley/",
+"cats": [
+"fuzzer"
+],
+"stars": 1450,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/sulley"
+]
+},
+{
+"name": "sylkie",
+"version": "1:0.0.4.r3.g1cf170f-3",
+"desc": "IPv6 address spoofing with the Neighbor Discovery Protocol.",
+"url": "https://github.com/dlrobertson/sylkie",
+"cats": [
+"networking",
+"spoof"
+],
+"stars": 54,
+"explicit": true,
+"bins": [
+"sylkie"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "syms2elf",
+"version": "12.329c2ce-3",
+"desc": "A plugin for Hex-Ray's IDA Pro and radare2 to export the symbols recognized to the ELF symbol table.",
+"url": "https://github.com/danigargu/syms2elf",
+"cats": [
+"binary",
+"disassembler",
+"reversing"
+],
+"stars": 218,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/syms2elf"
+]
+},
+{
+"name": "tcpcopy",
+"version": "1285.929511d-1",
+"desc": "A TCP stream replay tool to support real testing of Internet server applications.",
+"url": "https://github.com/session-replay-tools/tcpcopy",
+"cats": [
+"networking"
+],
+"stars": 4686,
+"explicit": true,
+"bins": [
+"tcpcopy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "tfsec",
+"version": "v0.63.1.r408.gb692c20b6-1",
+"desc": "Security scanner for your Terraform code.",
+"url": "https://github.com/aquasecurity/tfsec",
+"cats": [
+"defensive",
+"scanner"
+],
+"stars": 7042,
+"explicit": true,
+"bins": [
+"tfsec"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "thcrut",
+"version": "1.2.5-1",
+"desc": "Network discovery and OS Fingerprinting tool.",
+"url": "https://github.com/vanhauser-thc/THC-Archive/",
+"cats": [
+"fingerprint",
+"recon",
+"scanner"
+],
+"stars": 774,
+"explicit": true,
+"bins": [
+"thcrut"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "thefatrat",
+"version": "813.b0586d0-1",
+"desc": "TheFatRat a massive exploiting tool: easy tool to generate backdoor and easy tool to post exploitation attack.",
+"url": "https://github.com/Screetsec/TheFatRat",
+"cats": [
+"automation",
+"exploitation"
+],
+"stars": 11506,
+"explicit": true,
+"bins": [
+"thefatrat"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "theharvester",
+"version": "1:4.11.1.r76.g760b386-1",
+"desc": "E-mails, subdomains and names Harvester - OSINT",
+"url": "https://github.com/laramies/theHarvester",
+"cats": [
+"recon"
+],
+"stars": 17647,
+"explicit": true,
+"bins": [
+"theharvester",
+"restfulHarvest"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "thezoo",
+"version": "238.48515e4-1",
+"desc": "A project created to make the possibility of malware analysis open and available to the public.",
+"url": "https://github.com/ytisf/theZoo",
+"cats": [
+"malware"
+],
+"stars": 13420,
+"explicit": true,
+"bins": [
+"thezoo"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "threat-dragon",
+"version": "2.2.0-1",
+"desc": "Electron Threat Modelling and diagramming tool.",
+"url": "https://owasp.org/www-project-threat-dragon/",
+"cats": [
+"threat-model"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"threat-dragon"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "tls-fingerprinting",
+"version": "257.4b6e878-3",
+"desc": "Tool and scripts to perform TLS Fingerprinting.",
+"url": "https://github.com/LeeBrotherston/tls-fingerprinting",
+"cats": [
+"fingerprint",
+"sniffer"
+],
+"stars": 401,
+"explicit": true,
+"bins": [
+"fingerprintls",
+"fingerprintout",
+"parselog"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "tls-prober",
+"version": "286.72b1029-3",
+"desc": "A tool to fingerprint SSL/TLS servers.",
+"url": "https://github.com/WestpointLtd/tls_prober",
+"cats": [
+"crypto",
+"fingerprint"
+],
+"stars": 265,
+"explicit": true,
+"bins": [
+"tls-prober"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "tnscmd",
+"version": "1.3-9",
+"desc": "A lame tool to prod the oracle tnslsnr process (1521/tcp).",
+"url": "http://www.jammed.com/~jwa/hacks/security/tnscmd/",
+"cats": [
+"misc"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"tnscmd",
+"tnscmd10g"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "trape",
+"version": "132.6baae24-9",
+"desc": "People tracker on the Internet: OSINT analysis and research tool by Jose Pino.",
+"url": "https://github.com/jofpin/trape",
+"cats": [
+"recon",
+"social"
+],
+"stars": 9037,
+"explicit": true,
+"bins": [
+"trape"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "trevorproxy",
+"version": "1.0.6-10",
+"desc": "A SOCKS proxy written in Python that randomizes your source IP address.",
+"url": "https://github.com/blacklanternsecurity/TREVORproxy",
+"cats": [
+"proxy"
+],
+"stars": 536,
+"explicit": false,
+"bins": [
+"trevorproxy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "trevorspray",
+"version": "1:2.3.0-9",
+"desc": "A modular password sprayer with threading, clever proxying, loot modules, and more!",
+"url": "https://github.com/blacklanternsecurity/TREVORspray",
+"cats": [
+"cracker"
+],
+"stars": 1384,
+"explicit": true,
+"bins": [
+"trevorspray"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "triton",
+"version": "1:4382.bc84cf74-1",
+"desc": "A Dynamic Binary Analysis (DBA) framework.",
+"url": "https://github.com/JonathanSalwan/Triton",
+"cats": [
+"binary",
+"reversing"
+],
+"stars": 4313,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": []
+},
+{
+"name": "trufflehog",
+"version": "3:v3.97.9.r5.g88524578c-1",
+"desc": "Searches through git repositories for high entropy strings, digging deep into commit history.",
+"url": "https://github.com/dxa4481/truffleHog",
+"cats": [
+"code-audit",
+"recon"
+],
+"stars": 28159,
+"explicit": true,
+"bins": [
+"trufflehog"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "twint",
+"version": "1:845.e7c8a0c7-7",
+"desc": "An advanced Twitter scraping & OSINT tool written in Python that doesn't use Twitter's API, allowing you to scrape a user's followers, following, Tweets and more while evading most API limitations.",
+"url": "https://github.com/twintproject/twint",
+"cats": [
+"recon",
+"social"
+],
+"stars": 16401,
+"explicit": true,
+"bins": [
+"twint"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "uacme",
+"version": "319.3f1885c-1",
+"desc": "Defeating Windows User Account Control.",
+"url": "https://github.com/hfiref0x/UACME",
+"cats": [
+"windows"
+],
+"stars": 7807,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "ubertooth",
+"version": "2020.12.R1.r35.gc9dfdbd-1",
+"desc": "A 2.4 GHz wireless development board suitable for Bluetooth experimentation. Open source hardware and software. Tools only.",
+"url": "https://github.com/greatscottgadgets/ubertooth",
+"cats": [
+"bluetooth"
+],
+"stars": 2138,
+"explicit": true,
+"bins": [
+"ubertooth-afh",
+"ubertooth-btbr",
+"ubertooth-btle",
+"ubertooth-debug",
+"ubertooth-dfu",
+"ubertooth-ducky",
+"ubertooth-dump",
+"ubertooth-ego",
+"ubertooth-rx",
+"ubertooth-specan",
+"ubertooth-specan-ui",
+"ubertooth-tx",
+"ubertooth-util"
+],
+"man": [
+"ubertooth",
+"ubertooth-afh",
+"ubertooth-btle",
+"ubertooth-dfu",
+"ubertooth-dump",
+"ubertooth-ego",
+"ubertooth-rx",
+"ubertooth-scan",
+"ubertooth-specan",
+"ubertooth-util"
+],
+"paths": []
+},
+{
+"name": "uefi-firmware-parser",
+"version": "214.86d2834-1",
+"desc": "Parse BIOS/Intel ME/UEFI firmware related structures: Volumes, FileSystems, Files, etc.",
+"url": "https://github.com/theopolis/uefi-firmware-parser",
+"cats": [
+"firmware",
+"reversing"
+],
+"stars": 927,
+"explicit": true,
+"bins": [
+"uefi-firmware-parser"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ufonet",
+"version": "84.aea21b3-5",
+"desc": "A tool designed to launch DDoS attacks against a target, using 'Open Redirect' vectors on third party web applications, like botnet.",
+"url": "https://github.com/epsylon/ufonet",
+"cats": [
+"dos",
+"webapp"
+],
+"stars": 2529,
+"explicit": true,
+"bins": [
+"ufonet"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "unblob",
+"version": "26.6.4.r228.ge513436-1",
+"desc": "Extract files from any kind of container formats.",
+"url": "https://github.com/onekey-sec/unblob",
+"cats": [
+"forensic",
+"reversing"
+],
+"stars": 2561,
+"explicit": true,
+"bins": [
+"unblob"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "unicorn-powershell",
+"version": "219.071989b-1",
+"desc": "A simple tool for using a PowerShell downgrade attack and inject shellcode straight into memory.",
+"url": "https://github.com/trustedsec/unicorn",
+"cats": [
+"backdoor",
+"exploitation"
+],
+"stars": 3949,
+"explicit": true,
+"bins": [
+"unicorn-powershell"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "unicornscan",
+"version": "2:0.4.43-1",
+"desc": "Asynchronous, stateless TCP/UDP scanner for scalable, high-speed network reconnaissance. Includes Alicorn web UI for result visualization.",
+"url": "https://github.com/robertelee78/unicornscan",
+"cats": [
+"recon",
+"scanner"
+],
+"stars": 30,
+"explicit": false,
+"bins": [
+"unicornscan",
+"unicornscan-alicorn",
+"unicornscan-geoip-update",
+"fantaip",
+"unibrow",
+"unicfgtst",
+"us"
+],
+"man": [
+"fantaip",
+"unibrow",
+"unicfgtst",
+"unicorn",
+"unicornscan"
+],
+"paths": []
+},
+{
+"name": "unstrip",
+"version": "13.05e00c2-12",
+"desc": "ELF Unstrip Tool.",
+"url": "https://github.com/pzread/unstrip",
+"cats": [
+"binary",
+"disassembler"
+],
+"stars": 106,
+"explicit": true,
+"bins": [
+"unstrip"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "vbsmin",
+"version": "v1.2.0.r31.gc3791df-1",
+"desc": "VBScript minifier.",
+"url": "https://noraj.github.io/vbsmin/",
+"cats": [
+"automation",
+"packer"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"vbsmin"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "veil",
+"version": "5:297.d8acd4c-7",
+"desc": "A tool designed to generate metasploit payloads that bypass common anti-virus solutions.",
+"url": "https://github.com/Veil-Framework/Veil",
+"cats": [
+"automation",
+"exploitation"
+],
+"stars": 4227,
+"explicit": true,
+"bins": [
+"veil"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "villain",
+"version": "1:V2.2.1.r3.g87e5dd1-2",
+"desc": "C2 framework that can handle multiple TCP socket & HoaxShell-based reverse shells, enhance their functionality with additional features and share them among connected sibling servers.",
+"url": "https://github.com/t3l3machus/Villain",
+"cats": [
+"backdoor",
+"exploitation",
+"networking"
+],
+"stars": 4460,
+"explicit": true,
+"bins": [
+"villain"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "viper",
+"version": "2099.fdd7855-7",
+"desc": "A Binary analysis framework.",
+"url": "https://github.com/botherder/viper",
+"cats": [
+"binary",
+"disassembler",
+"malware"
+],
+"stars": 1561,
+"explicit": true,
+"bins": [
+"viper"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "vivisect",
+"version": "3:v1.3.2.r10.g66c93f0c-1",
+"desc": "A Python based static analysis and reverse engineering framework.",
+"url": "https://github.com/vivisect/vivisect",
+"cats": [
+"debugger",
+"disassembler",
+"reversing"
+],
+"stars": 1001,
+"explicit": true,
+"bins": [
+"vdbbin",
+"vivbin",
+"vivserver"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "voltron",
+"version": "1:v0.1.8.r0.gbe9e54b-1",
+"desc": "UI for GDB, LLDB and Vivisect's VDB.",
+"url": "https://github.com/snare/voltron",
+"cats": [
+"debugger"
+],
+"stars": 6342,
+"explicit": true,
+"bins": [
+"voltron"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "vsaudit",
+"version": "21.2cbc47b-11",
+"desc": "VOIP Security Audit Framework.",
+"url": "https://github.com/sanvil/vsaudit",
+"cats": [
+"fuzzer",
+"scanner",
+"voip"
+],
+"stars": 109,
+"explicit": true,
+"bins": [
+"vsaudit"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "vt-cli",
+"version": "1.3.1-1",
+"desc": "VirusTotal Command Line Interface.",
+"url": "https://github.com/VirusTotal/vt-cli",
+"cats": [
+"malware"
+],
+"stars": 1487,
+"explicit": true,
+"bins": [
+"vt"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "vuls",
+"version": "1:v0.35.1.r3.g0ba85f8-2",
+"desc": "Vulnerability scanner for Linux/FreeBSD, agentless, written in Go.",
+"url": "https://github.com/future-architect/vuls",
+"cats": [
+"scanner"
+],
+"stars": 12273,
+"explicit": true,
+"bins": [
+"vuls",
+"vuls-scanner"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "w3af",
+"version": "1.6.49-12",
+"desc": "Web Application Attack and Audit Framework.",
+"url": "https://github.com/andresriancho/w3af/releases",
+"cats": [
+"fuzzer",
+"scanner",
+"webapp"
+],
+"stars": 4911,
+"explicit": true,
+"bins": [
+"w3af",
+"w3af-gui"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wapiti",
+"version": "3.3.2.r2.gbe1acc0-1",
+"desc": "A vulnerability scanner for web applications.",
+"url": "https://github.com/wapiti-scanner/wapiti",
+"cats": [
+"fuzzer",
+"scanner",
+"webapp"
+],
+"stars": 1872,
+"explicit": false,
+"bins": [
+"wapiti",
+"wapiti-getcookie",
+"wapiti-install-headless-browser"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wdict",
+"version": "v0.1.20.r0.g05d896c-1",
+"desc": "Create dictionaries by scraping webpages or crawling local files.",
+"url": "https://github.com/pyqlsa/wdict",
+"cats": [
+"automation",
+"wordlist"
+],
+"stars": 6,
+"explicit": true,
+"bins": [
+"wdict"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "websockify",
+"version": "997.3dd228b-1",
+"desc": "WebSocket to TCP proxy/bridge.",
+"url": "http://github.com/kanaka/websockify",
+"cats": [
+"networking"
+],
+"stars": 4461,
+"explicit": true,
+"bins": [
+"websockify"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wesng",
+"version": "491.faf0bb1-1",
+"desc": "Windows Exploit Suggester - Next Generation.",
+"url": "https://github.com/bitsadmin/wesng",
+"cats": [
+"exploitation",
+"windows"
+],
+"stars": 4941,
+"explicit": true,
+"bins": [
+"wesng"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wfuzz",
+"version": "1157.2263cd0-1",
+"desc": "Utility to bruteforce web applications to find their not linked resources.",
+"url": "https://github.com/xmendez/wfuzz",
+"cats": [
+"fuzzer",
+"webapp"
+],
+"stars": 6585,
+"explicit": true,
+"bins": [
+"wfuzz",
+"wfencode",
+"wfpayload",
+"wxfuzz"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "whatweb",
+"version": "1:v0.6.4.r0.gd279d93-1",
+"desc": "Next generation web scanner that identifies what websites are running.",
+"url": "http://www.morningstarsecurity.com/research/whatweb",
+"cats": [
+"recon",
+"webapp"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"whatweb"
+],
+"man": [
+"whatweb"
+],
+"paths": []
+},
+{
+"name": "wifi-pumpkin",
+"version": "2:v1.1.7.r2.g344a475-7",
+"desc": "Framework for Rogue Wi-Fi Access Point Attack.",
+"url": "https://github.com/P0cL4bs/wifipumpkin3",
+"cats": [
+"dos",
+"exploitation",
+"sniffer",
+"social",
+"spoof",
+"wireless"
+],
+"stars": 2504,
+"explicit": true,
+"bins": [
+"wifi-pumpkin",
+"captiveflask",
+"evilqr3",
+"phishkin3",
+"sslstrip3",
+"wp3"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wifibroot",
+"version": "84.d0cd2cc-4",
+"desc": "A WiFi Pentest Cracking tool for WPA/WPA2 (Handshake, PMKID, Cracking, EAPOL, Deauthentication).",
+"url": "https://github.com/hash3liZer/WiFiBroot",
+"cats": [
+"cracker",
+"wireless"
+],
+"stars": 1126,
+"explicit": true,
+"bins": [
+"wifibroot"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wifijammer",
+"version": "100.be05dab-3",
+"desc": "A python script to continuously jam all wifi clients within range.",
+"url": "https://github.com/DanMcInerney/wifijammer",
+"cats": [
+"wireless"
+],
+"stars": 4302,
+"explicit": true,
+"bins": [
+"wifijammer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wifiphisher",
+"version": "1:800.4ae3365-1",
+"desc": "Fast automated phishing attacks against WPA networks.",
+"url": "https://github.com/wifiphisher/wifiphisher",
+"cats": [
+"social",
+"wireless"
+],
+"stars": 14867,
+"explicit": true,
+"bins": [
+"wifiphisher"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "windowsspyblocker",
+"version": "4.38.0-1",
+"desc": "Block spying and tracking on Windows.",
+"url": "https://github.com/crazy-max/WindowsSpyBlocker/",
+"cats": [
+"defensive",
+"windows"
+],
+"stars": 5212,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "winpwn",
+"version": "411.cba1769-1",
+"desc": "Automation for internal Windows Penetrationtest / AD-Security.",
+"url": "https://github.com/S3cur3Th1sSh1t/WinPwn",
+"cats": [
+"automation",
+"windows"
+],
+"stars": 3695,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "wmbusmeters",
+"version": "1.17.1-1",
+"desc": "Read the wired or wireless mbus protocol to acquire utility meter readings.",
+"url": "https://github.com/wmbusmeters/wmbusmeters",
+"cats": [
+"radio",
+"wireless"
+],
+"stars": 1332,
+"explicit": true,
+"bins": [
+"wmbusmeters",
+"wmbusmetersd"
+],
+"man": [
+"wmbusmeters",
+"wmbusmetersd"
+],
+"paths": []
+},
+{
+"name": "wordpot",
+"version": "44.e96889b-4",
+"desc": "A Wordpress Honeypot.",
+"url": "https://github.com/gbrindisi/wordpot",
+"cats": [
+"defensive",
+"honeypot"
+],
+"stars": 189,
+"explicit": true,
+"bins": [
+"wordpot"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wreckuests",
+"version": "75.69b6c27-10",
+"desc": "Yet another one hard-hitting tool to run DDoS attacks with HTTP-flood.",
+"url": "https://github.com/JamesJGoodwin/wreckuests",
+"cats": [
+"dos"
+],
+"stars": 173,
+"explicit": true,
+"bins": [
+"wreckuests"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "wuzz",
+"version": "1:v0.5.0.r24.g82195c6-1",
+"desc": "Interactive cli tool for HTTP inspection.",
+"url": "https://github.com/asciimoo/wuzz",
+"cats": [
+"misc",
+"webapp"
+],
+"stars": 10736,
+"explicit": true,
+"bins": [
+"wuzz"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "x64dbg",
+"version": "2025.07.04-1",
+"desc": "An open-source x64/x32 debugger for windows.",
+"url": "https://github.com/x64dbg/x64dbg/releases",
+"cats": [
+"debugger",
+"windows"
+],
+"stars": 49636,
+"explicit": true,
+"bins": [],
+"man": [],
+"paths": [
+"/usr/share/windows"
+]
+},
+{
+"name": "xfltreat",
+"version": "270.17d4ec8-3",
+"desc": "Tunnelling framework.",
+"url": "https://github.com/earthquake/xfltreat/",
+"cats": [
+"networking",
+"tunnel"
+],
+"stars": 331,
+"explicit": true,
+"bins": [
+"xfltreat"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "xprobe2",
+"version": "0.3-10",
+"desc": "An active OS fingerprinting tool.",
+"url": "https://sourceforge.net/apps/mediawiki/xprobe/index.php?title=Main_Page",
+"cats": [
+"fingerprint"
+],
+"stars": 0,
+"explicit": false,
+"bins": [
+"xprobe2"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "xspy",
+"version": "1.0c-6",
+"desc": "A utility for monitoring keypresses on remote X servers",
+"url": "http://www.freshports.org/security/xspy/",
+"cats": [
+"keylogger"
+],
+"stars": 0,
+"explicit": true,
+"bins": [
+"xspy"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "xsstracer",
+"version": "5.f2ed21a-5",
+"desc": "Python script that checks remote web servers for Clickjacking, Cross-Frame Scripting, Cross-Site Tracing and Host Header Injection.",
+"url": "https://github.com/1N3/XSSTracer",
+"cats": [
+"scanner"
+],
+"stars": 132,
+"explicit": false,
+"bins": [
+"xsstracer"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "xsstrike",
+"version": "475.ab27955-2",
+"desc": "An advanced XSS detection and exploitation suite.",
+"url": "https://github.com/UltimateHackers/XSStrike",
+"cats": [
+"scanner",
+"webapp"
+],
+"stars": 15199,
+"explicit": true,
+"bins": [
+"xsstrike"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "yeti",
+"version": "3522.4e7ceb24-1",
+"desc": "A platform meant to organize observables, indicators of compromise, TTPs, and knowledge on threats in a single, unified repository.",
+"url": "https://github.com/yeti-platform/yeti",
+"cats": [
+"defensive",
+"recon"
+],
+"stars": 2030,
+"explicit": true,
+"bins": [
+"yeti"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "ysoserial",
+"version": "0.0.6-1",
+"desc": "A proof-of-concept tool for generating payloads that exploit unsafe Java object deserialization.",
+"url": "https://github.com/frohoff/ysoserial",
+"cats": [
+"exploitation",
+"webapp"
+],
+"stars": 9070,
+"explicit": true,
+"bins": [
+"ysoserial"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "zeek",
+"version": "2:v9.1.0.dev.r150.g698b854-1",
+"desc": "A powerful network analysis framework that is much different from the typical IDS you may know.",
+"url": "https://github.com/zeek/zeek",
+"cats": [
+"defensive",
+"networking",
+"sniffer"
+],
+"stars": 8018,
+"explicit": true,
+"bins": [
+"zeek",
+"zeek-archiver",
+"zeek-client",
+"zeek-cluster-layout-generator",
+"zeek-config",
+"zeek-cut",
+"zeek-systemd-generator",
+"zeekctl",
+"bifcl",
+"binpac",
+"btest",
+"btest-ask-update",
+"btest-bg-run",
+"btest-bg-run-helper",
+"btest-bg-wait",
+"btest-diff",
+"btest-diff-rst",
+"btest-progress",
+"btest-rst-cmd",
+"btest-rst-include",
+"btest-rst-pipe",
+"btest-setsid",
+"capstats",
+"hilti-config",
+"hiltic",
+"paraglob-test",
+"spicy-build",
+"spicy-config",
+"spicy-driver",
+"spicy-dump",
+"spicy-precompile-headers",
+"spicyc",
+"spicyz",
+"trace-summary",
+"zkg"
+],
+"man": [],
+"paths": []
+},
+{
+"name": "zgrab2",
+"version": "1:v1.0.0.r82.ga123179-1",
+"desc": "Fast Application Layer Scanner.",
+"url": "https://github.com/zmap/zgrab2",
+"cats": [
+"fingerprint",
+"recon",
+"scanner"
+],
+"stars": 2187,
+"explicit": true,
+"bins": [
+"zgrab2"
+],
+"man": [],
+"paths": []
+}
+]
+}

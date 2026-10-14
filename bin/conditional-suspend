@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Suspend only if the session is NOT locked (so Super+L lock never sleeps).
+if [ "$(loginctl show-session "${XDG_SESSION_ID:-}" -p LockedHint --value)" = "yes" ]; then
+    exit 0
+fi
+systemctl suspend

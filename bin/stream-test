@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""stream-test -- try the stream overlays live in OBS (nothing is sent to Twitch).
+
+  stream-test                 pick from a menu
+  stream-test follow [name]   a follower alert + the counter bar reacting
+  stream-test burst           three follows in a row (checks the alerts queue up)
+  stream-test stats           sample viewer / follower numbers on the counter bar for 15 s
+  stream-test chat            a few sample chat messages in the chat box
+
+OBS must be open with the overlays in a scene; they pick the test up within a second.
+"""
+import json, os, random, sys, time
+
+DIR = os.path.expanduser("~/Videos/stream-overlays")
+FILE = os.path.join(DIR, "test-trigger.js")
+NAMES = ["NightOwl_77", "pixel_drifter", "Genesis127fan", "quietstorm", "LagSwitchLarry", "mono_chrome"]
+
+
+def send(**t):
+    t["id"] = time.time_ns()
+    tmp = FILE + ".tmp"
+    with open(tmp, "w") as f:
+        f.write("window.__STREAM_TEST = " + json.dumps(t) + ";\n")
+    os.replace(tmp, FILE)
+
+
+def follow(name=None):
+    name = name or random.choice(NAMES)
+    send(type="follow", name=name)
+    print(f"follow alert: {name}")
+
+
+def burst():
+    for n in random.sample(NAMES, 3):
+        follow(n)
+        time.sleep(1.6)          # the overlays look once a second
+    print("(they play one after another)")
+
+
+def stats():
+    send(type="stats", viewers=random.randint(12, 90), followers=random.randint(800, 2500), name=random.choice(NAMES))
+    print("sample numbers on the counter bar for 15 seconds")
+
+
+def chat():
+    lines = [["NightOwl_77", "yo this setup is clean"], ["pixel_drifter", "what distro is that?"],
+             ["you", "arch btw -- hyprland + my own bar"], ["quietstorm", "the alerts go hard"]]
+    send(type="chat", lines=lines)
+    print("sample chat messages")
+
+
+def menu():
+    print("\n  1  follower alert\n  2  three follows in a row\n  3  sample counter numbers\n  4  sample chat\n  q  quit")
+    while True:
+        try:
+            c = input("\n  test: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print(); return
+        if c == "1":
+            n = input("  name (Enter = random): ").strip()
+            follow(n or None)
+        elif c == "2":
+            burst()
+        elif c == "3":
+            stats()
+        elif c == "4":
+            chat()
+        elif c in ("q", "quit", "exit", ""):
+            return
+
+
+def main():
+    if not os.path.isdir(DIR):
+        sys.exit(f"no overlays folder at {DIR}")
+    a = sys.argv[1:]
+    if not a:
+        return menu()
+    cmd = a[0]
+    if cmd == "follow":
+        follow(" ".join(a[1:]) or None)
+    elif cmd == "burst":
+        burst()
+    elif cmd == "stats":
+        stats()
+    elif cmd == "chat":
+        chat()
+    else:
+        print(__doc__.strip())
+
+
+if __name__ == "__main__":
+    main()

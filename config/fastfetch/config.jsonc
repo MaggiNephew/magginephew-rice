@@ -1,0 +1,91 @@
+// Monochrome rice — fastfetch
+// Black / gray / white palette, matches the Hyprland + Quickshell theme.
+// The logo is supplied at runtime by ~/.config/fastfetch/random-logo.sh
+// (a random Ryoku emblem), so no "logo" key is set here.
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "display": {
+    "color": {
+      "keys": "#888888",
+      "title": "#ffffff",
+      "output": "#cccccc",
+      "separator": "#444444"
+    },
+    "key": {
+      "width": 11
+    },
+    "separator": "  "
+  },
+
+  "logo": {
+    "padding": {
+      "right": 4
+    }
+  },
+
+  "modules": [
+    "break",
+    {
+      "type": "custom",
+      "format": "{#separator}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500{#}"
+    },
+    {
+      "type": "title",
+      "key": "IDENTITY"
+    },
+    { "type": "os", "key": "OS" },
+    { "type": "kernel", "key": "KERNEL" },
+    { "type": "uptime", "key": "UPTIME" },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#title}SESSION{#}"
+    },
+    { "type": "shell", "key": "SHELL" },
+    { "type": "wm", "key": "DESKTOP" },
+    { "type": "terminal", "key": "TERMINAL" },
+    { "type": "display", "key": "DISPLAY", "format": "{width}x{height} @ {refresh-rate} Hz" },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#title}MACHINE{#}"
+    },
+    // short names: "Intel Core Ultra 9 275HX", "NVIDIA RTX 5070 Ti"
+    {
+      "type": "command",
+      "key": "CPU",
+      "text": "grep -m1 'model name' /proc/cpuinfo | sed 's/.*: //; s/(R)//g; s/(TM)//g; s/  */ /g'"
+    },
+    {
+      "type": "command",
+      "key": "GPU",
+      "text": "lspci -d 10de::0300 | sed -n 's/^[^[]*\\[\\([^]]*\\)\\].*/\\1/p' | head -1 | sed 's/GeForce //; s/ Mobile//; s/ Laptop GPU//; s/^/NVIDIA /'"
+    },
+    { "type": "memory", "key": "MEMORY", "percent": { "type": 9 } },
+    { "type": "disk", "key": "DISK", "folders": "/", "format": "{size-used} / {size-total} ({size-percentage})" },
+    { "type": "packages", "key": "PACKAGES" },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#separator}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#title}COMMANDS{#}"
+    },
+    { "type": "custom", "key": "cyber", "format": "{#output}cybersec tool/command browser (TUI){#}" },
+    { "type": "custom", "key": "ghgrab", "format": "{#output}download files/folders from GitHub (TUI){#}" },
+    { "type": "custom", "key": "spf", "format": "{#output}superfile \u2014 terminal file manager{#}" },
+    { "type": "custom", "key": "nmtui", "format": "{#output}NetworkManager TUI (wifi/network){#}" },
+    { "type": "custom", "key": "carbonyl", "format": "{#output}Chromium browser in the terminal{#}" },
+
+    "break"
+  ]
+}
