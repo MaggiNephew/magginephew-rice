@@ -61,11 +61,24 @@
   pre { font: 400 13.5px/1.6 var(--mono); background: #0b0b0b; border: 1px solid var(--dim); padding: 18px; overflow-x: auto; color: #dcdcdc; }
   ul.plain { list-style: none; } ul.plain li { padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
   footer { padding: 60px 0 80px; text-align: center; font: 400 13px var(--mono); color: var(--gray); border-top: 1px solid var(--line); }
+
+  /* drifting stipple shapes (same ones as the stream screens) */
+  header, section { position: relative; overflow: hidden; }
+  header > div, section > .wrap { position: relative; z-index: 1; }
+  canvas#wave { z-index: 1; }
+  .deco { position: absolute; z-index: 0; pointer-events: none; user-select: none; opacity: var(--o, .12);
+          animation: drift var(--d, 50s) ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translate(0,0) rotate(0) scale(1); }
+                     to { transform: translate(var(--dx,40px), var(--dy,-30px)) rotate(var(--r,14deg)) scale(1.06); } }
+  @media (max-width: 700px) { .deco { width: 70vw !important; } }
+  @media (prefers-reduced-motion: reduce) { .deco { animation: none; } }
 </style>
 </head>
 <body>
 
 <header>
+  <img class="deco" src="assets/stipple-sphere.png" alt="" aria-hidden="true" style="width:600px;right:-200px;bottom:-200px;--o:.10;--r:18deg">
+  <img class="deco" src="assets/stipple-haze.png" alt="" aria-hidden="true" style="width:560px;left:-180px;top:-160px;--o:.10;--dx:30px;--dy:40px;--d:60s">
   <div>
     <h1>MAGGINEPHEW</h1>
     <div class="frame"><img src="wordmark.svg" alt="MAGGINEPHEW"><div class="label">GENESIS 1:27</div></div>
@@ -80,6 +93,7 @@
 </header>
 
 <section id="look">
+  <img class="deco" src="assets/stipple-ring.png" alt="" aria-hidden="true" style="width:520px;right:-160px;top:-120px;--o:.12;--r:-22deg">
   <div class="wrap">
     <h2>THE LOOK</h2>
     <p class="lead">Everything is black, white and gray: the bar, the lock screen, the file manager, the terminal, even the stream overlays. One font family, one frame shape, one line that moves with the music.</p>
@@ -99,6 +113,8 @@
 </section>
 
 <section id="features">
+  <img class="deco" src="assets/stipple-swirl.png" alt="" aria-hidden="true" style="width:560px;left:-200px;bottom:-120px;--o:.11;--r:-16deg;--d:58s">
+  <img class="deco" src="assets/stipple-star.png" alt="" aria-hidden="true" style="width:420px;right:-140px;top:40px;--o:.09;--dx:-30px;--d:54s">
   <div class="wrap">
     <h2>WHAT'S INSIDE</h2>
     <div class="grid">
@@ -119,6 +135,7 @@
 </section>
 
 <section id="keys">
+  <img class="deco" src="assets/stipple-split.png" alt="" aria-hidden="true" style="width:480px;right:-150px;bottom:-160px;--o:.11;--r:24deg;--d:62s">
   <div class="wrap">
     <h2>KEYS</h2>
     <div class="cols">
@@ -148,6 +165,7 @@
 </section>
 
 <section id="install">
+  <img class="deco" src="assets/globes.png" alt="" aria-hidden="true" style="width:1300px;left:50%;bottom:-90px;margin-left:-650px;--o:.08;--dx:0px;--dy:-10px;--r:0deg;--d:20s">
   <div class="wrap">
     <h2>USE IT</h2>
     <p class="lead">These are my personal dotfiles, not an installer — take what you like. Back up your own configs first.</p>
@@ -160,6 +178,7 @@ cp bin/* ~/.local/bin/</pre>
 </section>
 
 <section id="walls">
+  <img class="deco" src="assets/stipple-orbit.png" alt="" aria-hidden="true" style="width:700px;right:-220px;top:-60px;--o:.08;--r:6deg;--d:44s">
   <div class="wrap">
     <h2>WALLPAPERS</h2>
     <p class="lead">All of them are in the <a href="https://github.com/MaggiNephew/magginephew-rice/tree/main/wallpapers">wallpapers folder</a>. The ones in <code>wallpapers/daily</code> rotate one per day (<code>wallpaper-daily</code>), <kbd>Super</kbd>+<kbd>W</kbd> skips to the next.</p>
